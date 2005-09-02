@@ -1,0 +1,13 @@
+<head>
+<script>
+#if ($data.getMessage())
+	parent.showError("$data.getMessage()")	
+#else
+	parent.showError("$!l10n.get("Common.Message.TriedImpossible")")	
+#end
+</script>
+</head>
+<body>
+
+##$stackTrace
+</body>

@@ -1,0 +1,105 @@
+#set ( $module = "Main" )
+#formCommon()
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.productid.value=$!entry.ProductId;
+
+	myForm.email.focus();
+
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.issueddate)) return false;
+	if (parent.isNotDate(myForm.issueddate)) return false;
+	if (parent.isEmpty(myForm.email)) return false;
+	if (!parent.isEmail(myForm.email.value)){
+		myForm.email.focus();
+		return false;
+	 }
+
+	if (myForm.status.value==50){
+		if (parent.isEmpty(myForm.closeddate)) return false;
+		if (parent.isNotDate(myForm.closeddate)) return false;
+	}
+
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='status'){
+		if (myForm.status.value==50){
+			myForm.closeddate.disabled=false;
+			myForm.closeddate.value="$!df.format($!today)";
+		}
+		else{
+			myForm.closeddate.disabled=true;
+			myForm.closeddate.value="";
+		}
+	}
+}
+
+#formHeader("NewsSubscriptionForm.vm" "NewsSubscriptionSQL" "newssubsid" $!entry.NewsSubsId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "newssubscode" $!entry.NewsSubsCode 20 100 1)
+			<td width=16>&nbsp;</td>
+        #formCellDateDefault ($!l10n.get("Common.Form.Label.Issued") "issueddate" $!entry.IssuedDate $!today 10 100 2)
+			<td width=16>&nbsp;</td>
+   		#formSelectStatus ($!l10n.get("Common.Form.Label.Status") "status" $!entry.Status 100 3)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("NewsSubscription.Form.Label.Email") "email" $!entry.Email 70 160 5)
+			<td width=16>&nbsp;</td>
+   		#formEmptyCell ()
+			<td width=16>&nbsp;</td>
+   		#formEmptyCell ()
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Common.Form.Label.Product"))
+		<td align="left">
+		<select name="productid" tabIndex=6 value=$!entry.ProductId width="160" STYLE="width: 160px">
+		#foreach ($product in $products)
+			<option value="$product.ProductId">$product.ProductDisplay</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+   		#formSelectProject ($!l10n.get("Common.Form.Label.Project") "projectid" $!entry.ProjectId 100 7)
+			<td width=16>&nbsp;</td>
+		#if ($!entry.Status==50)
+        	#formCellDate ($!l10n.get("PrintSubscription.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 14)
+        #else
+        	#formCellDisabled ($!l10n.get("PrintSubscription.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 14)
+        #end
+      </tr>
+
+
+	</table>
+  </td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+<input type="hidden" name="newssubscode" value="$!entry.NewsSubsCode">
+
+#documentFooter()
+	
+#formFooter("NewsSubscriptionForm.vm" "NewsSubscriptionSQL" "newssubsid" $!entry.NewsSubsId $mode)

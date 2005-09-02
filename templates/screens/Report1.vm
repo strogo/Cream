@@ -1,0 +1,27 @@
+#set ( $module = "Report" )
+
+#reportHeader($!reptitle)
+<tr><td>
+<table  width="80%" align="center" cols=3 cellpadding=2 cellspacing=0 border=0>
+	#if ($!entries)
+		<tr>
+			<td class="reptblhead" align="left" width="25%">&nbsp;$!l10n.get("Report.Headers.Id")&nbsp;</td>
+			<td class="reptblhead" align="left" width="60%">$!l10n.get("Report.Headers.Product")&nbsp;</td>
+			<td class="reptblhead" align="right" width="15%">$!l10n.get("Report.Headers.Amount")&nbsp;</td>
+		</tr>        
+	    #foreach ($entry in $entries)
+			<tr class="repcontent">
+				<td class="repcontent" align="left" width="25%">&nbsp;$!entry.getValue(3)</td>
+				<td class="repcontent" align="left" width="60%">$!entry.getValue(4)&nbsp;</td>
+				<td class="repcontent" align="right" width="15%">$!entry.getValue(2)&nbsp;</td>
+			</tr>        
+	    #end
+		<tr class="repcontent">
+			<td class="reptblhead" align="right" width="25%">&nbsp;</td>
+			<td class="reptblhead" align="right" width="60%">$!l10n.get("Report.Headers.Total"):</td>
+			<td class="reptblhead" align="right" width="15%">$!sumall&nbsp;</td>
+		</tr>        
+	#end
+</table>
+</td></tr>
+#reportFooter()

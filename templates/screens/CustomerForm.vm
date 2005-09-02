@@ -1,0 +1,297 @@
+#set ( $module = "Main" )
+#formCommon()
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.customertype.value=$!entry.CustomerType;
+	myForm.gendertemp.value=$!entry.Gender;
+	myForm.customercatid.value=$!entry.CustomerCatId;
+	myForm.languageid.value=$!entry.LanguageId;
+	myForm.emailformat.value=$!entry.EmailFormat;
+	myForm.countryid.value=$!entry.CountryId;
+	myForm.regionid.value=$!entry.RegionId;
+	myForm.householdcatidtemp.value=$!entry.HouseholdCatId;
+	myForm.educationcatidtemp.value=$!entry.EducationCatId;
+
+	if (myForm.sendnews.value==10) myForm.sendnewstemp.checked=false;
+	if (myForm.customertype.value==20){
+		myForm.gendertemp.disabled=true;
+		myForm.householdcatidtemp.disabled=true;
+		myForm.educationcatidtemp.disabled=true;
+	}
+	highlight(myForm.customername1);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.customercode)) return false;
+	if (parent.isEmpty(myForm.customername1)) return false;
+	if (parent.isEmpty(myForm.customerdisplay)) return false;
+
+	if (myForm.email.value!=""){
+		if (!parent.isEmail(myForm.email.value)){
+			myForm.email.focus();
+			return false;
+		}
+	}
+	
+	myForm.customercode.value = myForm.customercode.value.toUpperCase();
+
+	if (myForm.customertype.value==20){
+		myForm.gender.value=10;
+		myForm.householdcatid.value=1000;
+		myForm.educationcatid.value=1000;
+	}
+	else{
+		myForm.gender.value=myForm.gendertemp.value;
+		myForm.householdcatid.value=myForm.householdcatidtemp.value;
+		myForm.educationcatid.value=myForm.educationcatidtemp.value;
+	}
+	if (myForm.sendnewstemp.checked){
+		 myForm.sendnews.value=20;
+	}
+	else {
+		 myForm.sendnews.value=10;
+	}
+	
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='customername1'){
+		myForm.customerdisplay.value=formField.value;
+		myForm.dear.value=formField.value;
+	}
+	else if (formField.name=='customertype'){
+		if (formField.value==20){
+			myForm.gendertemp.value=10;
+			myForm.householdcatidtemp.value=1000;
+			myForm.educationcatidtemp.value=1000;
+			myForm.gendertemp.disabled=true;
+			myForm.householdcatidtemp.disabled=true;
+			myForm.educationcatidtemp.disabled=true;
+		}else{
+			myForm.gendertemp.disabled=false;
+			myForm.householdcatidtemp.disabled=false;
+			myForm.educationcatidtemp.disabled=false;
+		}
+	}
+
+}
+
+#formHeader("CustomerForm.vm" "CustomerSQL" "customerid" $!entry.CustomerId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCell ($!l10n.get("Common.Form.Label.Code") "customercode" $!entry.CustomerCode 20 100 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="status" tabIndex=2 value=$!entry.Status STYLE="width: 100px">
+  		#if($mode=="insert" || $!entry.Status==10)
+			<option value="10">$!l10n.get("Customer.Form.Status.Prospect")</option>
+		#end        	
+			<option value="30">$!l10n.get("Customer.Form.Status.Active")</option>
+			<option value="50">$!l10n.get("Customer.Form.Status.Inactive")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCellWithChange ($!l10n.get("Common.Form.Label.Name") "customername1" $!entry.CustomerName1 70 160 3)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Type"))
+		<td align="left">
+		<select name="customertype" tabIndex="7" value="$!entry.CustomerType" onchange="valueChanged(this);" width="160" STYLE="width: 160px">
+			<option value="10">$!l10n.get("Customer.Form.Type.Person")</option>
+			<option value="20">$!l10n.get("Customer.Form.Type.Institution")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+        #formCell ("" "customername2" $!entry.CustomerName2 70 160 4)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Customer.Form.Label.Gender"))
+		<td align="left">
+		<select name="gendertemp" tabIndex="8" value="$!entry.Gender" width="160" STYLE="width: 160px">
+			<option value="10">---</option>
+			<option value="20">$!l10n.get("Customer.Form.Gender.Male")</option>
+			<option value="30">$!l10n.get("Customer.Form.Gender.Female")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Display") "customerdisplay" $!entry.CustomerDisplay 70 160 5)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Category"))
+		<td align="left">
+		<select name="customercatid" tabIndex="9" value="$!entry.CustomerCatId" width="160" STYLE="width: 160px">
+		#foreach ($customercat in $customercats)
+			<option value="$customercat.CustomerCatId">$customercat.CustomerCatName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Dear") "dear" $!entry.Dear 70 160 6)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Customer.Form.Label.Language"))
+		<td align="left">
+		<select name="languageid" tabIndex="10" value="$!entry.LanguageId" width="160" STYLE="width: 160px">
+		#foreach ($language in $languages)
+			<option value="$language.LanguageId">$language.LanguageName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Address") "address1" $!entry.Address1 55 160 12)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Phone1")  "phone1" $!entry.Phone1 30 160 20)
+      </tr>
+      <tr>
+        #formCell ("" "address2" $!entry.Address2 55 160 13)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Phone2")  "phone2" $!entry.Phone1 30 160 21)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.City")  "city" $!entry.City 35 160 15)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Fax")  "fax" $!entry.Fax 30 160 22)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Zip")  "zip" $!entry.Zip 12 100 16)
+			<td width=16>&nbsp;</td>
+		#formEmptyCell()
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.State")  "state" $!entry.State 35 160 17)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Email")  "email" $!entry.Email 70 160 24)
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Customer.Form.Label.Country") )
+		<td align="left">
+		<select name="countryid" tabIndex="18" value="$!entry.CountryId" width="160" STYLE="width: 160px">
+		#foreach ($country in $countries)
+			<option value="$country.CountryId">$country.CountryName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+        #formCheckBox ($!l10n.get("Customer.Form.Label.SendNewsletters")  "sendnewstemp" true 25)
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Customer.Form.Label.Region") )
+		<td align="left">
+		<select name="regionid" tabIndex="19" value="$!entry.RegionId" width="160" STYLE="width: 160px">
+		#foreach ($region in $regions)
+			<option value="$region.RegionId">$region.RegionName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.InfoUrl")  "www" $!entry.Www 70 160 26)
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Customer.Form.Label.HouseholdIncome") )
+		<td align="left">
+		<select name="householdcatidtemp" tabIndex="27" value="$!entry.HouseholdCatId" width="160" STYLE="width: 160px">
+		#foreach ($income in $incomes)
+			<option value="$income.HouseholdCatId">$income.HouseholdCatName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Customer.Form.Label.Education") )
+		<td align="left">
+		<select name="educationcatidtemp" tabIndex="28" value="$!entry.EducationCatId" width="160" STYLE="width: 160px">
+		#foreach ($education in $educations)
+			<option value="$education.EducationCatId">$education.EducationCatName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Custom1")  "custom1" $!entry.Custom1 55 160 37)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Custom4")  "custom4" $!entry.Custom4 55 160 40)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Custom2") "custom2" $!entry.Custom2 55 160 38)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Custom5") "custom5" $!entry.Custom5 55 160 41)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Custom3") "custom3" $!entry.Custom3 55 160 39)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Custom6") "custom6" $!entry.Custom6 55 160 42)
+      </tr>
+	</table>
+  </td>
+</tr>
+
+<input type="hidden" name="gender" value="$!entry.Gender">
+<input type="hidden" name="householdcatid" value="$!entry.HouseholdCatId">
+<input type="hidden" name="educationcatid" value="$!entry.EducationCatId">
+<input type="hidden" name="sendnews" value="$!entry.SendNews">
+<input type="hidden" name="emailformat" value="20">
+
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+	<td align=center>
+		<textarea rows="5" cols="96%" name="notes" tabIndex=43>$!entry.Notes</textarea>
+	</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+	<tr>
+		<td align=center>
+	    <table align=center width="96%" cellpadding=0 cellspacing=0 border=0>
+	      <tr>  
+	      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+	      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+	      </tr>  
+		</table>
+		</td>
+	</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+#end        	
+
+	
+#formFooter("CustomerForm.vm" "CustomerSQL" "customerid" $!entry.CustomerId $mode)

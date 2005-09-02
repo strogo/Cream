@@ -1,0 +1,30 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(1001 "CustomerList.vm" "CustomerSQL" 7)
+  
+	#if ($entries)
+
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle ($!entry.CustomerId)
+
+				#if ($!entry.CustomerType==10)
+					#addListPic($ui.person)
+				#else
+					#addListPic($ui.institut)
+				#end
+
+				<td width="15%"><span class="llink" onClick="doEdit('$entry.CustomerId')">$!entry.CustomerCode</span></td>
+				#listCellPrc (35 $!entry.CustomerDisplay)
+				#listCellPrc (25 $!entry.CustomerCategory.CustomerCatName)
+				#if ($!entry.City)
+					#listCellPrc (15 $!entry.City)
+				#else
+					#listCellPrc (15 "")
+				#end
+				#listCellPrc (10 $!entry.Country.CountryCode)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

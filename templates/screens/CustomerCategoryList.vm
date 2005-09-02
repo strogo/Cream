@@ -1,0 +1,15 @@
+#set ( $module = "Options" )
+#listCommon()
+#listHeader(3010 "CustomerCategoryList.vm" "CustomerCategorySQL" 3)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+	        <tr class=rowopen valign="center">
+				#addToggle($entry.CustomerCatId)
+				#addListPic($ui.space)
+				<td width="100%"><span class="llink" onClick="doEdit('$entry.CustomerCatId')">$entry.CustomerCatName</span></td>
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

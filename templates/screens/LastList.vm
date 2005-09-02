@@ -1,0 +1,5 @@
+#set ( $module = "Main" )
+
+<head></head>
+<BODY onload=parent.showLastList()>
+</body>

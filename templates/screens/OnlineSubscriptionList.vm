@@ -1,0 +1,19 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2003 "OnlineSubscriptionList.vm" "OnlineSubscriptionSQL" 7)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.OnlineSubsId)
+				#addListPic($ui.osubs)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.OnlineSubsId')">$!entry.OnlineSubsCode</span></td>
+				#listCellPrc (25 $!entry.CustomerRelatedByCustomerId.CustomerDisplay)
+				#listCellPrc (20 $!entry.Sorder.SorderCode)
+				#listCellPrc (25 $!entry.Product.ProductDisplay)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

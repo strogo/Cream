@@ -1,0 +1,20 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2002 "PaymentList.vm" "PaymentSQL" 8)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.PaymentId)
+				#addListPic($ui.payment)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.PaymentId')">$!entry.PaymentCode</span></td>
+				#listCellPrc (25 $!entry.Customer.CustomerDisplay)
+				#listCellPrc (20 $!entry.Sorder.SorderCode)
+				#listCellPrcAmount (15 $!entry.CurrencyAmount)
+				#listCellPrc (10 $!entry.Currency.CurrencyCode)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

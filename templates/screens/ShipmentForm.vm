@@ -1,0 +1,244 @@
+#set ( $module = "Main" )
+#formCommon()
+
+var rowId=1;
+var tabInd=26;
+
+function ProductObject (desc, u){
+	this.description=desc;
+	this.uomCode=u;
+}
+
+var orderProduct= new Array();
+
+#foreach ($product in $products)
+orderProduct[$product.ProductId]=new ProductObject("$product.ProductDescription", "$product.Uom.UomCode");
+#end        	
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.customerid.value=$!entry.CustomerId;
+	myForm.recipientid.value=$!entry.RecipientId;
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.sorderid.value=$!entry.SorderId;
+	myForm.carrierid.value=$!entry.CarrierId;
+
+	#if ($!mode=="insert")
+		doAddItem();
+	#else
+		#foreach ($entryitem in $entryitems)
+			myRow= doAddItem();
+			suf= '_' + myRow;
+			myForm['productid' + suf].value="$!entryitem.ProductId";
+			myForm['description' + suf].value="$!entryitem.Description";
+			myForm['uomcode' + suf].value="$!entryitem.Product.Uom.UomCode";
+			myForm['quantity' + suf].value="$!entryitem.Quantity";
+	
+		#end
+	#end
+	myForm.customerid.focus();
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.issueddate)) return false;
+	if (parent.isNotDate(myForm.issueddate)) return false;
+	if (myForm.status.value==50){
+		if (parent.isEmpty(myForm.closeddate)) return false;
+		if (parent.isNotDate(myForm.closeddate)) return false;
+	}
+	if (parent.isSelected(myForm.customerid)) return false;
+	if (parent.isSelected(myForm.recipientid)) return false;
+
+	var len = myForm.elements.length;
+	for (var i = 0; i < len; i++) {
+	    var e = myForm.elements[i];
+	    if (e.name.substring(0, 11) == "description") {
+			if (parent.isEmpty(e)) return false;
+	    }
+	    else if (e.name.substring(0, 8) == "quantity") {
+			if (parent.isNotQuantity(e)) return false;
+	    }
+	}
+
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='customerid'){
+		myForm.recipientid.value=formField.value;
+		loadUtil('$link.setPage("CustomerOrders.vm")', formField.value);
+	}
+	else if (formField.name=='status'){
+		if (myForm.status.value==50){
+			myForm.closeddate.disabled=false;
+			myForm.closeddate.value="$!df.format($!today)";
+		}
+		else{
+			myForm.closeddate.disabled=true;
+			myForm.closeddate.value="";
+		}
+	}
+	else if (formField.name=='sorderid'){
+		if (formField.value > 1000){
+			loadUtil('$link.setPage("ShipmentOrder.vm")', formField.value);
+		}
+	}
+	else if (formField.name.substring(0, 9)=='productid'){
+		sufix= formField.name.substring(9, formField.name.length);
+		setProductData(sufix);
+	}
+}
+
+function doAddItem(){
+	rowId++;
+
+	itemstr1='<a href="javascript: void 0" ONCLICK="doDeleteItem(this)"><img src="$ui.image($ui.itemDelete)" width="16" height="16" border=0 alt="Delete Item"></a>';
+	itemstr2='<select name="productid_' + rowId + '" tabIndex="' + tabInd + '" value="$!entry.ProductId" onchange="valueChanged(this);" width="100" STYLE="width: 100px">';
+	#foreach ($product in $products)
+		itemstr2+='<option value="$product.ProductId">$product.ProductCode</option>'
+	#end        	
+	itemstr2+='</select>';
+	tabInd++;
+	itemstr3='<input type="text" tabIndex="' + tabInd + '" maxLength="254" name="description_' + rowId + '" value="" STYLE="width: 320px">';
+	tabInd++;
+	itemstr4='<input type="text" DISABLED tabIndex="' + tabInd + '" maxLength="10" name="uomcode_' + rowId + '" value="--" STYLE="width: 60px;">';
+	tabInd++;
+	itemstr5='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="quantity_' + rowId + '" value="1" onchange="valueChanged(this);" STYLE="width: 60px; text-align: right;">';
+	tabInd++;
+
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+    var row = table.insertRow(table.rows.length);
+
+    var cell1 = row.insertCell(0);
+    cell1.innerHTML = itemstr1;
+    var cell2 = row.insertCell(1);
+    cell2.innerHTML = itemstr2;
+    var cell3 = row.insertCell(2);
+    cell3.innerHTML = itemstr3;
+    var cell4 = row.insertCell(3);
+    cell4.innerHTML = itemstr4;
+    var cell5 = row.insertCell(4);
+    cell5.innerHTML = itemstr5;
+    
+    return rowId;
+}
+
+function setProductData(sufix){
+	prid= myForm['productid' + sufix].value;
+	
+	myForm['description' + sufix].value=this.orderProduct[prid].description;
+	myForm['uomcode' + sufix].value=this.orderProduct[prid].uomCode;
+}
+
+function doDeleteItem(cell){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	var rowIndex= document.all ? cell.parentElement.parentElement.rowIndex : cell.parentNode.parentNode.rowIndex;
+
+	table.deleteRow(rowIndex);
+	if (table.rows.length<2){
+		doAddItem();
+	}
+}
+
+function checkEmptyTable(){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	if (table.rows.length<2){
+		doAddItem();
+	}
+}
+
+function doClearItems(){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	var rowIndex= table.rows.length - 1;
+
+	while (rowIndex > 0){
+		table.deleteRow(rowIndex);
+		rowIndex--;
+	}
+	
+	rowId=1;
+	tabInd=26;
+}
+
+#formHeader("ShipmentForm.vm" "ShipmentSQL" "shipmentid" $!entry.ShipmentId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "shipmentcode" $!entry.ShipmentCode 20 100 1)
+			<td width=16>&nbsp;</td>
+        #formCellDateDefault ($!l10n.get("Common.Form.Label.Issued") "issueddate" $!entry.IssuedDate $!today 10 100 2)
+			<td width=16>&nbsp;</td>
+   		#formSelectStatus ($!l10n.get("Common.Form.Label.Status") "status" $!entry.Status 100 3)
+     </tr>
+    <tr>
+	<td>
+	&nbsp;
+	</td>
+    </tr>
+      <tr>
+   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 5)
+			<td width=16>&nbsp;</td>
+   		#formSelectOrder ($!l10n.get("Common.Form.Label.Order") "sorderid" $!entry.SorderId 100 6)
+			<td width=16>&nbsp;</td>
+   		#formSelectProject ($!l10n.get("Common.Form.Label.Project") "projectid" $!entry.ProjectId 100 7)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+   		#formSelectCustomer ($!l10n.get("Shipment.Form.Label.ShipTo") "recipientid" $!entry.RecipientId 160 11)
+			<td width=16>&nbsp;</td>
+   		#formSelectCarrier ($!l10n.get("Shipment.Form.Label.Carrier") "carrierid" $!entry.CarrierId 100 12)
+			<td width=16>&nbsp;</td>
+		#if ($!entry.Status==50)
+        	#formCellDate ($!l10n.get("Shipment.Form.Label.Shipped") "closeddate" $!entry.ClosedDate 10 100 14)
+        #else
+        	#formCellDisabled ($!l10n.get("Shipment.Form.Label.Shipped") "closeddate" $!entry.ClosedDate 10 100 14)
+        #end
+      </tr>
+	</table>
+  </td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+
+<tr>
+<td>
+	<table align=center cellpadding=0 cellspacing=0 border=0>
+	<tr>
+		<td>
+		<table id="itemList" name="itemList" align=center cellpadding=0 cellspacing=0 border=0>
+			<tr class=toolbar align=center>
+				<td>
+				<a href="javascript: void 0" ONCLICK="doAddItem()"><img src="$ui.image($ui.itemNew)" width="16" height="16" border=0 alt="Add Item"></a>
+				</td>
+				<td width="100">$!l10n.get("Common.Form.Items.Header.Id")</td>
+				<td width="320">$!l10n.get("Common.Form.Items.Header.Description")</td>
+				<td width="60">$!l10n.get("Common.Form.Items.Header.Uom")</td>
+				<td width="60">$!l10n.get("Common.Form.Items.Header.Qty")</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<input type="hidden" name="shipmentcode" value="$!entry.ShipmentCode">
+
+#documentFooter()
+
+	
+#formFooter("ShipmentForm.vm" "ShipmentSQL" "shipmentid" $!entry.ShipmentId $mode)

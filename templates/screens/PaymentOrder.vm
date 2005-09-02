@@ -1,0 +1,30 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	myForm=parent.document.getElementById('formData');
+
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.currencyid.value=$!entry.CurrencyId;
+	myForm.payterm.value=$!entry.PayTerm;
+	myForm.paymethod.value=$!entry.PayMethod;
+	myForm.currencyamount.value=$!entry.CurrencyAmount;
+
+	parent.doClearItems();
+	#foreach ($entryitem in $entryitems)
+		myRow= parent.doAddItem();
+		suf= '_' + myRow;
+		myForm['productid' + suf].value="$!entryitem.ProductId";
+		myForm['description' + suf].value="$!entryitem.Description";
+		myForm['unitprice' + suf].value="$!af.format($!entryitem.UnitPrice)";
+		myForm['quantity' + suf].value="$!entryitem.Quantity";
+		myForm['itemcurrtotal' + suf].value="$!af.format($!entryitem.ItemCurrTotal)";
+
+	#end
+	parent.checkEmptyTable();
+	myForm.projectid.focus();
+
+}
+
+#utilHeader()
+#utilFooter()

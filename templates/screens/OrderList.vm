@@ -1,0 +1,20 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2001 "OrderList.vm" "OrderSQL" 8)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.SorderId)
+				#addListPic($ui.sorder)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.SorderId')">$!entry.SorderCode</span></td>
+				#listCellPrc (30 $!entry.CustomerRelatedByCustomerId.CustomerDisplay)
+				#listCellPrcPayTerm (15 $!entry.PayTerm)
+				#listCellPrcAmount (15 $!entry.CurrencyAmount)
+				#listCellPrc (10 $!entry.Currency.CurrencyCode)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

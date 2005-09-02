@@ -1,0 +1,18 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2012 "NewsSubscriptionList.vm" "NewsSubscriptionSQL" 6)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.NewsSubsId)
+				#addListPic($ui.nssubs)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.NewsSubsId')">$!entry.NewsSubsCode</span></td>
+				#listCellPrc (40 $!entry.Email)
+				#listCellPrc (30 $!entry.Product.ProductDisplay)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

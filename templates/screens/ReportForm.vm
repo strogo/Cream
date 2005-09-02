@@ -1,0 +1,321 @@
+#set ( $module = "Main" )
+#formCommon()
+
+function formInit(){
+	myForm.reptitle.value=myForm.reportid.options[myForm.reportid.selectedIndex].text;
+	myForm.reportid.focus();
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.reptitle)) return false;
+	if (parent.isEmpty(myForm.fromdate)) return false;
+	if (parent.isNotDate(myForm.fromdate)) return false;
+	if (parent.isEmpty(myForm.todate)) return false;
+	if (parent.isNotDate(myForm.todate)) return false;
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='reportid'){
+		myForm.reptitle.value=formField.options[formField.selectedIndex].text;
+		if (formField.value==6){
+			myForm.productid.value=999;
+			myForm.producttype.value=1;
+			myForm.productcatid.value=999;
+			myForm.uomid.value=999;
+			myForm.vendorid.value=999;
+
+			myForm.productid.disabled=true;
+			myForm.producttype.disabled=true;
+			myForm.productcatid.disabled=true;
+			myForm.uomid.disabled=true;
+			myForm.vendorid.disabled=true;
+		}else{
+			myForm.productid.disabled=false;
+			myForm.producttype.disabled=false;
+			myForm.productcatid.disabled=false;
+			myForm.uomid.disabled=false;
+			myForm.vendorid.disabled=false;
+		}
+
+	}
+}
+
+function showReport(){
+	if (myForm.reportid.value==1){
+		myUrl="$link.setPage("Report1.vm").setAction("ReportSQL")";
+	}else if (myForm.reportid.value==2){
+		myUrl="$link.setPage("Report2.vm").setAction("ReportSQL")";
+	}else if (myForm.reportid.value==3){
+		myUrl="$link.setPage("Report3.vm").setAction("ReportSQL")";
+	}else if (myForm.reportid.value==4){
+		myUrl="$link.setPage("Report4.vm").setAction("ReportSQL")";
+	}else if (myForm.reportid.value==5){
+		myUrl="$link.setPage("Report5.vm").setAction("ReportSQL")";
+	}else if (myForm.reportid.value==6){
+		myUrl="$link.setPage("Report6.vm").setAction("ReportSQL")";
+	}
+		
+	myForm.action= myUrl;
+	myForm.submit();
+}
+</script>
+</head>
+<body #TurbineHtmlBodyAttributes()>
+
+<form id="formData" name="formData" target="_blank" method="post" action="" onSubmit="return formValidate();">
+  <div id="Master" align="center">
+    <table cellpadding=1 cellspacing=0 border=0>
+    <tr>&nbsp;</tr>
+ <tr>
+	<td>
+		<table align="center" cellpadding=10 width="100%" cellspacing=0 border=0 style="border: solid 2px #B6C7E5;">
+		<tr>
+			<td>
+		<table align="center" cellpadding=0 width="100%" cellspacing=0 border=0>
+		<tr>
+			<td class=frmlabel align="left">
+			    $!l10n.get("Report.Form.Label.Report")&nbsp;
+			</td>
+			<td align="left">
+			<select name="reportid"  tabIndex="1" value="1" onchange="valueChanged(this);" width="340" STYLE="width: 340px">
+				<option value="1">$!l10n.get("Report.Form.Report.Name1")</option>
+				<option value="2">$!l10n.get("Report.Form.Report.Name2")</option>
+				<option value="3">$!l10n.get("Report.Form.Report.Name3")</option>
+				<option value="4">$!l10n.get("Report.Form.Report.Name4")</option>
+				<option value="5">$!l10n.get("Report.Form.Report.Name5")</option>
+				<option value="6">$!l10n.get("Report.Form.Report.Name6")</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formCell ($!l10n.get("Report.Form.Label.Title") "reptitle" "" 254 340 1)
+		</tr>
+		</table>
+		</td>
+		</tr>
+		</table>
+	</td>
+ </tr>
+	<tr>
+	<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+      <tr>  
+   		#formCellDate ($!l10n.get("Report.Form.Label.From") "fromdate" $!today 20 140 2)
+			<td width=16>&nbsp;</td>
+   		#formEmptyCell()
+ 		</tr>
+      <tr>  
+   		#formCellDate ($!l10n.get("Report.Form.Label.To") "todate" $!today 20 140 3)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="status" tabIndex="4" value="30" width="140" STYLE="width: 140px">
+			<option value="10">$!l10n.get("Common.Form.Status.Draft")</option>
+			<option SELECTED value="30">$!l10n.get("Common.Form.Status.Open")</option>
+			<option value="50">$!l10n.get("Common.Form.Status.Closed")</option>
+		</select>
+		</td>
+ 		</tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+
+		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Customer"))
+			<td align="left">
+			<select name="customerid" tabIndex="10" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($customer in $customers)
+				<option value="$customer.CustomerId">$customer.CustomerDisplay</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Common.Form.Label.Project"))
+			<td align="left">
+			<select name="projectid" tabIndex="20" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($project in $projects)
+				<option value="$project.ProjectId">$project.ProjectName</option>
+			#end        	
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Type"))
+			<td align="left">
+			<select name="customertype" tabIndex="11" value="1" width="140" STYLE="width: 140px">
+				<option value="1">(*)</option>
+				<option value="10">$!l10n.get("Customer.Form.Type.Person")</option>
+				<option value="20">$!l10n.get("Customer.Form.Type.Institution")</option>
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Common.Form.Label.Category"))
+			<td align="left">
+			<select name="projectcatid" tabIndex="21" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($projectcat in $projectcats)
+				<option value="$projectcat.ProjectCatId">$projectcat.ProjectCatName</option>
+			#end        	
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Category"))
+			<td align="left">
+			<select name="customercatid" tabIndex="12" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($customercat in $customercats)
+				<option value="$customercat.CustomerCatId">$customercat.CustomerCatName</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formEmptyCell()
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Customer.Form.Label.Language"))
+			<td align="left">
+			<select name="languageid" tabIndex="13" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($language in $languages)
+				<option value="$language.LanguageId">$language.LanguageName</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Common.Form.Label.Product"))
+			<td align="left">
+			<select name="productid" tabIndex="30" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($product in $products)
+				<option value="$product.ProductId">$product.ProductDisplay</option>
+			#end        	
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Customer.Form.Label.Country"))
+			<td align="left">
+			<select name="countryid" tabIndex="14" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($country in $countries)
+				<option value="$country.CountryId">$country.CountryName</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Common.Form.Label.Type"))
+			<td align="left">
+			<select name="producttype" tabIndex="31" value="1" width="140" STYLE="width: 140px">
+				<option value="1">(*)</option>
+				<option value="10">$!l10n.get("Product.Form.Type.StockItem")</option>
+				<option value="20">$!l10n.get("Product.Form.Type.Service")</option>
+				<option value="30">$!l10n.get("Product.Form.Type.OnlineSubscription")</option>
+				<option value="40">$!l10n.get("Product.Form.Type.PrintSubscription")</option>
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Customer.Form.Label.Region"))
+			<td align="left">
+			<select name="regionid" tabIndex="15" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($region in $regions)
+				<option value="$region.RegionId">$region.RegionName</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Common.Form.Label.Category"))
+			<td align="left">
+			<select name="productcatid" tabIndex="32" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($productcat in $productcats)
+				<option value="$productcat.ProductCatId">$productcat.ProductCatName</option>
+			#end        	
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Customer.Form.Label.HouseholdIncome"))
+			<td align="left">
+			<select name="householdcatid" tabIndex="16" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($householdcat in $householdcats)
+				<option value="$householdcat.HouseholdCatId">$householdcat.HouseholdCatName</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Product.Form.Label.UOM"))
+			<td align="left">
+			<select name="uomid" tabIndex="33" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+				#foreach ($uom in $uoms)
+					#if($uom.UomCode=="DAY")
+						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Day")</option>
+					#elseif($uom.UomCode=="WEE")
+						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Week")</option>
+					#elseif($uom.UomCode=="MON")
+						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Month")</option>
+					#elseif($uom.UomCode=="QAN")
+						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.QuarterOfYear")</option>
+					#elseif($uom.UomCode=="SAN")
+						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.HalfOfYear")</option>
+					#elseif($uom.UomCode=="ANN")
+						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Year")</option>
+					#else
+						<option value="$uom.UomId">$uom.UomName</option>
+					#end
+				#end        	
+			</select>
+			</td>
+		</tr>
+		<tr>
+			#formLabel($!l10n.get("Customer.Form.Label.Education"))
+			<td align="left">
+			<select name="educationcatid" tabIndex="17" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($educationcat in $educationcats)
+				<option value="$educationcat.EducationCatId">$educationcat.EducationCatName</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Product.Form.Label.Vendor"))
+			<td align="left">
+			<select name="vendorid" tabIndex="34" value="999" width="140" STYLE="width: 140px">
+				<option value="999">(*)</option>
+			#foreach ($vendor in $vendors)
+				<option value="$vendor.VendorId">$vendor.VendorName</option>
+			#end        	
+			</select>
+			</td>
+		</tr>
+
+
+
+	</table>
+	</td>
+ </tr>
+</table>
+	</td>
+ </tr>
+</table>
+
+
+    <input type="hidden" name="eventSubmit_doReport" value="Show"/>
+  </div>
+</form>
+
+	

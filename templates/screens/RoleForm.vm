@@ -1,0 +1,175 @@
+#set ( $module = "System" )
+#formCommon()
+
+var rowId=1;
+var tabInd=26;
+
+function formInit(){
+
+	#if ($!mode=="insert")
+		doAddItem();
+	#else
+		#foreach ($entryitem in $entryitems)
+			myRow= doAddItem();
+			suf= '_' + myRow;
+			myForm['permissionid' + suf].value="$!entryitem.PermissionId";
+		#end
+	#end
+
+	highlight(myForm.name);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.name)) return false;
+	
+//	var len = myForm.elements.length;
+//	for (var i = 0; i < len; i++) {
+//	    var e = myForm.elements[i];
+//	    if (e.name.substring(0, 11) == "description") {
+//			if (parent.isEmpty(e)) return false;
+//	    }
+//	}
+
+	return true;
+}
+
+function valueChanged(formField){
+}
+
+function doAddItem(){
+	rowId++;
+
+	itemstr1='<a href="javascript: void 0" ONCLICK="doDeleteItem(this)"><img src="$ui.image($ui.itemDelete)" width="16" height="16" border=0 alt="Delete Item"></a>';
+	itemstr2='<select name="permissionid_' + rowId + '" tabIndex="' + tabInd + '" value="" width="320" STYLE="width: 320px">';
+
+	itemstr2+='<option value="1010">$!l10n.get("Inbox.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1011">$!l10n.get("Inbox.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1020">$!l10n.get("Outbox.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1021">$!l10n.get("Outbox.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1280">$!l10n.get("NewsSubscription.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1281">$!l10n.get("NewsSubscription.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1030">$!l10n.get("Newsletter.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1031">$!l10n.get("Newsletter.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1040">$!l10n.get("OnlineSubscription.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1041">$!l10n.get("OnlineSubscription.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1050">$!l10n.get("PrintSubscription.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1051">$!l10n.get("PrintSubscription.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1060">$!l10n.get("Service.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1061">$!l10n.get("Service.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1070">$!l10n.get("Shipment.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1071">$!l10n.get("Shipment.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1080">$!l10n.get("Payment.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1081">$!l10n.get("Payment.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1090">$!l10n.get("SalesOrder.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1091">$!l10n.get("SalesOrder.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1100">$!l10n.get("Customer.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1101">$!l10n.get("Customer.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1110">$!l10n.get("Project.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1111">$!l10n.get("Project.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1120">$!l10n.get("Product.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1121">$!l10n.get("Product.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1130">$!l10n.get("Currency.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1131">$!l10n.get("Currency.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1140">$!l10n.get("Carrier.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1141">$!l10n.get("Carrier.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1150">$!l10n.get("Language.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1151">$!l10n.get("Language.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1160">$!l10n.get("Country.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1161">$!l10n.get("Country.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1170">$!l10n.get("Region.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1171">$!l10n.get("Region.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1180">$!l10n.get("HouseholdIncome.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1181">$!l10n.get("HouseholdIncome.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1190">$!l10n.get("Education.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1191">$!l10n.get("Education.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1200">$!l10n.get("UOM.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1201">$!l10n.get("UOM.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1210">$!l10n.get("Vendor.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1211">$!l10n.get("Vendor.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1220">$!l10n.get("CustomerCategory.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1221">$!l10n.get("CustomerCategory.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1230">$!l10n.get("ProjectCategory.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1231">$!l10n.get("ProjectCategory.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1240">$!l10n.get("ProductCategory.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1241">$!l10n.get("ProductCategory.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1250">$!l10n.get("Notification.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1251">$!l10n.get("Notification.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1260">$!l10n.get("User.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1261">$!l10n.get("User.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+	itemstr2+='<option value="1270">$!l10n.get("Role.Menu.Label") - $!l10n.get("Role.Form.Permission.View")</option>'
+	itemstr2+='<option value="1271">$!l10n.get("Role.Menu.Label") - $!l10n.get("Role.Form.Permission.Modify")</option>'
+
+	itemstr2+='</select>';
+	tabInd++;
+
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+    var row = table.insertRow(table.rows.length);
+
+    var cell1 = row.insertCell(0);
+    cell1.innerHTML = itemstr1;
+    var cell2 = row.insertCell(1);
+    cell2.innerHTML = itemstr2;
+    
+    return rowId;
+}
+
+function doDeleteItem(cell){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	var rowIndex= document.all ? cell.parentElement.parentElement.rowIndex : cell.parentNode.parentNode.rowIndex;
+
+	table.deleteRow(rowIndex);
+	if (table.rows.length<2){
+		doAddItem();
+	}
+}
+
+function checkEmptyTable(){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	if (table.rows.length<2){
+		doAddItem();
+	}
+}
+
+
+#formHeader("RoleForm.vm" "RoleSQL" "roleid" $!entry.RoleId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>
+        #formCell ($!l10n.get("Common.Form.Label.Name") "name" $!entry.Name 32 160 1 )
+      </tr>
+	</table>
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+	<table align=center cellpadding=0 cellspacing=0 border=0>
+	<tr>
+		<td>
+		<table id="itemList" name="itemList" align=center cellpadding=0 cellspacing=0 border=0>
+			<tr class=toolbar align=center>
+				<td>
+				<a href="javascript: void 0" ONCLICK="doAddItem()"><img src="$ui.image($ui.itemNew)" width="16" height="16" border=0 alt="Add Item"></a>
+				</td>
+				<td width="320">$!l10n.get("Role.Form.Items.Header.Permission")</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+
+#formFooter("RoleForm.vm" "RoleSQL" "roleid" $!entry.RoleId $mode)

@@ -1,0 +1,18 @@
+#set ( $module = "Options" )
+#listCommon()
+#listHeader(3001 "CurrencyList.vm" "CurrencySQL" 6)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+	        <tr class=rowopen valign="center">
+				#addToggle($entry.CurrencyId)
+				#addListPic($ui.space)
+				<td width="60%"><span class="llink" onClick="doEdit('$entry.CurrencyId')">$entry.CurrencyName</span></td>
+				#listCellPrc (20 $entry.CurrencyCode)
+				#listCellPrcRate (20 $entry.CurrencyRate)
+				#addListPic($ui.space)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

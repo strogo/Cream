@@ -1,0 +1,19 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2005 "ShipmentList.vm" "ShipmentSQL" 7)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.ShipmentId)
+				#addListPic($ui.shipment)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.ShipmentId')">$!entry.ShipmentCode</span></td>
+				#listCellPrc (25 $!entry.CustomerRelatedByCustomerId.CustomerDisplay)
+				#listCellPrc (20 $!entry.Sorder.SorderCode)
+				#listCellPrc (25 $!entry.Carrier.CarrierName)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

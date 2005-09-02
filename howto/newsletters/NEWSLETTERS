@@ -1,0 +1,29 @@
+NEWS SUBSCRIPTION FORM
+
+To create news subscription html form, you should first enter couple of products (service type). Then remember their IDs and go to edit our sample html file (newssubscribe.html). Change values for product IDs in the example file and replace 'localhost' with your server name.
+
+Of course, you can remove the following lines:
+ <input type="hidden" name="campaignid" value="CP0001001">
+ <input type="hidden" name="urlok" value="http://www.tol.org">
+ <input type="hidden" name="urlerror" value="http://www.campware.org">
+
+ The first line is if you want to track campaigns within subscription (you should enter valid ID from your database). Other two lines are for redirection after successful/unsuccessful subscription.
+
+In case, you have only one newsletter, you can remove all checkboxes from the page and add this line (where 'TOLNEWS' is your product id): 
+
+<input type="hidden" name="productid_1" value="TOLNEWS">
+
+
+WRITING NEWSLETTERS
+
+To alow your customers to unsubscribe from newsletters add this link at the end of your newsletter and replace 'localhost' with your server name. Because Cream uses html editor for writing newsletters you should create a link with this URL.
+
+http://localhost:8080/cream/app/action/NewsletterSubscription/eventSubmit_doUnsubscribe/Unsubscribe/subscriptionid/$subscriptionid/email/$email
+
+
+UNSUBSCRIBE FROM NEWSLETTERS
+
+When user clicks on the unsubscribe link, s/he will see one of the default html pages depending on the result of the operation (success or not). Further, you can define urls of these pages in the 'cream.properties' file from '{Tomcat installation}/webapps/cream/WEB-INF/conf' directory.
+
+
+Enjoy!

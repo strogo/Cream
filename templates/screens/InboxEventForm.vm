@@ -1,0 +1,249 @@
+#set ( $module = "Main" )
+
+#formCommon()
+
+function formInit(){
+	myForm.status.value=$entry.Status;
+	myForm.priority.value=$entry.Priority;
+	myForm.eventtype.value=$entry.EventType;
+	myForm.eventchanneltemp.value=$entry.EventChannel;
+	myForm.customerid.value=$entry.CustomerId;
+	myForm.productid.value=$entry.ProductId;
+	myForm.projectid.value=$entry.ProjectId;
+
+	if (myForm.eventchanneltemp.value==10){
+		myForm.eventchanneltemp.disabled=true;
+		parent.showSpecialTop(INBOX_EMAIL, false);
+	}
+
+	myForm.eventtype.focus();
+
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.issueddate)) return false;
+	if (parent.isSelected(myForm.customerid)) return false;
+	if (parent.isEmpty(myForm.subject)) return false;
+
+	myForm.eventchannel.value=myForm.eventchanneltemp.value;
+
+	return true;
+}
+
+function formReplyToEmail(){
+	parent.doReply($!entry.InboxEventId);
+}
+
+#formHeader("InboxEventForm.vm" "InboxEventSQL" "inboxeventid" $!entry.InboxEventId $mode)
+
+ <tr>
+	<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+<tr>
+<td>
+</td>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "inboxeventcodetemp" $!entry.InboxEventCode 20 130 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Priority"))
+		<td align="left">
+		<select name="priority" tabIndex="2" value="$!entry.Priority" width="100" STYLE="width: 100px">
+			<option value="10">$!l10n.get("Common.Form.Priority.Low")</option>
+			<option #if($mode=="insert")selected #end value="30">$!l10n.get("Common.Form.Priority.Normal")</option>
+			<option value="50">$!l10n.get("Common.Form.Priority.High")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="status" tabIndex="3" value="$!entry.Status" width="100" STYLE="width: 100px">
+  		#if($mode=="insert" || $!entry.Status==10)
+			<option value="10">$!l10n.get("Common.Form.Status.Draft")</option>
+		#end        	
+			<option #if($mode=="insert")selected #end value="30">$!l10n.get("Common.Form.Status.Open")</option>
+			<option value="50">$!l10n.get("Common.Form.Status.Closed")</option>
+		</select>
+		</td>
+      </tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+      <tr>  
+		#formLabel($!l10n.get("Common.Form.Label.Type"))
+		<td align="left">
+		<select name="eventtype" tabIndex="4" value="$!entry.EventType" width="130" STYLE="width: 130px">
+			<option value="10">$!l10n.get("Inbox.Form.Type.Message")</option>
+			<option value="30">$!l10n.get("Inbox.Form.Type.InfoRequest")</option>
+			<option value="50">$!l10n.get("Inbox.Form.Type.SupportRequest")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Inbox.Form.Label.Channel"))
+		<td align="left">
+		<select name="eventchanneltemp" tabIndex="5" value="$!entry.EventChannel" width="100" STYLE="width: 100px">
+	  		#if($mode!="insert" && $!entry.EventChannel==10)
+				<option value="10">$!l10n.get("Inbox.Form.Channel.Email")</option>
+			#end
+			<option value="20">$!l10n.get("Inbox.Form.Channel.PhoneCall")</option>
+			<option value="30">$!l10n.get("Inbox.Form.Channel.Letter")</option>
+			<option value="40">$!l10n.get("Inbox.Form.Channel.Fax")</option>
+			<option value="50">$!l10n.get("Inbox.Form.Channel.Visit")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+   		#formCellDateDefault ($!l10n.get("Common.Form.Label.Date") "issueddate" $!entry.IssuedDate $!today 20 100 6)
+      </tr>
+	</table>
+	</td>
+ </tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Customer"))
+			<td align="left">
+			<select name="customerid" tabIndex="7" value="$!entry.CustomerId" width="520" STYLE="width: 520px">
+			#foreach ($customer in $customers)
+				<option value="$customer.CustomerId">$!customer.CustomerDisplay</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Product"))
+			<td align="left">
+			<select name="productid" tabIndex="8" value="$!entry.ProductId" width="520" STYLE="width: 520px">
+			#foreach ($product in $products)
+				<option value="$product.ProductId">$!product.ProductDisplay</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Project"))
+			<td align="left">
+			<select name="projectid" tabIndex="9" value="$!entry.ProjectId" width="520" STYLE="width: 520px">
+			#foreach ($project in $projects)
+				<option value="$project.ProjectId">$!project.ProjectName</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+	  		#if($mode!="insert" && $!entry.EventChannel==10)
+	  			#set ( $module = "Main" )
+				#if($!entry.SenderName)
+		  			#set ( $sender = "$!entry.SenderName&nbsp;&lt;$!entry.SenderEmail&gt" )
+				#else
+		  			#set ( $sender = "$!entry.SenderEmail" )
+				#end
+		 		<tr>
+		    		#formCellReadOnly ($!l10n.get("Inbox.Form.Label.From") "sendertemp" $sender 520 10)
+		 		</tr>
+		 		<tr>
+		    		#formCellReadOnly ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 520 10)
+		 		</tr>
+		 	#else
+		 		<tr>
+		    		#formCell ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 254 520 10)
+		 		</tr>
+		 	#end
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+
+	  		#if($mode!="insert" && $!entry.EventChannel==10)
+				<tr>
+					<td align=left colspan=2>
+					<DIV ID="EmailBody" NAME="EmailBody" STYLE="width:580px; height:250px; border-style:inset; border-width:1px; background-color: white; position: relative; overflow: auto;">
+							$!entry.Body
+							#if ($attachments)
+						    <table align=left cellpadding=0 cellspacing=0 border=0>
+								 <tr>
+									<td>
+									&nbsp;
+									</td>
+								 </tr>
+									#foreach ($attachment in $attachments)
+									<tr>
+										<td align=left colspan=2><a href="$link.setPage("InboxAttachmentData.vm").addQueryData("inboxattachmentid","$!attachment.InboxAttachmentId")" style="color: blue;">$attachment.FileName</a></td>
+									</tr>
+									#end     
+								 <tr>
+									<td>
+									&nbsp;
+									</td>
+								 </tr>
+							</table>   	
+							#end        	
+					</DIV>
+					</td>
+				</tr>
+				<tr>
+					<td align=left colspan=2>
+					<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none; width: 100%">$!entry.Body</textarea>
+					</td>
+				</tr>
+
+
+			#else
+				<tr>
+					<td align=center colspan=2>
+					<textarea rows=16 name="body" tabIndex=33 width="99%" style="width: 99%">$!entry.Body</textarea>
+					</td>
+				</tr>
+			#end
+
+<input type="hidden" name="eventchannel" value="$!entry.EventChannel">
+<input type="hidden" name="inboxeventcode" value="$!entry.InboxEventCode">
+<input type="hidden" name="emailformat" value="$!entry.EmailFormat">
+<input type="hidden" name="sendername" value="$!entry.SenderName">
+<input type="hidden" name="senderemail" value="$!entry.SenderEmail">
+<input type="hidden" name="senderreplyto" value="$!entry.SenderReplyTo">
+<input type="hidden" name="senttime" value="$!entry.SentTime">
+<input type="hidden" name="senderto" value="$!entry.SenderTo">
+<input type="hidden" name="sendercc" value="$!entry.SenderCc">
+
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+			<tr>
+				<td align=center colspan=2>
+			    <table align=center cellpadding=0 cellspacing=0 border=0 style="width: 100%">
+			      <tr>  
+			      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+			      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+			      </tr>  
+				</table>
+				</td>
+			</tr>
+		<tr>
+		<td>
+		&nbsp;
+		</td>
+		</tr>
+		#end        	
+ 		</table>
+</td>
+</tr>
+
+	
+#formFooter("InboxEventForm.vm" "InboxEventSQL" "inboxeventid" $!entry.InboxEventId $mode)

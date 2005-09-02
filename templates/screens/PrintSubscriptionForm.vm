@@ -1,0 +1,159 @@
+#set ( $module = "Main" )
+#formCommon()
+
+function ProductObject (disp, u){
+	this.productDisplay=disp;
+	this.uomCode=u;
+}
+
+var orderProduct= new Array();
+
+#foreach ($product in $products)
+orderProduct[$product.ProductId]=new ProductObject("$product.ProductDisplay", "$product.Uom.UomCode");
+#end        	
+
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.customerid.value=$!entry.CustomerId;
+	myForm.recipientid.value=$!entry.RecipientId;
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.sorderid.value=$!entry.SorderId;
+	myForm.carrierid.value=$!entry.CarrierId;
+	myForm.productid.value=$!entry.ProductId;
+
+	myForm.customerid.focus();
+
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.issueddate)) return false;
+	if (parent.isNotDate(myForm.issueddate)) return false;
+	if (myForm.status.value==50){
+		if (parent.isEmpty(myForm.closeddate)) return false;
+		if (parent.isNotDate(myForm.closeddate)) return false;
+	}
+	if (parent.isSelected(myForm.customerid)) return false;
+	if (parent.isSelected(myForm.recipientid)) return false;
+	if (parent.isSelected(myForm.productid)) return false;
+
+	if (parent.isEmpty(myForm.quantity)) return false;
+	if (parent.isNotQuantity(myForm.quantity)) return false;
+
+	if (parent.isEmpty(myForm.startdate)) return false;
+	if (parent.isNotDate(myForm.startdate)) return false;
+
+	if (parent.isEmpty(myForm.enddate)) return false;
+	if (parent.isNotDate(myForm.enddate)) return false;
+
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='customerid'){
+		myForm.recipientid.value=formField.value;
+		loadUtil('$link.setPage("CustomerOrders.vm")', formField.value);
+	}
+	else if (formField.name=='status'){
+		if (myForm.status.value==50){
+			myForm.closeddate.disabled=false;
+			myForm.closeddate.value="$!df.format($!today)";
+		}
+		else{
+			myForm.closeddate.disabled=true;
+			myForm.closeddate.value="";
+		}
+	}
+	else if (formField.name=='sorderid'){
+		if (formField.value > 1000){
+			loadUtil('$link.setPage("PrintSubscriptionOrder.vm")', formField.value);
+		}
+	}
+	else if (formField.name=='productid'){
+		myForm.productdisplay.value=this.orderProduct[formField.value].productDisplay;
+		myForm.uomcode.value=this.orderProduct[formField.value].uomCode;
+	}
+}
+
+#formHeader("PrintSubscriptionForm.vm" "PrintSubscriptionSQL" "printsubsid" $!entry.PrintSubsId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "printsubscode" $!entry.PrintSubsCode 20 100 1)
+			<td width=16>&nbsp;</td>
+        #formCellDateDefault ($!l10n.get("Common.Form.Label.Issued") "issueddate" $!entry.IssuedDate $!today 10 100 2)
+			<td width=16>&nbsp;</td>
+   		#formSelectStatus ($!l10n.get("Common.Form.Label.Status") "status" $!entry.Status 100 3)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 5)
+			<td width=16>&nbsp;</td>
+   		#formSelectOrder ($!l10n.get("Common.Form.Label.Order") "sorderid" $!entry.SorderId 100 6)
+			<td width=16>&nbsp;</td>
+   		#formSelectProject ($!l10n.get("Common.Form.Label.Project") "projectid" $!entry.ProjectId 100 7)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+   		#formSelectCustomer ($!l10n.get("PrintSubscription.Form.Label.Subscriber") "recipientid" $!entry.RecipientId 160 11)
+			<td width=16>&nbsp;</td>
+   		#formSelectCarrier ($!l10n.get("PrintSubscription.Form.Label.Carrier") "carrierid" $!entry.CarrierId 100 12)
+			<td width=16>&nbsp;</td>
+		#if ($!entry.Status==50)
+        	#formCellDate ($!l10n.get("PrintSubscription.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 14)
+        #else
+        	#formCellDisabled ($!l10n.get("PrintSubscription.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 14)
+        #end
+      </tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+      <tr>
+		#formLabel($!l10n.get("Common.Form.Label.Product"))
+		<td align="left">
+		<select name="productid" tabIndex=15 value=$!entry.ProductId onchange="valueChanged(this);" width="160" STYLE="width: 160px">
+		#foreach ($product in $products)
+			<option value="$product.ProductId">$product.ProductCode</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+        #formCellNum ($!l10n.get("PrintSubscription.Form.Label.Quantity") "quantity" $!entry.Quantity 10 100 17)
+			<td width=16>&nbsp;</td>
+        #formCellDateDefault ($!l10n.get("PrintSubscription.Form.Label.Start") "startdate" $!entry.StartDate $!today 10 100 19)
+      </tr>
+      <tr>
+        #formCellDisabled ("" "productdisplay" $!entry.Product.ProductDisplay 70 160 16)
+			<td width=16>&nbsp;</td>
+        #formCellNumDisabled ($!l10n.get("PrintSubscription.Form.Label.Uom") "uomcode" $!entry.Product.Uom.UomCode 10 100 18)
+			<td width=16>&nbsp;</td>
+        #formCellDateDefault ($!l10n.get("PrintSubscription.Form.Label.End") "enddate" $!entry.EndDate $!today 10 100 20)
+      </tr>
+
+	</table>
+  </td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+<input type="hidden" name="printsubscode" value="$!entry.PrintSubsCode">
+
+#documentFooter()
+	
+#formFooter("PrintSubscriptionForm.vm" "PrintSubscriptionSQL" "printsubsid" $!entry.PrintSubsId $mode)

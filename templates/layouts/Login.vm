@@ -1,0 +1,27 @@
+$page.DefaultDoctype
+
+    $page.setTitle("CReaM")
+    $page.addStyleSheet("$content.getAbsoluteURI('style/cream-blue.css')")
+    ## build the HTML, HEAD, and BODY tags dynamically
+	$page.setBgColor("#B6C7E5")
+    <html>
+      #TurbineHtmlHead()
+      <body #TurbineHtmlBodyAttributes() >
+		<table width="100%" height="100%">
+		  <tr>
+		    <td valign=bottom colspan="2">
+		      $navigation.setTemplate("/LoginTop.vm")
+		    </td>
+		  </tr>
+		  <tr>
+		    <td valign=top align="left">
+		      $screen_placeholder
+		    </td>
+		  </tr>
+		</table>
+
+      </body>
+    </html>
+
+
+

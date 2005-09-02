@@ -1,0 +1,179 @@
+#set ( $module = "Main" )
+#portalCommon()
+#portalHeader(1000 "Home.vm")
+
+<table height="100%" width="100%" align="center" cols=1 cellpadding=0 cellspacing=0 border=0>
+<tr align="center" valign="middle">
+	<td align="center">
+	<table height="100%" width="100%" align="center" cols=2 cellpadding=0 cellspacing=0 border=0>
+	<tr align="center" valign="middle">
+		<td align="center">
+			<table cols=2 cellpadding=1 cellspacing=5 border=0>
+	        <tr>
+				<td align="left" width=16>&nbsp;</td>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.person)
+				<td align="left"><span class="homelink" onClick="doShortcutList(CUSTOMER)">$!l10n.get("Customer.List.Title") ( $!l10n.get("Customer.List.Filter.Option.Active") - $!customerno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.stockitem)
+				<td align="left"><span class="homelink" onClick="doShortcutList(PRODUCT)">$!l10n.get("Product.List.Title") ( $!l10n.get("Product.List.Filter.Option.Active") - $!productno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.project)
+				<td align="left"><span class="homelink" onClick="doShortcutList(PROJECT)">$!l10n.get("Project.List.Title") ( $!l10n.get("Project.List.Filter.Option.Active") - $!projectno )</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.inbox)
+				<td align="left"><span class="homelink" onClick="doShortcutList(INBOX)">$!l10n.get("Inbox.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!inboxno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.message)
+				<td align="left"><span class="homelink" onClick="doShortcutList(OUTBOX)">$!l10n.get("Outbox.List.Title") ( $!l10n.get("Common.List.Filter.Option.Drafts") - $!outboxno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.nssubs)
+				<td align="left"><span class="homelink" onClick="doShortcutList(NEWS_SUBSCRIPTION)">$!l10n.get("NewsSubscription.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!newssubsno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.newsletter)
+				<td align="left"><span class="homelink" onClick="doShortcutList(NEWSLETTER)">$!l10n.get("Newsletter.List.Title") ( $!l10n.get("Common.List.Filter.Option.Drafts") - $!newsletterno )</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.sorder)
+				<td align="left"><span align="left" class="homelink" onClick="doShortcutList(ORDER)">$!l10n.get("SalesOrder.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!sorderno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.payment)
+				<td align="left"><span align="left" class="homelink" onClick="doShortcutList(PAYMENT)">$!l10n.get("Payment.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!paymentno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.shipment)
+				<td align="left"><span align="left" class="homelink" onClick="doShortcutList(SHIPMENT)">$!l10n.get("Shipment.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!shipmentno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.service)
+				<td align="left"><span align="left" class="homelink" onClick="doShortcutList(SERVICE)">$!l10n.get("Service.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!serviceno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.psubs)
+				<td align="left"><span align="left" class="homelink" onClick="doShortcutList(PRINT_SUBSCRIPTION)">$!l10n.get("PrintSubscription.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!printsubsno )</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.osubs)
+				<td align="left"><span align="left" class="homelink" onClick="doShortcutList(ONLINE_SUBSCRIPTION)">$!l10n.get("OnlineSubscription.List.Title") ( $!l10n.get("Common.List.Filter.Option.Open") - $!onlinesubsno )</span></td>
+	        </tr>        
+			</table>
+		</td>
+		<td align="center">
+			<table cols=2 cellpadding=1 cellspacing=5 border=0>
+	        <tr>
+				<td align="left" width=16>&nbsp;</td>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.person)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(CUSTOMER)">$!l10n.get("Customer.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.stockitem)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(PRODUCT)">$!l10n.get("Product.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.project)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(PROJECT)">$!l10n.get("Project.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.inbox)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(INBOX)">$!l10n.get("Inbox.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.message)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(OUTBOX)">$!l10n.get("Outbox.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.nssubs)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(NEWS_SUBSCRIPTION)">$!l10n.get("NewsSubscription.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.newsletter)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(NEWSLETTER)">$!l10n.get("Newsletter.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.sorder)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(ORDER)">$!l10n.get("SalesOrder.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.payment)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(PAYMENT)">$!l10n.get("Payment.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.shipment)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(SHIPMENT)">$!l10n.get("Shipment.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.service)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(SERVICE)">$!l10n.get("Service.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.psubs)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(PRINT_SUBSCRIPTION)">$!l10n.get("PrintSubscription.Form.NewTitle")</span></td>
+	        </tr>        
+	        <tr>
+				#addListPic($ui.osubs)
+				<td align="left"><span class="homelink" onClick="doShortcutNew(ONLINE_SUBSCRIPTION)">$!l10n.get("OnlineSubscription.Form.NewTitle")</span></td>
+	        </tr>        
+			</table>
+		</td>
+	</tr>        
+	</table>
+	</td>
+</tr>        
+<tr align="center" valign="bottom">
+	<td align="center">
+		<span>&nbsp;</span>
+	</td>
+</tr>        
+<tr align="center" valign="bottom">
+	<td align="center">
+		<span>&nbsp;</span>
+	</td>
+</tr>        
+<tr align="center" valign="bottom">
+	<td align="center">
+	<table>
+		<tr align="center" valign="bottom">
+			<td align="center">
+				<span style="font-family:Arial,Arial,helvetica,sans-serif;font-size:x-small;color:gray;">Cream 2.0.0 - Maintained and distributed under GNU GPL by Campware - Copyright @ 2003-2005 MDLF</span>
+			</td>
+		</tr>   
+		<tr align="center" height="12" valign="bottom">
+			<td align="center">
+				<span>&nbsp;</span>
+			</td>
+		</tr>        
+	</table>     
+	</td>
+</tr>        
+</table>
+		
+#portalFooter()
+    

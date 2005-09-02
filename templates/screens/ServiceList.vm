@@ -1,0 +1,18 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2006 "ServiceList.vm" "ServiceSQL" 6)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.ServiceId)
+				#addListPic($ui.service)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.ServiceId')">$!entry.ServiceCode</span></td>
+				#listCellPrc (35 $!entry.CustomerRelatedByCustomerId.CustomerDisplay)
+				#listCellPrc (25 $!entry.Sorder.SorderCode)
+				#listCellPrcDate (25 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

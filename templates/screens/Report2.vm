@@ -1,0 +1,27 @@
+#set ( $module = "Report" )
+
+#reportHeader($!reptitle)
+<tr><td>
+<table  width="80%" align="center" cols=3 cellpadding=2 cellspacing=0 border=0>
+	#if ($!entries)
+		<tr>
+			<td class="reptblhead" align="left" width="65%">&nbsp;$!l10n.get("Report.Headers.Currency")&nbsp;</td>
+			<td class="reptblhead" align="right" width="25%">$!l10n.get("Report.Headers.Amount")&nbsp;</td>
+			<td class="reptblhead" align="left" width="10%">$!l10n.get("Report.Headers.Code")&nbsp;</td>
+		</tr>        
+	    #foreach ($entry in $entries)
+			<tr class="repcontent">
+			
+			#if ("$!entry.getValue(1)"=="1000")
+				<td class="repcontent" align="left" width="65%">(&nbsp;Local&nbsp;)&nbsp;</td>
+			#else
+				<td class="repcontent" align="left" width="65%">$!entry.getValue(4)&nbsp;</td>
+			#end
+				<td class="repcontent" align="right" width="25%">$!entry.getValue(2)&nbsp;</td>
+				<td class="repcontent" align="left" width="10%">&nbsp;$!entry.getValue(3)</td>
+			</tr>        
+	    #end
+	#end
+</table>
+</td></tr>
+#reportFooter()

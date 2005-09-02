@@ -1,0 +1,391 @@
+#set ( $module = "Main" )
+
+#formCommon()
+
+function formInit(){
+	myForm.statustemp.value=$entry.Status;
+	myForm.priority.value=$entry.Priority;
+	myForm.languageid.value=$entry.LanguageId;
+	myForm.emailformat.value=$entry.EmailFormat;
+	myForm.customercatidtemp.value=$entry.CustomerCatId;
+	myForm.customertypetemp.value=$entry.CustomerType;
+	myForm.custlanguageidtemp.value=$entry.CustLanguageId;
+	myForm.custcountryidtemp.value=$entry.CustCountryId;
+	myForm.reldocument.value=$entry.RelDocument;
+	myForm.reldocstatustemp.value=$entry.RelDocStatus;
+	myForm.relprojectidtemp.value=$entry.RelProjectId;
+	myForm.relproductidtemp.value=$entry.RelProductId;
+	myForm.productid.value=$entry.ProductId;
+	myForm.projectid.value=$entry.ProjectId;
+
+
+	if (myForm.statustemp.value==50){
+		myForm.statustemp.disabled=true;
+	}
+
+	if (myForm.reldocument.value==20){
+		myForm.reldocstatustemp.disabled=true;
+		myForm.relprojectidtemp.disabled=true;
+		myForm.relproductidtemp.disabled=true;
+	}else{
+		myForm.customercatidtemp.disabled=true;
+		myForm.customertypetemp.disabled=true;
+		myForm.custlanguageidtemp.disabled=true;
+		myForm.custcountryidtemp.disabled=true;
+	}
+
+	myForm.languageid.focus();
+
+}
+
+function HTMLEncode( text ){
+	if ( typeof( text ) != "string" )
+		text = text.toString() ;
+
+	text = text.replace(/&/g, "&amp;") ;
+	text = text.replace(/"/g, "&quot;") ;
+	text = text.replace(/</g, "&lt;") ;
+	text = text.replace(/>/g, "&gt;") ;
+	text = text.replace(/'/g, "&#39;") ;
+
+	return text ;
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.subject)) return false;
+
+	if (myForm.reldocument.value==20){
+		myForm.reldocstatus.value=1;
+		myForm.relprojectid.value=999;
+		myForm.relproductid.value=999;
+
+		myForm.customercatid.value=myForm.customercatidtemp.value;
+		myForm.customertype.value=myForm.customertypetemp.value;
+		myForm.custlanguageid.value=myForm.custlanguageidtemp.value;
+		myForm.custcountryid.value=myForm.custcountryidtemp.value;
+
+	}else{
+		myForm.reldocstatus.value=myForm.reldocstatustemp.value;
+		myForm.relprojectid.value=myForm.relprojectidtemp.value;
+		myForm.relproductid.value=myForm.relproductidtemp.value;
+
+		myForm.customercatid.value=999;
+		myForm.customertype.value=1;
+		myForm.custlanguageid.value=999;
+		myForm.custcountryid.value=999;
+
+	}
+
+#if($mode=="insert" || $!entry.Status==10)
+	var newHtml= window.frames['utilEditor'].document.getElementById('FCKeditor1___Frame').contentWindow.document.getElementById('eEditorArea').contentWindow.document.body.innerHTML;
+	myForm.body.value=newHtml;
+#end
+
+	myForm.status.value=myForm.statustemp.value;
+
+	return true;
+}
+
+function valueChanged(formField){
+
+	if (formField.name=='reldocument'){
+		if (formField.value==20){
+			myForm.reldocstatustemp.value=1;
+			myForm.relprojectidtemp.value=999;
+			myForm.relproductidtemp.value=999;
+			myForm.reldocstatustemp.disabled=true;
+			myForm.relprojectidtemp.disabled=true;
+			myForm.relproductidtemp.disabled=true;
+
+			myForm.customercatidtemp.disabled=false;
+			myForm.customertypetemp.disabled=false;
+			myForm.custlanguageidtemp.disabled=false;
+			myForm.custcountryidtemp.disabled=false;
+		}else{
+			myForm.customercatidtemp.value=999;
+			myForm.customertypetemp.value=1;
+			myForm.custlanguageidtemp.value=999;
+			myForm.custcountryidtemp.value=999;
+			myForm.customercatidtemp.disabled=true;
+			myForm.customertypetemp.disabled=true;
+			myForm.custlanguageidtemp.disabled=true;
+			myForm.custcountryidtemp.disabled=true;
+
+			myForm.reldocstatustemp.disabled=false;
+			myForm.relprojectidtemp.disabled=false;
+			myForm.relproductidtemp.disabled=false;
+		}
+	}
+
+}
+
+
+#formHeader("NewsletterForm.vm" "NewsletterSQL" "newsletterid" $!entry.NewsletterId $mode)
+
+
+ <tr>
+	<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+	<tr>
+	<td>
+	</td>
+	<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "newslettercode" $!entry.NewsletterCode 20 100 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Priority"))
+		<td align="left">
+		<select name="priority" tabIndex="2" value="$!entry.Priority" width="100" STYLE="width: 100px">
+			<option value="10">$!l10n.get("Common.Form.Priority.Low")</option>
+			<option #if($mode=="insert")selected #end value="30">$!l10n.get("Common.Form.Priority.Normal")</option>
+			<option value="50">$!l10n.get("Common.Form.Priority.High")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="statustemp" tabIndex="3" value="$!entry.Status" width="100" STYLE="width: 100px">
+  		#if($mode=="insert" || $!entry.Status==10)
+			<option value="10">$!l10n.get("Common.Form.Status.Draft")</option>
+			<option #if($mode=="insert")selected #end value="30">$!l10n.get("Newsletter.Form.Status.ToSend")</option>
+		#end        	
+  		#if($!entry.Status==50)
+			<option value="50">$!l10n.get("Newsletter.Form.Status.Sent")</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+      <tr>  
+		#formLabel($!l10n.get("Newsletter.Form.Label.Language"))
+		<td align="left">
+		<select name="languageid" tabIndex="6" value="$!entry.LanguageId" width="100" STYLE="width: 100px">
+		#foreach ($language in $languages)
+			<option value="$language.LanguageId">$language.LanguageName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+			#formEmptyCell()
+			<td width=16>&nbsp;</td>
+   		#formCellDateDefault ($!l10n.get("Common.Form.Label.Date") "issueddate" $!entry.IssuedDate $!today 20 100 8)
+ 		</tr>
+
+
+	</table>
+	</td>
+ </tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+
+
+ 		<tr>
+    		#formLabel ($!l10n.get("Newsletter.Form.Label.Recipients"))
+    		<td align="left">
+			<table align="left" cellpadding=10 cellspacing=0 border=0 style="border: solid 2px #B6C7E5; width: 520px">
+			<tr>
+			<td align="left">
+			    <table align=center cellpadding=0 cellspacing=0 border=0>
+					<tr>
+						#formLabel($!l10n.get("Newsletter.Form.Label.RelatedTo"))
+						<td align="left">
+						<select name="reldocument" tabIndex="15" value="$!entry.RelDocument" onchange="valueChanged(this);" width="160" STYLE="width: 160px">
+							<option value="10">$!l10n.get("NewsSubscription.Menu.Label")</option>
+							<option value="20">$!l10n.get("Customer.Menu.Label")</option>
+						</select>
+						</td>
+							<td width=16>&nbsp;</td>
+						#formLabel($!l10n.get("Common.Form.Label.Category"))
+						<td align="left">
+						<select name="customercatidtemp" tabIndex="19" value="$!entry.CustomerCatId" width="160" STYLE="width: 160px">
+							<option value="999">(*)</option>
+						#foreach ($customercat in $customercats)
+							<option value="$customercat.CustomerCatId">$customercat.CustomerCatName</option>
+						#end        	
+						</select>
+						</td>
+					</tr>
+					<tr>
+						#formLabel($!l10n.get("Common.Form.Label.Status"))
+						<td align="left">
+						<select name="reldocstatustemp" tabIndex="16" value="$!entry.RelDocStatus" width="160" STYLE="width: 160px">
+							<option value="1">(*)</option>
+							<option value="30">$!l10n.get("Common.Form.Status.Open")</option>
+							<option value="50">$!l10n.get("Common.Form.Status.Closed")</option>
+						</select>
+						</td>
+							<td width=16>&nbsp;</td>
+						#formLabel($!l10n.get("Common.Form.Label.Type"))
+						<td align="left">
+						<select name="customertypetemp" tabIndex="20" value="$!entry.CustomerType" width="160" STYLE="width: 160px">
+							<option value="1">(*)</option>
+							<option value="10">$!l10n.get("Customer.Form.Type.Person")</option>
+							<option value="20">$!l10n.get("Customer.Form.Type.Institution")</option>
+						</select>
+						</td>
+					</tr>
+					<tr>
+						#formLabel($!l10n.get("Common.Form.Label.Product"))
+						<td align="left">
+						<select name="relproductidtemp" tabIndex="17" value="$!entry.RelProductId" width="160" STYLE="width: 160px">
+							<option value="999">(*)</option>
+						#foreach ($product in $products)
+							<option value="$product.ProductId">$product.ProductDisplay</option>
+						#end        	
+						</select>
+						</td>
+							<td width=16>&nbsp;</td>
+						#formLabel($!l10n.get("Newsletter.Form.Label.Language"))
+						<td align="left">
+						<select name="custlanguageidtemp" tabIndex="21" value="$!entry.CustLanguageId" width="160" STYLE="width: 160px">
+							<option value="999">(*)</option>
+						#foreach ($language in $languages)
+							<option value="$language.LanguageId">$language.LanguageName</option>
+						#end        	
+						</select>
+						</td>
+					</tr>
+					<tr>
+						#formLabel($!l10n.get("Common.Form.Label.Project"))
+						<td align="left">
+						<select name="relprojectidtemp" tabIndex="18" value="$!entry.RelProjectId" width="160" STYLE="width: 160px">
+							<option value="999">(*)</option>
+						#foreach ($project in $projects)
+							<option value="$project.ProjectId">$project.ProjectName</option>
+						#end        	
+						</select>
+						</td>
+							<td width=16>&nbsp;</td>
+						#formLabel($!l10n.get("Newsletter.Form.Label.Country"))
+						<td align="left">
+						<select name="custcountryidtemp" tabIndex="22" value="$!entry.CustCountryId" width="160" STYLE="width: 160px">
+							<option value="999">(*)</option>
+						#foreach ($country in $countries)
+							<option value="$country.CountryId">$country.CountryName</option>
+						#end        	
+						</select>
+						</td>
+					</tr>
+    			</table>
+			</td>
+			</tr>
+			</table>
+    		</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Product"))
+			<td align="left">
+			<select name="productid" tabIndex="25" value="$!entry.ProductId" width="520" STYLE="width: 520px">
+			#foreach ($product in $products)
+				<option value="$product.ProductId">$product.ProductDisplay</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Project"))
+			<td align="left">
+			<select name="projectid" tabIndex="26" value="$!entry.ProjectId" width="520" STYLE="width: 520px">
+			#foreach ($project in $projects)
+				<option value="$project.ProjectId">$project.ProjectName</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+    		#formCell ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 254 520 27)
+ 		</tr>
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+
+<input type="hidden" name="newslettercode" value="$!entry.NewsletterCode">
+<input type="hidden" name="emailformat" value="20">
+<input type="hidden" name="reldocstatus" value="$!entry.RelDocStatus">
+<input type="hidden" name="relprojectid" value="$!entry.RelProjectId">
+<input type="hidden" name="relproductid" value="$!entry.RelProductId">
+<input type="hidden" name="customercatid" value="$!entry.CustomerCatId">
+<input type="hidden" name="customertype" value="$!entry.CustomerType">
+<input type="hidden" name="custlanguageid" value="$!entry.CustLanguageId">
+<input type="hidden" name="custcountryid" value="$!entry.CustCountryId">
+<input type="hidden" name="status" value="$!entry.Status">
+<input type="hidden" name="editorlang" value="$!l10n.getLocale().getLanguage()">
+
+  		#if($mode=="insert" || $!entry.Status==10)
+			<tr>
+				<td align=left colspan=2>
+				<IFRAME id="utilEditor" name="utilEditor" valign="top" src="$content.getAbsoluteURI('/resources/FCKeditor/body.html')" style="width: 580px; height:272px" frameborder="0" scrolling="no">
+				</IFRAME>
+				</td>
+			</tr>
+		#else
+			<tr>
+				<td align=left colspan=2>
+				<DIV ID="EmailBody" NAME="EmailBody" STYLE="width:580px; height:250px; border-style:inset; border-width:1px; background-color: white; position: relative; overflow: auto;">
+					$!entry.Body
+				</DIV>
+				</td>
+			</tr>
+		#end
+			<tr>
+				<td align=left colspan=2>
+				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none; width: 100%">$!entry.Body</textarea>
+				</td>
+			</tr>
+
+#if($!entry.Status==50 && $!entry.Notes)
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+		<tr>
+			<td align=center colspan=2>
+				<textarea rows=8 id="notes" name="notes" tabIndex=33 style="width: 580px">$!entry.Notes</textarea>
+			</td>
+		</tr>
+
+#end
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+
+
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+			<tr>
+				<td align=center colspan=2>
+			    <table align=center cellpadding=0 cellspacing=0 border=0 style="width: 100%">
+			      <tr>  
+			      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+			      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+			      </tr>  
+				</table>
+				</td>
+			</tr>
+		<tr>
+		<td>
+		&nbsp;
+		</td>
+		</tr>
+		#end        	
+ </table>
+</td>
+</tr>
+
+	
+#formFooter("NewsletterForm.vm" "NewsletterSQL" "newsletterid" $!entry.NewsletterId $mode)

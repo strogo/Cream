@@ -1,0 +1,549 @@
+
+targetdatabase = postgresql
+dbprops.idMethod = sequence
+# Taken from java.sql.Types in the IBM 1.3 JDK
+# JDBC to PostgreSQL mappings.
+#
+# See http://www.postgresql.org/idocs/index.php?datatype.html for more
+# information on PostgreSQL data types.
+
+BIT = boolean
+TINYINT = int2
+SMALLINT = int2
+INTEGER = integer
+BIGINT = int8
+FLOAT = float
+REAL = float
+BOOLEANCHAR = char
+BOOLEANINT = int2
+
+DOUBLE = double precision
+# numeric(precision, scale) / decimal(precision, scale)
+NUMERIC = numeric
+DECIMAL = decimal
+CHAR = char
+VARCHAR = varchar
+LONGVARCHAR = text
+DATE = date
+TIME = time
+TIMESTAMP = timestamp
+BINARY = bytea
+VARBINARY = bytea
+LONGVARBINARY = bytea
+NULL =
+OTHER =
+JAVA_OBJECT =
+DISTINCT =
+STRUCT =
+ARRAY =
+BLOB =
+CLOB = text
+REF =
+
+AUTOINCREMENT = serial
+NOTNULL = NOT NULL
+
+primaryKeyInsideTableDirective = true
+indexInsideTableDirective = false
+
+removeNotNullWithAutoIncrement = true
+
+suppressDefaults = false
+idMethod=sequence
+
+
+  
+        
+    
+    org.campware.cream.om
+    org.campware.cream.om
+    org.campware.cream.om.map
+
+        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+
+        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/map/
+
+        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+
+                  TURBINE_USER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_PERMISSION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_ROLE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_GROUP
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_ROLE_PERMISSION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_USER_GROUP_ROLE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_SCHEDULED_JOB
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                      
+        
+    
+    org.campware.cream.om
+    org.campware.cream.om
+    org.campware.cream.om.map
+
+        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+
+        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/map/
+
+        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+
+                  CREAM_USER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                NOTIFICATION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PROJECT_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PRODUCT_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CUSTOMER_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                COUNTRY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                REGION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                LANGUAGE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CURRENCY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CARRIER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                VENDOR
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                UOM
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                EDUCATION_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                HOUSEHOLD_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CUSTOMER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PRODUCT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PROJECT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SORDER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PAYMENT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SERVICE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SHIPMENT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PRINT_SUBSCRIPTION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                ONLINE_SUBSCRIPTION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                INBOX_EVENT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                INBOX_ATTACHMENT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                OUTBOX_EVENT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                NEWS_SUBSCRIPTION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                NEWSLETTER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SORDER_ITEM
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PAYMENT_ITEM
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SHIPMENT_ITEM
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SERVICE_ITEM
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                    

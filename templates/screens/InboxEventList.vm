@@ -1,0 +1,26 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2010 "InboxEventList.vm" "InboxEventSQL" 6)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+
+				#addToggle($!entry.InboxEventId)
+				#if ($!entry.EventType==10)
+					#addListPic($ui.message)
+				#elseif ($!entry.EventType==30)
+					#addListPic($ui.inforeq)
+				#else
+					#addListPic($ui.suppreq)
+				#end
+
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.InboxEventId')">$!entry.InboxEventCode</span></td>
+				#listCellPrc (40 $!entry.Subject)
+				#listCellPrc (30 $!entry.Customer.CustomerDisplay)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

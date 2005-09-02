@@ -1,0 +1,346 @@
+	
+	function showLastList()
+	{
+		if(lastReturnType==SCREEN_PORTAL){
+			showPortal(lastPortal);
+		} else{
+			showList(lastList);
+		}
+	}
+
+	function loadList (url) {
+	  window.frames['buffer'].document.location.replace(url);
+	}
+
+	function copyListContent (listName) {
+		if (listName!=lastScreen || lastTop!=TOP_LIST)
+		{
+			showListTop(listName);
+			if (listName<3000)
+			{
+				if (this.creamObject[listName].filterNumber==999)
+				{
+					setFindFilter(listName);
+				}
+				document.getElementById("ListFilter").value=this.creamObject[listName].filterNumber;
+			}
+		}
+		else if (listName<3000 && this.creamObject[listName].filterNumber==999)
+		{
+			setFindFilter(listName);
+			document.getElementById("ListFilter").value=this.creamObject[listName].filterNumber;
+		}
+
+		lastScreenType=SCREEN_LIST;
+		lastReturnType=SCREEN_LIST;
+		lastScreen=listName;
+		lastList=listName;
+		retrieveInfo=false;
+
+		document.getElementById('DataFrame').style.backgroundColor = "#ffffff";
+		document.getElementById('DataFrame').innerHTML = window.frames['buffer'].document.body.innerHTML;
+	}
+
+	function showList(listName)
+	{
+		listLocation= getListUrl(listName);
+
+		if (listName!=lastScreen || lastTop!=TOP_LIST)
+		{
+			showListTop(listName);
+			if (listName<3000)
+			{
+				if (this.creamObject[listName].filterNumber==999)
+				{
+					setFindFilter(listName);
+				}
+				document.getElementById("ListFilter").value=this.creamObject[listName].filterNumber;
+			}
+		}
+		else if (listName<3000 && this.creamObject[listName].filterNumber==999)
+		{
+			setFindFilter(listName);
+			document.getElementById("ListFilter").value=this.creamObject[listName].filterNumber;
+		}
+
+		showRetrieveInfo();
+		lastScreenType=SCREEN_LIST;
+		lastReturnType=SCREEN_LIST;
+		lastScreen=listName;
+		lastList=listName;
+		loadList(listLocation);
+
+	}	
+
+	function getListUrl(listName)
+	{
+		listLocation= getListTemplate(listName);
+		if (listName<3000)
+		{
+			if (this.creamObject[listName].filterNumber==999)
+			{		
+				listLocation+="/find/" + this.creamObject[listName].findString;		
+			}
+			else
+			{
+				listLocation+="/filter/" + this.creamObject[listName].filterNumber;
+			}
+		}
+		listLocation+="/sortcol/" + this.creamObject[listName].sortColumn;		
+		listLocation+="/sortord/" + this.creamObject[listName].sortOrder;		
+		
+		return listLocation;
+	}
+
+	function showListTop(listName)
+	{
+
+		document.getElementById('DataFrame').style.height = screenHeight - listTopHeight - marginHeight;
+		document.getElementById('ScreenTop').innerHTML = getListTop(listName);
+//		document.getElementById('DataFrame').style.height = screenHeight - document.getElementById('ScreenTop').offsetHeight - 10;
+		lastTop=TOP_LIST;
+	}
+	
+	function getListTop(listName)
+	{
+		listTopHeader='<table cellpadding=0 cellspacing=0 border=0 width="100%">';
+		listTopHeader+='<tr>';
+		listTopHeader+='<td>';
+		listTopHeader+='<table cellpadding=5 cellspacing=0 border=0 width="100%">';
+		listTopHeader+='<tr>';
+		listTopHeader+='<td class=ltitle align=left colspan=3><span>'+ getListTitle(listName)+'</span>&nbsp;&nbsp;<span></span></td>';
+		listTopHeader+='</tr>';
+
+		listToolbar='<tr class=toolbar>';
+		listToolbar+='<td align=left nowrap>';
+		listToolbar+='<span onClick="doNew()" style="cursor: pointer;"><img src="$ui.image($ui.navNew)" width="24" height="24" border=0 title="$!l10n.get("Common.List.Toolbar.Tooltip.New")"></span>';
+		listToolbar+='<span onClick="doDeleteSelected()" style="cursor: pointer;"><img src="$ui.image($ui.navDelete)" width="24" height="24" border=0 title="$!l10n.get("Common.List.Toolbar.Tooltip.Delete")"></span>';
+		if (listName<3000)
+		{
+			listToolbar+='<span onClick="doFind()" style="cursor: pointer;"><img src="$ui.image($ui.navFind)" width="24" height="24" border=0 title="$!l10n.get("Common.List.Toolbar.Tooltip.Find")"></span>';
+		}
+		listToolbar+='<span onClick="doHelp()" style="cursor: pointer;"><img src="$ui.image($ui.navHelp)" width="24" height="24" border=0 title="$!l10n.get("Common.List.Toolbar.Tooltip.Help")"></span>';
+		listToolbar+='</td>';
+		listToolbar+='<td align=right nowrap></td>';
+		listToolbar+='<td align=right>';
+		if (listName<3000)
+		{
+			listToolbar+='<span onClick="doFind()" class="lhlink">$!l10n.get("Common.List.Toolbar.Label.Filter"):&nbsp;&nbsp;</span>';
+			listToolbar+='<select ID="ListFilter" onChange="javascript:doFilter(this[this.selectedIndex].value)" STYLE="width: 140px">';
+			listToolbar+= getListFilter(listName);
+			listToolbar+='</select>';
+		}
+		listToolbar+='</td>';
+		listToolbar+='</tr>';
+		
+		listTopFooter='</table>';
+		listTopFooter='</td>';
+		listTopFooter='</tr>';
+		listTopFooter='</table>';
+
+		listHeader=getListHeader(listName);
+		
+		return listTopHeader + listToolbar + listTopFooter + listHeader;
+	}
+
+	function getListTitle(listName)
+	{
+		listTitle=this.creamObject[listName].titleList;
+		return listTitle;
+	}	
+
+	function getListHeader(listName)
+	{
+		listHeader='<table width="100%" height="100%" cellpadding=0 cellspacing=0 border=0>';
+		listHeader+='<tr height="100%">';
+		listHeader+='<td>';
+		listHeader+='<table width="100%" height="100%" cellpadding=2 cellspacing=0 border=0>';
+		listHeader+='<tr class="listhead" height="100%">';
+		listHeader+='<td  width=16 nowrap align=center>';
+		listHeader+='<input type="checkbox" id="toggleCheck" name="toggleCheck" title="$!l10n.get("Common.List.Toolbar.Tooltip.ToggleAll")" onclick="ToggleAll(this);">';
+		listHeader+='</td>';
+		listHeader+='<td valign=middle><img src="$ui.image($ui.space)" width=16 height=16></td>';
+
+		listHeader+=getListHeadings(listName);
+
+		if(NS)
+		{
+			listHeader+='<td>';
+			listHeader+='<img src="$ui.image($ui.space)" width=16>';
+			listHeader+='</td>';
+		}
+		listHeader+='</tr>';
+		listHeader+='</table>';
+		listHeader+='</td>';
+		listHeader+='</tr>';
+		listHeader+='</table>';
+
+		return listHeader;
+	}
+
+	function getListTemplate(listName)
+	{
+		listLocation= this.creamObject[listName].listTemplate;
+		return listLocation;
+	}
+
+	function setFindFilter(listName)
+	{
+		
+		if (document.getElementById("ListFilter").options[0].value==999)
+		{
+			document.getElementById("ListFilter").options[0].text="( " + this.creamObject[listName].findString + "... )";
+		}
+		else
+		{
+			findo = new Option();
+			findo.value = 999;
+			findo.text = "( " + this.creamObject[listName].findString + "... )";
+
+			if (document.all) {
+				document.getElementById("ListFilter").add(findo, 0);
+			}else{
+				document.getElementById("ListFilter").add(findo, document.getElementById("ListFilter").options[0]);
+			}
+
+		}
+	}
+
+	function doSort(colNo)
+	{
+		listName= lastScreen;
+
+		if(colNo==this.creamObject[listName].sortColumn)
+		{
+			if (this.creamObject[listName].sortOrder=="ASC")
+			{
+				this.creamObject[listName].sortOrder="DESC"
+			}
+			else
+			{
+				this.creamObject[listName].sortOrder="ASC"
+			}
+		}
+		else
+		{
+			this.creamObject[listName].sortOrder="ASC"
+		}
+
+		this.creamObject[listName].sortColumn= colNo;		
+
+		showList(listName);
+	}
+
+	function doFind()
+	{
+	    nn = prompt("$!l10n.get("Common.List.Message.FindString")", this.creamObject[lastScreen].findString);
+	    if(nn == null || nn == "null" || nn == "") {
+	    }
+	    else {
+			listName= lastScreen;
+			this.creamObject[listName].filterNumber= 999;		
+			this.creamObject[listName].findString= nn;		
+			showList(listName);
+	    }
+	}
+
+	function doFilter(filterNo)
+	{
+		listName= lastScreen;
+		this.creamObject[listName].filterNumber=filterNo;		
+		showList(listName);
+	}
+	
+	function doDeleteSelected()
+	{
+		var myListForm= document.getElementById('listData');
+		
+		someChecked=false;
+		len = myListForm.elements.length;
+		for(var i = 0 ; i < len ; i++) {
+		    if (myListForm.elements[i].name == "rowid" && myListForm.elements[i].checked) {
+				someChecked=true;
+		    }
+		}
+
+		if (someChecked){
+			if (confirm("$!l10n.get("Common.List.Message.DeleteSelected")")){
+				myListAction= myListForm.actname.value;
+				myListUrl= getListUrl(lastScreen) + '/action/' + myListAction;
+				myListForm.action= myListUrl;
+				
+				myListForm.submit();
+			}
+		}else{
+			alert("$!l10n.get("Common.List.Message.SelectEntry")");
+		}
+	}
+
+    function Toggle(e)
+    {
+		if (e.checked) {
+		    document.getElementById('toggleCheck').checked = AllChecked();
+		}
+		else {
+		    document.getElementById('toggleCheck').checked = false;
+		}
+    }
+
+    function ToggleAll(e)
+    {
+		if (e.checked) {
+		    CheckAll();
+		}
+		else {
+		    ClearAll();
+		}
+    }
+
+    function Check(e)
+    {
+		e.checked = true;
+    }
+
+    function Clear(e)
+    {
+		e.checked = false;
+    }
+
+    function CheckAll()
+    {
+		var ml = document.getElementById('listData');
+		var len = ml.elements.length;
+		for (var i = 0; i < len; i++) {
+		    var e = ml.elements[i];
+		    if (e.name == "rowid") {
+			Check(e);
+		    }
+		}
+		document.getElementById('toggleCheck').checked = true;
+    }
+
+    function ClearAll()
+    {
+		var ml = document.getElementById('listData');
+		var len = ml.elements.length;
+		for (var i = 0; i < len; i++) {
+		    var e = ml.elements[i];
+		    if (e.name == "rowid") {
+			Clear(e);
+		    }
+		}
+		document.getElementById('toggleCheck').checked = false;
+    }
+
+
+    function AllChecked()
+    {
+		var ml = document.getElementById('listData');
+		len = ml.elements.length;
+		for(var i = 0 ; i < len ; i++) {
+		    if (ml.elements[i].name == "rowid" && !ml.elements[i].checked) {
+			return false;
+		    }
+		}
+		return true;
+    }

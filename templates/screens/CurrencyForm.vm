@@ -1,0 +1,33 @@
+#set ( $module = "Options" )
+#formCommon()
+
+function formInit(){
+	highlight(myForm.currencyname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.currencyname)) return false;
+	if (parent.isEmpty(myForm.currencycode)) return false;
+	if (parent.isEmpty(myForm.currencyrate)) return false;
+	if (parent.isNotFloat(myForm.currencyrate)) return false;
+	if (parent.isNotPositive(myForm.currencyrate)) return false;
+
+	myForm.currencycode.value = myForm.currencycode.value.toUpperCase();
+	
+	return true;
+
+}
+
+#formHeader("CurrencyForm.vm" "CurrencySQL" "currencyid" $!entry.CurrencyId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "currencyname" $!entry.CurrencyName 50 200 1)
+      </tr>
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Code") "currencycode" $!entry.CurrencyCode 3 40 2)
+      </tr>
+      <tr>  
+        #formCellRate ($!l10n.get("Currency.Form.Label.Rate") "currencyrate" $!entry.CurrencyRate 10 70 3)
+      </tr>
+
+#formFooter("CurrencyForm.vm" "CurrencySQL" "currencyid" $!entry.CurrencyId $mode)

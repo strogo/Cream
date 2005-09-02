@@ -1,0 +1,68 @@
+#set ( $module = "System" )
+$page.setHttpEquiv("Pragma", "no-cache")
+$page.setBgColor("$ui.formBg")
+$page.addBodyAttribute("onLoad", "window.parent.copyFormContent();")	
+
+<head>
+<script id="formScript" language=JavaScript>
+
+var myForm=document.getElementById('formData');
+
+function formInit(){
+
+}
+
+function formValidate(){
+
+
+
+	return true;
+}
+
+function saveForm(retUrl){
+	myAction='ImportSQL';
+	myUrl= retUrl + '/action/' + myAction;
+	myForm.action= myUrl;
+	myForm.submit();
+}
+</script>
+</head>
+<body #TurbineHtmlBodyAttributes()>
+
+
+
+
+<form id="formData" name="formData" target="buffer" method="post" action="" enctype="multipart/form-data">
+
+
+<div id="Master" align="center">
+<table cellpadding = 2>
+
+    <tr>&nbsp;</tr>
+
+	<tr>
+		#formLabel($!l10n.get("Import.Form.Label.Type"))
+		<td align=left>
+		
+		<SELECT SIZE="1" name="type" maxlength="50" size="40" >
+		<OPTION value="10">$!l10n.get("Customer.Menu.Label")</OPTION>
+		<OPTION value="20">$!l10n.get("Product.Menu.Label")</OPTION>
+		</SELECT>
+		
+		</td>
+	</tr>
+	<tr>
+		#formLabel($!l10n.get("Import.Form.Label.File"))
+		<td align=left><input type="file" name="file">
+		</td>
+	</tr>
+
+
+
+</table>
+
+    <input type="hidden" name="eventSubmit_doUpdate" value="Update"/>
+      </div>
+  
+</form>
+	

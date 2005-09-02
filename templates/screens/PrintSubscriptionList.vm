@@ -1,0 +1,19 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(2004 "PrintSubscriptionList.vm" "PrintSubscriptionSQL" 7)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle($!entry.PrintSubsId)
+				#addListPic($ui.psubs)
+				<td width="15%"><span class="llink" onClick="doEdit('$!entry.PrintSubsId')">$!entry.PrintSubsCode</span></td>
+				#listCellPrc (25 $!entry.CustomerRelatedByCustomerId.CustomerDisplay)
+				#listCellPrc (20 $!entry.Sorder.SorderCode)
+				#listCellPrc (25 $!entry.Product.ProductDisplay)
+				#listCellPrcDate (15 $!entry.IssuedDate)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

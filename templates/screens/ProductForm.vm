@@ -1,0 +1,222 @@
+#set ( $module = "Main" )
+#formCommon()
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.producttypetemp.value=$!entry.ProductType;
+	#if ($!entry.Created)
+		myForm.producttypetemp.disabled=true;
+	#end
+	myForm.productcatid.value=$!entry.ProductCatId;
+	myForm.uomid.value=$!entry.UomId;
+	myForm.vendorid.value=$!entry.VendorId;
+
+	if (myForm.showonpricelist.value==10) myForm.showonpricelisttemp.checked=false;
+
+	highlight(myForm.productdescription);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.productcode)) return false;
+	if (parent.isEmpty(myForm.productdescription)) return false;
+	if (parent.isEmpty(myForm.productdisplay)) return false;
+	if (parent.isEmpty(myForm.baseprice)) return false;
+	if (parent.isNotFloat(myForm.baseprice)) return false;
+	if (parent.isNegative(myForm.baseprice)) return false;
+
+	if (myForm.producttypetemp.value == 30 || myForm.producttypetemp.value == 40){
+		if (isNotSubsUom())	 return false;
+	}
+	
+	myForm.productcode.value = myForm.productcode.value.toUpperCase();
+	if (myForm.showonpricelisttemp.checked){
+		 myForm.showonpricelist.value=20;
+	}
+	else {
+		 myForm.showonpricelist.value=10;
+	}
+	myForm.producttype.value=myForm.producttypetemp.value;
+
+
+	return true;
+}
+
+function isNotSubsUom(){
+	if (myForm.uomid.value > 106){
+		parent.showWrongValue(myForm.uomid);
+		return true;
+	}
+
+	return false;
+}
+
+function valueChanged(formField){
+	if (formField.name=='productdescription'){
+		desc= formField.value;
+		myForm.productdisplay.value=desc.substring(0, 69);
+	}
+}
+
+#formHeader("ProductForm.vm" "ProductSQL" "productid" $!entry.ProductId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCell ($!l10n.get("Common.Form.Label.Code") "productcode" $!entry.ProductCode 20 100 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="status" tabIndex="2" value="$!entry.Status" width="100" STYLE="width: 100px">
+			<option value="30">$!l10n.get("Product.Form.Status.Active")</option>
+			<option value="50">$!l10n.get("Product.Form.Status.Inactive")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCellWithChange ($!l10n.get("Common.Form.Label.Name") "productdescription" $!entry.ProductDescription 254 160 3)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Type"))
+		<td align="left">
+		<select name="producttypetemp" tabIndex="5" value="$!entry.ProductType" width="160" STYLE="width: 160px">
+			<option value="10">$!l10n.get("Product.Form.Type.StockItem")</option>
+			<option value="20">$!l10n.get("Product.Form.Type.Service")</option>
+			<option value="30">$!l10n.get("Product.Form.Type.OnlineSubscription")</option>
+			<option value="40">$!l10n.get("Product.Form.Type.PrintSubscription")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Product.Form.Label.Display") "productdisplay" $!entry.ProductDisplay 70 160 4)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Category"))
+		<td align="left">
+		<select name="productcatid" tabIndex="6" value="$!entry.ProductCatId" width="160" STYLE="width: 160px">
+		#foreach ($productcat in $productcats)
+			<option value="$productcat.ProductCatId">$productcat.ProductCatName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Product.Form.Label.UOM"))
+		<td align="left">
+		<select name="uomid" tabIndex="7" value="$!entry.UomId" width="160" STYLE="width: 160px">
+		#foreach ($uom in $uoms)
+			#if($uom.UomCode=="DAY")
+				<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Day")</option>
+			#elseif($uom.UomCode=="WEE")
+				<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Week")</option>
+			#elseif($uom.UomCode=="MON")
+				<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Month")</option>
+			#elseif($uom.UomCode=="QAN")
+				<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.QuarterOfYear")</option>
+			#elseif($uom.UomCode=="SAN")
+				<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.HalfOfYear")</option>
+			#elseif($uom.UomCode=="ANN")
+				<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Year")</option>
+			#else
+				<option value="$uom.UomId">$uom.UomName</option>
+			#end
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Product.Form.Label.Vendor"))
+		<td align="left">
+		<select name="vendorid" tabIndex="11" value="$!entry.VendorId" width="160" STYLE="width: 160px">
+		#foreach ($vendor in $vendors)
+			<option value="$vendor.VendorId">$vendor.VendorName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+        #formCellAmount ($!l10n.get("Product.Form.Label.BasePrice") "baseprice" $!entry.BasePrice 20 100 8)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Product.Form.Label.VendorId") "vendorscode" $!entry.VendorsCode 20 160 12)
+      </tr>
+        #formCheckBox ($!l10n.get("Product.Form.Label.ShowOnPricelist") "showonpricelisttemp" true 8)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Product.Form.Label.EanUpc") "eanupccode" $!entry.EanUpcCode 20 160 13)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Product.Form.Label.Location") "location" $!entry.Location 55 160 9)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Product.Form.Label.InfoUrl") "www" $!entry.Www 70 160 14)
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Product.Form.Label.Custom1") "custom1" $!entry.Custom1 55 160 27)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Product.Form.Label.Custom4") "custom4" $!entry.Custom4 55 160 30)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Product.Form.Label.Custom2") "custom2" $!entry.Custom2 55 160 28)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Product.Form.Label.Custom5") "custom5" $!entry.Custom5 55 160 31)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Product.Form.Label.Custom3") "custom3" $!entry.Custom3 55 160 29)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Product.Form.Label.Custom6") "custom6" $!entry.Custom6 55 160 32)
+      </tr>
+	</table>
+  </td>
+</tr>
+
+<input type="hidden" name="showonpricelist" value="$!entry.ShowOnPricelist">
+<input type="hidden" name="producttype" value="$!entry.ProductType">
+
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+	<td align=center>
+		<textarea rows="5" cols="96%" name="notes" tabIndex=43>$!entry.Notes</textarea>
+	</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+	<tr>
+		<td align=center>
+	    <table align=center width="96%" cellpadding=0 cellspacing=0 border=0>
+	      <tr>  
+	      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+	      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+	      </tr>  
+		</table>
+		</td>
+	</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+#end        	
+	
+#formFooter("ProductForm.vm" "ProductSQL" "productid" $!entry.ProductId $mode)

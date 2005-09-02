@@ -1,0 +1,9 @@
+To localize Cream user interface, open the 'Cream_en.translation' file in some editor, translate right parts of the properties and save the file as, for example, Cream_fr.translation (in case you would localize to French language).
+
+Now, find 'native2ascii' executable in the bin directory of your Java installation (for example /usr/local/j2sdk1.4.2_01/bin/native2ascii) and run it this way:
+
+/usr/local/j2sdk1.4.2_01/bin/native2ascii -encoding CP1250 Cream_fr.translation Cream_fr.properties
+
+This would create 'Cream_fr.properties' file. Copy this file to /webapps/cream/WEB-INF/classes directory. Set French language as default in your browser (somewhere in the browser preferences) and login into Cream.
+
+Enjoy!

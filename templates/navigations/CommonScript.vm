@@ -1,0 +1,491 @@
+var lastTop;
+var lastScreen;
+var lastScreenType;
+var lastReturnType;
+var lastList;
+var lastPortal;
+var screenHeight;
+var screenWidth;
+var listScreenHeight;
+var listTopHeight=94;
+var formTopHeight=69;
+var marginHeight=10;
+var retrieveInfo=false;
+
+var IE= null;
+var NS= null;
+
+//window.onresize=postResize;
+
+ ua = navigator.appName.toLowerCase();
+ if(ua.indexOf('explorer')>-1 && document.getElementById && document.childNodes) {IE=true;}
+ if(ua.indexOf('netscape')>-1 && document.getElementById && document.childNodes) {NS=true;}
+
+	function initApp()
+	{
+		postResize();
+		showTab(TAB_COMM);
+		if (defaultList==HOME){
+			showPortal(defaultList);
+		}else{
+			showList(defaultList);
+		}
+		document.body.style.visibility='visible';
+	}
+
+	function waitAndResize() {
+	  setTimeout("postResize()", 1000);
+	}
+
+	function postResize()
+	{
+		if (window.innerHeight)
+		{
+			myHeight = window.innerHeight;
+			myWidth = window.innerWidth;
+//			alert('ovde if 1');
+		}
+		else if (document.documentElement && document.documentElement.clientHeight)
+		{
+			myHeight = document.documentElement.clientHeight;
+			myWidth = document.documentElement.clientWidth;
+//			alert('ovde if 2');
+		}
+		else if (document.body)
+		{
+			myHeight = document.body.clientHeight;
+			myWidth = document.body.clientWidth;
+//			alert('ovde if 3');
+		}
+	
+		myHeight=myHeight - 62;
+		screenHeight= myHeight;
+		screenWidth= myWidth;
+		dataScreenWidth= myWidth - 185;
+		document.getElementById("mainTable").style.height=myHeight;
+		if (lastTop==TOP_LIST)
+		{
+			document.getElementById('DataFrame').style.height = screenHeight - listTopHeight - marginHeight;
+		}
+		else
+		{
+			document.getElementById('DataFrame').style.height = screenHeight - formTopHeight - marginHeight;
+		}
+	}
+
+	function showTab(tabId)
+	{
+		document.getElementById("AppTab").innerHTML=getTab(tabId);
+		document.getElementById("AppMenu").innerHTML=getMenu(tabId);
+	}
+
+
+	function getTab(tabId)
+	{
+		tabHeader='<table width="100%" cellpadding=0 cellspacing=0 border=0>';
+		tabHeader+='<tr>';
+
+		tabFooter='<td class=tabrest align=right valign=center>';
+		tabFooter+='<table cellpadding=0 cellspacing=0 border=0>';
+		tabFooter+='<tr>';
+		tabFooter+='<td><IMG valign=bottom alt="" src="$ui.image($ui.smalllogo)"></td>';
+		tabFooter+='<td STYLE="color: blue;"><span><b>'+TI_WELCOME+'</b></span></td>';
+		tabFooter+='<td>&nbsp;-&nbsp;<span class="trlink" onClick="showPortal(HOME)">'+TI_HOME+'</span></td>';
+		tabFooter+='<td>&nbsp;-&nbsp;<span class="trlink" onClick="showPortal(HELP)">'+TI_HELP+'</span></td>';
+		tabFooter+='<td>&nbsp;-&nbsp;<a href="$link.setAction("LogoutUser")">'+TI_LOGOUT+'</a></td>';
+		tabFooter+='</tr>';
+		tabFooter+='</table>';
+		tabFooter+='</td>';
+		tabFooter+='</tr>';
+		tabFooter+='</table>';
+
+		tabContent='';
+		tabContent= getTabContent(tabId);
+		tabContent= tabHeader + tabContent + tabFooter;
+		return tabContent;
+	}
+
+	function getMenu(tabId)
+	{
+		menuHeader='<table  class=menubar cellpadding=10 cellspacing=0 border=0 height="100%" width="100%">';
+		menuHeader+='<tr valign="top">';
+		menuHeader+='<td>';
+		menuHeader+='<table valign=top width="100%"  cellpadding="2" cellspacing="0" border="0">';
+		menuHeader+='<tr height="12">';
+		menuHeader+='<td></td>';
+		menuHeader+='<td></td>';
+		menuHeader+='</tr>';
+		
+		menuFooter='<tr>';
+		menuFooter+='<td colSpan=2 height=5><IMG height=5 alt="" src="$ui.image($ui.space)" width=5></td>';
+		menuFooter+='</tr>';
+		menuFooter+='</table>';
+		menuFooter+='</td>';
+		menuFooter+='</tr>';
+		menuFooter+='</table>';
+
+		menuContent='';
+		menuContent= getMenuContent(tabId);
+		menuContent= menuHeader + menuContent + menuFooter;
+
+		return menuContent;
+	}
+
+	function getMenuLabel(objName)
+	{
+		return this.creamObject[objName].menuLabel;
+	}
+
+	function showNotReady(dlgName)
+	{
+		showInfo("Sorry, not for public use yet!");
+	}
+
+	function showDialog(dlgName)
+	{
+		dlgLocation= this.creamObject[dlgName].formTemplate;
+		formId= getFormId(dlgName);
+		dlgLocation+="/" + formId + "/1";
+		
+		dlgTitle= this.creamObject[dlgName].titleEdit;
+
+
+		showRetrieveInfo();
+		window.frames.buffer.document.location.replace(dlgLocation);
+
+		lastTop=TOP_DIALOG;
+		lastScreenType=SCREEN_DIALOG;
+		lastScreen=dlgName;
+
+		dlgTop='<table cellpadding=0 cellspacing=0 border=0 width="100%">';
+		dlgTop+='<tr>';
+		dlgTop+='<td>';
+		dlgTop+='<table cellpadding=5 cellspacing=0 border=0 width="100%">';
+		dlgTop+='<tr>';
+		dlgTop+='<td class=ltitle  align=left colspan=2><span>'+ dlgTitle+'</span>&nbsp;&nbsp;<span></span></td>';
+		dlgTop+='<td class=lfilter align=right nowrap></td>';
+		dlgTop+='</tr>';
+		dlgTop+='<tr class=toolbar>';
+		dlgTop+='<td align=left nowrap>';
+		dlgTop+='<span onClick="doHelp()" style="cursor: pointer;"><img src="$ui.image($ui.navHelp)" width="24" height="24" border=0 title="$!l10n.get("Common.List.Toolbar.Tooltip.Help")"></span>';
+		dlgTop+='</td>';
+		dlgTop+='<td align=right nowrap></td>';
+		dlgTop+='<td align=right >';
+
+		if (dlgName==REPORT){		
+	    	dlgTop+='<input type="button" name="okButton" class=fbutton onclick="doReport()" value="$!l10n.get("Common.Form.Button.Show")"/>';
+		    dlgTop+='<input type="button" name="cancelButton"  class=fbutton onclick="doCancel()" value="$!l10n.get("Common.Form.Button.Cancel")"/>';
+		}else if (dlgName==HOME){		
+	    	dlgTop+='';
+	    }else{
+	    	dlgTop+='<input type="button" name="okButton" class=fbutton onclick="doSave()" value="$!l10n.get("Common.Form.Button.Save")"/>';
+		    dlgTop+='<input type="button" name="cancelButton"  class=fbutton onclick="doCancel()" value="$!l10n.get("Common.Form.Button.Cancel")"/>';
+	    }
+		dlgTop+='</td>';
+		dlgTop+='</tr>';
+		dlgTop+='</table>';
+		dlgTop+='</td>';
+		dlgTop+='</tr>';
+		dlgTop+='</table>';
+
+
+		document.getElementById('DataFrame').style.height = screenHeight - formTopHeight - marginHeight;
+		document.getElementById('ScreenTop').innerHTML = dlgTop;
+	}	
+
+	function showPortal(portalName)
+	{
+		dlgLocation= this.creamObject[portalName].listTemplate;
+		dlgTitle= this.creamObject[portalName].titleList;
+
+
+		lastScreenType=SCREEN_PORTAL;
+		lastReturnType=SCREEN_PORTAL;
+		lastScreen=portalName;
+		lastPortal=portalName;
+
+		showPortalTop(portalName);
+		showRetrieveInfo();
+		window.frames.buffer.document.location.replace(dlgLocation);
+	}	
+
+	function showPortalTop(portalName){
+		lastTop=TOP_PORTAL;
+
+		dlgTop='<table cellpadding=0 cellspacing=0 border=0 width="100%">';
+		dlgTop+='<tr>';
+		dlgTop+='<td>';
+		dlgTop+='<table cellpadding=5 cellspacing=0 border=0 width="100%">';
+		dlgTop+='<tr>';
+		dlgTop+='<td class=ltitle  align=left colspan=2><span>'+ dlgTitle+'</span>&nbsp;&nbsp;<span></span></td>';
+		dlgTop+='<td class=lfilter align=right nowrap></td>';
+		dlgTop+='</tr>';
+		dlgTop+='<tr class=toolbar>';
+		dlgTop+='<td align=left nowrap>';
+		dlgTop+='<span onClick="doHelp()" style="cursor: pointer;"><img src="$ui.image($ui.navHelp)" width="24" height="24" border=0 title="$!l10n.get("Common.List.Toolbar.Tooltip.Help")"></span>';
+		dlgTop+='</td>';
+		dlgTop+='<td align=right nowrap></td>';
+		dlgTop+='<td align=right >';
+
+		dlgTop+='</td>';
+		dlgTop+='</tr>';
+		dlgTop+='</table>';
+		dlgTop+='</td>';
+		dlgTop+='</tr>';
+		dlgTop+='</table>';
+
+		document.getElementById('DataFrame').style.height = screenHeight - formTopHeight - marginHeight;
+		document.getElementById('ScreenTop').innerHTML = dlgTop;
+	}
+
+	function copyPortalContent (portalName) {
+
+		if (portalName!=lastScreen || lastTop!=TOP_PORTAL)
+		{
+			showPortalTop(portalName);
+		}
+
+		lastScreenType=SCREEN_PORTAL;
+		lastReturnType=SCREEN_PORTAL;
+		lastScreen=portalName;
+		lastPortal=portalName;
+		retrieveInfo=false;
+
+		document.getElementById('DataFrame').style.backgroundColor = "#ffffff";
+		document.getElementById('DataFrame').innerHTML = window.frames['buffer'].document.body.innerHTML;
+	}
+
+	function getPortalUrl(portalName)
+	{
+		portalLocation= this.creamObject[portalName].listTemplate;
+		
+		return portalLocation;
+	}
+
+	function doReport()
+	{
+		if (formValidate()){
+			showReport();
+		}
+	}
+
+	function showRetrieveInfo()
+	{
+		document.getElementById('DataFrame').style.backgroundColor = "#ffffff";
+		document.getElementById('DataFrame').innerHTML='<table width="100%" height="100%"><tr><td valign="center"><p align="center">$!l10n.get("Common.Message.RetrievingData")...</p></td></tr></table>';
+		retrieveInfo=true;
+	}	
+
+    function doHelp()
+    {
+		window.open("http://www.campware.org/cream/help/","help","");
+    }
+
+    function doLogin()
+    {
+		self.document.location.replace('$link.setPage("Login.vm")');
+    }
+
+
+    function Help()
+    {
+		window.open("http://www.campware.org/cream/help/","help","");
+    }
+
+	function getScreenSize()
+	{
+		if(IE)
+		{
+			winWidth = document.body.clientWidth;
+			winHeight = document.body.clientHeight;	
+		}
+	
+		if(NS)
+		{
+			winWidth = innerWidth -17;
+			winHeight = innerHeight;	
+		}
+	}
+
+	function getYMargin()
+	{
+		if(IE) return document.body.scrollTop;
+		if(NS) return window.pageYOffset;
+	}
+		
+	function getXMargin()
+	{
+		if(IE) return document.body.scrollLeft;
+		if(NS) return window.pageXOffset;
+	}
+
+    function showAbout()
+    {
+		msgTitle = 'About';
+		msgString = MSG_ABOUT;
+//		showMsgBox(msgTitle, msgString);        
+		alert(msgString);  
+    }
+
+    function showInfo(msgString)
+    {
+		msgTitle = 'Info';
+//		showMsgBox(msgTitle, msgString);        
+		alert(msgString);  
+		if (retrieveInfo){
+			document.getElementById('DataFrame').innerHTML='<table width="100%" height="100%"><tr><td valign="center"><p align="center"></p></td></tr></table>';
+			retrieveInfo=false;
+		}
+    }
+
+    function showError(msgString)
+    {
+		msgTitle = 'Error';
+//		showMsgBox(msgTitle, msgString);        
+		alert(msgString);  
+		if (retrieveInfo){
+			document.getElementById('DataFrame').innerHTML='<table width="100%" height="100%"><tr><td valign="center"><p align="center"></p></td></tr></table>';
+			retrieveInfo=false;
+		}
+    }
+
+    function showMsgBox(msgtitle, msgstring)
+    {
+		getScreenSize();        
+	    
+		// Create body
+		bg = document.createElement('div');
+		bg.style.position = "absolute";
+		bg.style.top = getYMargin() + "px";  
+		bg.style.left = getXMargin() + "px";
+		bg.style.width = (winWidth)+  "px"
+		bg.style.height = (winHeight)+  "px";
+	
+		bg.style.zIndex = "99";
+		document.body.appendChild(bg);
+
+		// Create title
+		tl = document.createElement('div');
+		tl.style.position = "absolute";
+		tl.style.top = ((winHeight)/2 - 100) + getYMargin() + "px"; 
+		tl.style.left = ((winWidth)/2 - 200) + getXMargin() + "px";
+		tl.style.width = "400px";
+		tl.style.zIndex = "101";
+		tl.style.backgroundColor = "#1F386A";
+		tl.style.fontWeight = "bold";
+		tl.style.color = "#EEF3FB";
+		tl.style.border = "solid 1px black"
+		tl.style.textAlign = "left";
+		tl.innerHTML = '&nbsp;&nbsp;' + msgtitle;
+		document.body.appendChild(tl);
+
+
+		// Create message
+		hl = document.createElement('div');
+		hl.style.position = "absolute";
+		hl.style.top = ((winHeight)/2 - 100) + getYMargin() + "px"; 
+		hl.style.left = ((winWidth)/2 - 200) + getXMargin() + "px";
+		hl.style.width = "400px";
+		hl.style.zIndex = "100";
+		hl.style.backgroundColor = "#B6C7E5";
+		hl.style.fontWeight = "bold";
+		hl.style.color = "#1F386A";
+		hl.style.border = "solid 1px black"
+		hl.style.textAlign = "center";
+		hl.innerHTML = '<br><br>' + msgstring + '<br><br><input value="  OK  " type=button class=fbutton onClick="Javascript: bg.parentNode.removeChild(bg); tl.parentNode.removeChild(tl); hl.parentNode.removeChild(hl);msgBoxClosed();"><br><br>';
+		document.body.appendChild(hl);
+		
+		msgBoxCreated();
+		
+    }
+
+	function msgBoxCreated()
+	{
+		if (document.all.formData) document.all.formData.style.visibility = 'hidden';
+	}
+
+	function msgBoxClosed()
+	{
+		if (document.all.formData){
+			document.all.formData.style.visibility = 'visible';
+			document.all.formData.focus();
+		}
+	}
+
+	function doShortcutNew(formName)
+	{
+		lastScreenType=SCREEN_PORTAL;
+		lastScreen=HOME;
+		lastList=HOME;
+		return showNew(formName);
+	}
+
+	function doShortcutList(listName)
+	{
+		lastScreenType=SCREEN_PORTAL;
+		lastScreen=HOME;
+		lastList=HOME;
+
+		if (listName==CUSTOMER)
+		{
+			this.creamObject[listName].filterNumber=1004;
+		}
+		else if (listName==PRODUCT)
+		{
+			this.creamObject[listName].filterNumber=1005;
+		}
+		else if (listName==PROJECT)
+		{
+			this.creamObject[listName].filterNumber=1001;
+		}
+		else if (listName==OUTBOX)
+		{
+			this.creamObject[listName].filterNumber=1006;
+		}
+		else if (listName==NEWSLETTER)
+		{
+			this.creamObject[listName].filterNumber=1006;
+		}
+		else
+		{
+			this.creamObject[listName].filterNumber=1007;
+		}
+
+		return showList(listName);
+	}
+
+	function doShortcutHelp(helpName)
+	{
+		lastScreenType=SCREEN_PORTAL;
+		lastScreen=HOME;
+		lastList=HOME;
+
+		if (helpName==HELP_CREDITS)
+		{
+			showAbout();
+		}
+		else if (helpName==HELP_FORUMS)
+		{
+			window.open("http://www.campware.org/cream/forums/","help","");
+		}
+		else if (helpName==HELP_MAILING)
+		{
+			window.open("http://www.campware.org/cream/mailinglists/","help","");
+		}
+		else if (helpName==HELP_FAQ)
+		{
+			window.open("http://www.campware.org/cream/faq/","help","");
+		}
+		else if (helpName==HELP_BUGS)
+		{
+			window.open("http://www.campware.org/cream/bugs/","help","");
+		}
+		else
+		{
+			window.open("http://www.campware.org/cream/help/","help","");
+		}
+		
+		return;
+
+	}
+		

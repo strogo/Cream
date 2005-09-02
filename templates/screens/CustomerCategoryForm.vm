@@ -1,0 +1,20 @@
+#set ( $module = "Options" )
+#formCommon()
+
+function formInit(){
+	highlight(myForm.customercatname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.customercatname)) return false;
+	
+	return true;
+}
+
+#formHeader("CustomerCategoryForm.vm" "CustomerCategorySQL" "customercatid" $!entry.CustomerCatId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "customercatname" $!entry.CustomerCatName 50 200 1)
+      </tr>
+
+#formFooter("CustomerCategoryForm.vm" "CustomerCategorySQL" "customercatid" $!entry.CustomerCatId $mode)

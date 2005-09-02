@@ -1,0 +1,31 @@
+#set ( $module = "System" )
+
+<head>
+<script>
+if (parent.window.frames['buffer'])
+{
+
+#if ($data.getMessage())
+	parent.showError("$data.getMessage()");	
+#else
+	parent.showError("$!l10n.get("Common.Message.TriedImpossible")");	
+#end
+}
+</script>
+
+</head>
+<body>
+
+<table width="100%" height="100%">
+<tr><td valign="center">
+
+#if ($data.getMessage())
+	<p align="center">$data.getMessage()</p>
+#else
+	<p align="center">$!l10n.get("Common.Message.TriedImpossible")</p>
+#end
+
+</td></tr>
+</table>
+</body>
+

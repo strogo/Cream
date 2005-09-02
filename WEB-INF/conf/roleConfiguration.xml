@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- ======================================================================== -->
+<!--                                                                          -->
+<!--  Avalon role configuration for loading Torque                            -->
+<!--                                                                          -->
+<!-- $Id: roleConfiguration.xml,v 1.3 2004/10/31 16:11:37 henning Exp $       -->
+<!--                                                                          -->
+<!-- ======================================================================== -->
+
+<role-list>
+  <role name="org.apache.torque.avalon.Torque"
+        shorthand="torque"
+        default-class="org.apache.torque.avalon.TorqueComponent" />
+</role-list>
+

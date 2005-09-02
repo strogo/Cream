@@ -1,0 +1,231 @@
+#set ( $module = "Main" )
+
+#formCommon()
+
+function CustomerEmail (eml){
+	this.email=eml;
+}
+
+var custEmail= new Array();
+
+#foreach ($customer in $customers)
+	custEmail[$customer.CustomerId]=new CustomerEmail("$!customer.Email");
+#end        	
+
+
+function formInit(){
+	myForm.statustemp.value=$entry.Status;
+	myForm.priority.value=$entry.Priority;
+	myForm.customerid.value=$entry.CustomerId;
+	myForm.productid.value=$entry.ProductId;
+	myForm.projectid.value=$entry.ProjectId;
+
+	if (myForm.statustemp.value==50){
+		myForm.statustemp.disabled=true;
+	}
+
+	myForm.customerid.focus();
+}
+
+function formValidate(){
+	if (parent.isSelected(myForm.customerid)) return false;
+	if (parent.isEmpty(myForm.subject)) return false;
+	if (parent.isEmpty(myForm.receiverto)) return false;
+	if (!parent.isEmail(myForm.receiverto.value)){
+		myForm.receiverto.focus();
+		return false;
+	 }
+
+#if($mode=="insert" || $!entry.Status==10)
+	var newHtml= window.frames['utilEditor'].document.getElementById('FCKeditor1___Frame').contentWindow.document.getElementById('eEditorArea').contentWindow.document.body.innerHTML;
+	myForm.body.value=newHtml;
+#end
+
+	myForm.status.value=myForm.statustemp.value;
+
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='customerid'){
+		if (myForm.receiverto.value==""){
+			myForm.receiverto.value=custEmail[formField.value].email;
+		}
+	}
+}
+
+#formHeader("OutboxEventForm.vm" "OutboxEventSQL" "outboxeventid" $!entry.OutboxEventId $mode)
+
+ <tr>
+	<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+<tr>
+<td>
+</td>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "outboxeventcodetemp" $!entry.OutboxEventCode 20 130 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Priority"))
+		<td align="left">
+		<select name="priority" tabIndex="2" value="$!entry.Priority" width="100" STYLE="width: 100px">
+			<option value="10">$!l10n.get("Common.Form.Priority.Low")</option>
+			<option #if($mode=="insert")selected #end value="30">$!l10n.get("Common.Form.Priority.Normal")</option>
+			<option value="50">$!l10n.get("Common.Form.Priority.High")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="statustemp" tabIndex="3" value="$!entry.Status" width="100" STYLE="width: 100px">
+  		#if($mode=="insert" || $!entry.Status==10)
+			<option value="10">$!l10n.get("Common.Form.Status.Draft")</option>
+		#end        	
+			<option #if($mode=="insert")selected #end value="30">$!l10n.get("Outbox.Form.Status.ToSend")</option>
+  		#if($!entry.Status==50)
+			<option value="50">$!l10n.get("Outbox.Form.Status.Sent")</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+	</table>
+	</td>
+ </tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+
+
+ 		<tr>
+   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 520 7)
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Product"))
+			<td align="left">
+			<select name="productid" tabIndex="8" value="$!entry.ProductId" width="520" STYLE="width: 520px">
+			#foreach ($product in $products)
+				<option value="$product.ProductId">$!product.ProductDisplay</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Project"))
+			<td align="left">
+			<select name="projectid" tabIndex="9" value="$!entry.ProjectId" width="520" STYLE="width: 520px">
+			#foreach ($project in $projects)
+				<option value="$project.ProjectId">$!project.ProjectName</option>
+			#end        	
+			</select>
+			</td>
+ 		</tr>
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+<input type="hidden" name="outboxeventcode" value="$!entry.OutboxEventCode">
+<input type="hidden" name="eventtype" value="$!entry.EventType">
+<input type="hidden" name="emailformat" value="20">
+<input type="hidden" name="eventchannel" value="$!entry.EventChannel">
+<input type="hidden" name="status" value="$!entry.Status">
+<input type="hidden" name="editorlang" value="$!l10n.getLocale().getLanguage()">
+
+
+  		#if($mode=="insert" || $!entry.Status==10)
+	 		<tr>
+	    		#formCell ($!l10n.get("Outbox.Form.Label.To") "receiverto" $!entry.ReceiverTo 254 520 10)
+	 		</tr>
+	 		<tr>
+	    		#formCell ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 254 520 10)
+	 		</tr>
+			 <tr>
+				<td>
+				&nbsp;
+				</td>
+			 </tr>
+			<tr>
+				<td align=left colspan=2>
+				<IFRAME id="utilEditor" name="utilEditor" valign="top" src="$content.getAbsoluteURI('/resources/FCKeditor/body.html')" style="width: 580px; height:272px" frameborder="0" scrolling="no">
+				</IFRAME>
+				</td>
+			</tr>
+		#else
+	 		<tr>
+	    		#formCellReadOnly ($!l10n.get("Outbox.Form.Label.To") "receiverto" $!entry.ReceiverTo 520 10)
+	 		</tr>
+	 		<tr>
+	    		#formCellReadOnly ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 520 10)
+	 		</tr>
+			 <tr>
+				<td>
+				&nbsp;
+				</td>
+			 </tr>
+			<tr>
+				<td align=left colspan=2>
+				<DIV ID="EmailBody" NAME="EmailBody" STYLE="width:580px; height:250px; border-style:inset; border-width:1px; background-color: white; position: relative; overflow: auto;">
+					$!entry.Body
+				</DIV>
+				</td>
+			</tr>
+		#end
+			<tr>
+				<td align=left colspan=2>
+				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none; width: 100%">$!entry.Body</textarea>
+				</td>
+			</tr>
+
+#if($!entry.Status==50 && $!entry.Notes)
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+		<tr>
+			<td align=center colspan=2>
+				<textarea rows=8 id="notes" name="notes" tabIndex=33 style="width: 580px">$!entry.Notes</textarea>
+			</td>
+		</tr>
+
+#end
+
+#if ($!entry.IssuedDate)
+	<input type="hidden" name="issueddate" value="$!dtf.format($!entry.IssuedDate)">
+#else
+	<input type="hidden" name="issueddate" value="$!dtf.format($!today)">
+#end
+		 <tr>
+			<td>
+			&nbsp;
+			</td>
+		 </tr>
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+			<tr>
+				<td align=center colspan=2>
+			    <table align=center cellpadding=0 cellspacing=0 border=0 style="width: 100%">
+			      <tr>  
+			      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+			      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+			      </tr>  
+				</table>
+				</td>
+			</tr>
+		<tr>
+		<td>
+		&nbsp;
+		</td>
+		</tr>
+		#end        	
+ 		</table>
+</td>
+</tr>
+
+	
+#formFooter("OutboxEventForm.vm" "OutboxEventSQL" "outboxeventid" $!entry.OutboxEventId $mode)

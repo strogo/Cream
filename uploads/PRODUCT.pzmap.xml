@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE PZMAP [
+	<!ELEMENT PZMAP (COLUMN*)>
+	<!ELEMENT COLUMN EMPTY>
+	<!ATTLIST COLUMN name CDATA  #REQUIRED
+			  length CDATA #IMPLIED	>
+
+]>
+<PZMAP>
+
+	<COLUMN name="Status" />
+	<COLUMN name="ProductType" />
+	<COLUMN name="ProductCatName" />
+	<COLUMN name="ProductDescription" />
+	<COLUMN name="ProductDisplay" />
+	<COLUMN name="BasePrice" />
+	<COLUMN name="UomName" />
+	<COLUMN name="WebUrl" />
+	<COLUMN name="VendorName" />
+	
+</PZMAP> 

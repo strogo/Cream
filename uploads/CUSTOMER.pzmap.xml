@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE PZMAP [
+	<!ELEMENT PZMAP (COLUMN*)>
+	<!ELEMENT COLUMN EMPTY>
+	<!ATTLIST COLUMN name CDATA  #REQUIRED
+			  length CDATA #IMPLIED	>
+
+]>
+<PZMAP>
+
+	<COLUMN name="Status" />
+
+	<COLUMN name="CustomerType" />
+	<COLUMN name="CustomerCatName" />
+	<COLUMN name="CustomerName1" />
+	<COLUMN name="CustomerName2" />
+	<COLUMN name="CustomerDisplay" />
+	<COLUMN name="Dear" />
+	<COLUMN name="Address1" />
+	<COLUMN name="Address2" />
+	<COLUMN name="City" />		
+	<COLUMN name="Zip" />
+	<COLUMN name="State" />
+	<COLUMN name="CountryName" />
+	<COLUMN name="RegionName" />
+	<COLUMN name="Phone1" />
+	<COLUMN name="Phone2" />	
+
+	<COLUMN name="Fax" />
+	<COLUMN name="Email" />
+
+	<COLUMN name="WebUrl" />
+	<COLUMN name="LanguageName" />
+	<COLUMN name="Gender" />
+
+	<COLUMN name="EducationCatName" />
+	<COLUMN name="HouseholdCatName" />
+</PZMAP> 
+

@@ -1,0 +1,16 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	myForm=parent.document.getElementById('formData');
+
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.recipientid.value=$!entry.RecipientId;
+	myForm.carrierid.value=$!entry.CarrierId;
+
+	myForm.projectid.focus();
+
+}
+
+#utilHeader()
+#utilFooter()

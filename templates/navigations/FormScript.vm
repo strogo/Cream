@@ -1,0 +1,559 @@
+	function loadUtil(utilTemplate, idNo)
+	{
+		formLocation= utilTemplate;
+		formLocation+="/id/" + idNo;
+
+		loadForm(formLocation);
+	}
+
+	function loadForm (url) {
+	  window.frames['buffer'].document.location.replace(url);
+	}
+
+	function copyFormContent () {
+
+		document.getElementById('DataFrame').style.backgroundColor = "$ui.formBg";
+		document.getElementById('DataFrame').innerHTML = window.frames['buffer'].document.body.innerHTML;
+
+		oldSc=document.getElementById('docFormScript');
+		sc = document.createElement('script');
+		sc.id="docFormScript";
+		sc.text= window.frames.buffer.document.getElementById('formScript').text;
+		document.body.replaceChild(sc, oldSc);
+		retrieveInfo=false;
+
+		formInit();
+	}
+
+	function doReply( idNo)
+	{
+		formLocation= getFormTemplate(OUTBOX);
+		formId= getFormId(OUTBOX);
+		relNo= idNo * (-1);
+
+		formLocation+="/" + formId + "/" + relNo;
+
+		loadForm(formLocation);
+		showForm(OUTBOX, true);
+		showRetrieveInfo();
+
+		lastTop=TOP_FORM_NEW;
+	}
+
+	function doEmailReply()
+	{
+		if (document.getElementById('formData')){
+				formReplyToEmail();
+		}
+	}
+
+	function showNew(formName)
+	{
+		formLocation= getFormTemplate(formName);
+		formId= getFormId(formName);
+
+		formLocation+="/" + formId + "/0";
+
+		loadForm(formLocation);
+		showForm(formName, true);
+		showRetrieveInfo();
+
+		lastTop=TOP_FORM_NEW;
+	}
+
+	function showDetail(formName, idNo)
+	{
+		formLocation= getFormTemplate(formName);
+		formId= getFormId(formName);
+
+		formLocation+="/" + formId + "/" + idNo;
+
+		loadForm(formLocation);
+		showForm(formName, false);
+		showRetrieveInfo();
+
+		lastTop=TOP_FORM_EDIT;
+	}
+
+	function showForm(formName, isNew)
+	{
+
+		document.getElementById('ScreenTop').innerHTML = getFormTop(formName, isNew);
+		document.getElementById('DataFrame').style.height = screenHeight - formTopHeight - marginHeight;
+		lastScreenType=SCREEN_FORM;
+		lastScreen=formName;
+	}
+
+	function showSpecialTop(formName, isNew)
+	{
+
+		document.getElementById('ScreenTop').innerHTML = getFormTop(formName, isNew);
+	}
+
+	function getFormTop(formName, isNew)
+	{
+		formTopHeader='<table cellpadding=0 cellspacing=0 border=0 width="100%">';
+		formTopHeader+='<tr>';
+		formTopHeader+='<td>';
+		formTopHeader+='<table cellpadding=5 cellspacing=0 border=0 width="100%">';
+		formTopHeader+='<tr>';
+		formTopHeader+='<td class=ltitle  align=left colspan=3><span>'+ getFormTitle(formName, isNew)+'</span>&nbsp;&nbsp;<span></span></td>';
+		formTopHeader+='</tr>';
+
+		formToolbar='<tr class=toolbar>';
+		formToolbar+='<td align=left nowrap>';
+		formToolbar+='<span onClick="doNew()" style="cursor: pointer;"><img src="$ui.image($ui.navNew)" width="24" height="24" border=0 title="$!l10n.get("Common.Form.Toolbar.Tooltip.New")"></span>';
+		if (isNew==false)
+		{
+			formToolbar+='<span onClick="doDelete()" style="cursor: pointer;"><img src="$ui.image($ui.navDelete)" width="24" height="24" border=0 title="$!l10n.get("Common.Form.Toolbar.Tooltip.Delete")"></span>';
+		}
+//		if (formName<3000 & isNew==false)
+//		{
+//			formToolbar+='<span onClick="doPrint()" style="cursor: pointer;"><img src="$ui.image($ui.navPrint)" width="24" height="24" border=0 title="$!l10n.get("Common.Form.Toolbar.Tooltip.Print")"></span>';
+//		}
+		formToolbar+='<span onClick="doHelp()" style="cursor: pointer;"><img src="$ui.image($ui.navHelp)" width="24" height="24" border=0 title="$!l10n.get("Common.Form.Toolbar.Tooltip.Help")"></span>';
+		formToolbar+='</td>';
+		formToolbar+='<td align=right nowrap></td>';
+		formToolbar+='<td align=right >';
+		if (formName==INBOX_EMAIL)
+		{
+	    	formToolbar+='<input type="button" name="replyButton" class=fbutton onclick="doEmailReply()" value="$!l10n.get("Inbox.Form.Button.Reply")"/>';
+	    }
+		if (isNew)
+		{
+	    	formToolbar+='<input type="button" name="okNewButton" class=fbutton onclick="doSaveAndNew()" value="$!l10n.get("Common.Form.Button.SaveAndNew")"/>';
+	    }
+	    formToolbar+='<input type="button" name="okButton" class=fbutton onclick="doSave()" value="$!l10n.get("Common.Form.Button.Save")"/>';
+	    formToolbar+='<input type="button" name="cancelButton"  class=fbutton onclick="doCancel()" value="$!l10n.get("Common.Form.Button.Cancel")"/>';
+		formToolbar+='</td>';
+		formToolbar+='</tr>';
+		
+		formTopFooter='</table>';
+		formTopFooter='</td>';
+		formTopFooter='</tr>';
+		formTopFooter='</table>';
+
+		return formTopHeader + formToolbar + formTopFooter;
+	}
+
+
+
+	function getFormId(formName)
+	{
+
+		formId= this.creamObject[formName].idName;
+		
+		return formId;
+	}
+
+	function getFormTitle(formName, isNew)
+	{
+		if (isNew)
+		{
+			formTitle=this.creamObject[formName].titleNew;
+		}
+		else
+		{
+			formTitle=this.creamObject[formName].titleEdit;
+		}
+
+		return formTitle;
+	}
+
+
+	function doEdit(idNo)
+	{
+		showDetail(lastScreen, idNo);
+	}
+
+	function doNew()
+	{
+		return showNew(lastScreen);
+	}
+
+	function doCancel()
+	{
+		return showLastList();
+	}
+
+	function doSave()
+	{
+		if (document.getElementById('formData')){
+			if (formValidate()){
+				if(lastReturnType==SCREEN_PORTAL){
+					saveForm( getPortalUrl(lastPortal));
+				}else{
+					saveForm( getListUrl(lastList));
+				}
+			}
+		}
+	}
+
+	function doSaveAndNew()
+	{
+		if (document.getElementById('formData')){
+			if (formValidate()){
+				saveFormAndNew();
+			}
+		}
+	}
+
+	function doDelete()
+	{
+		 if (confirm("$!l10n.get("Common.Form.Message.DeleteThisEntry")")){
+			deleteForm( getListUrl(lastScreen));
+		  }
+	}
+
+	function isEmpty(theField){
+		   if( theField.value=="" ) {
+		      showInfo("$!l10n.get("Common.Form.Message.RequiredField")");
+		      theField.focus();
+		      return true;
+		   } else {
+		      return false;
+		   }
+	}
+		
+	function isNotInteger(theField){
+//		alert("$!l10n.get("Common.Form.Message.WrongValue")");
+		return false;
+	}
+	
+	function isNotFloat(theField){
+		if (isNaN(theField.value)){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function isNotPositive(theField){
+		if (theField.value<0 || theField.value==0){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function isNegative(theField){
+		if (theField.value < 0){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function isNotAmount(theField){
+		if (isNaN(theField.value) || theField.value<0){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function isNotRate(theField){
+		if (isNaN(theField.value) || theField.value<0){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function isNotQuantity(theField){
+		if (isNaN(theField.value) || theField.value<0){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function isNotDate(theField){
+		if (isDate(theField.value)== false){
+//			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	var dtCh= ".";
+	var minYear=1900;
+	var maxYear=2100;
+	
+	function isInteger(s){
+		var i;
+	    for (i = 0; i < s.length; i++){   
+	        // Check that current character is number.
+	        var c = s.charAt(i);
+	        if (((c < "0") || (c > "9"))) return false;
+	    }
+	    // All characters are numbers.
+	    return true;
+	}
+	
+	function stripCharsInBag(s, bag){
+		var i;
+	    var returnString = "";
+	    // Search through string's characters one by one.
+	    // If character is not in bag, append to returnString.
+	    for (i = 0; i < s.length; i++){   
+	        var c = s.charAt(i);
+	        if (bag.indexOf(c) == -1) returnString += c;
+	    }
+	    return returnString;
+	}
+	
+	function daysInFebruary (year){
+		// February has 29 days in any year evenly divisible by four,
+	    // EXCEPT for centurial years which are not also divisible by 400.
+	    return (((year % 4 == 0) && ( (!(year % 100 == 0)) || (year % 400 == 0))) ? 29 : 28 );
+	}
+
+	function DaysArray(n) {
+		for (var i = 1; i <= n; i++) {
+			this[i] = 31
+			if (i==4 || i==6 || i==9 || i==11) {this[i] = 30}
+			if (i==2) {this[i] = 29}
+	   } 
+	   return this
+	}
+	
+	function isDate(dtStr){
+		var daysInMonth = DaysArray(12)
+		var pos1=dtStr.indexOf(dtCh)
+		var pos2=dtStr.indexOf(dtCh,pos1+1)
+		var strDay=dtStr.substring(0,pos1)
+		var strMonth=dtStr.substring(pos1+1,pos2)
+		var strYear=dtStr.substring(pos2+1)
+		strYr=strYear
+		if (strDay.charAt(0)=="0" && strDay.length>1) strDay=strDay.substring(1)
+		if (strMonth.charAt(0)=="0" && strMonth.length>1) strMonth=strMonth.substring(1)
+		for (var i = 1; i <= 3; i++) {
+			if (strYr.charAt(0)=="0" && strYr.length>1) strYr=strYr.substring(1)
+		}
+		month=parseInt(strMonth)
+		day=parseInt(strDay)
+		year=parseInt(strYr)
+		if (pos1==-1 || pos2==-1){
+//			alert("The date format should be : dd.mm.yyyy")
+			alert("$!l10n.get("Common.Form.Message.InvalidDateFormat")")
+			return false
+		}
+		if (strMonth.length<1 || month<1 || month>12){
+//			alert("Please enter a valid month")
+			alert("$!l10n.get("Common.Form.Message.EnterValidDate")")
+			return false
+		}
+		if (strDay.length<1 || day<1 || day>31 || (month==2 && day>daysInFebruary(year)) || day > daysInMonth[month]){
+//			alert("Please enter a valid day")
+			alert("$!l10n.get("Common.Form.Message.EnterValidDate")")
+			return false
+		}
+		if (strYear.length != 4 || year==0 || year<minYear || year>maxYear){
+//			alert("Please enter a valid 4 digit year between "+minYear+" and "+maxYear)
+			alert("$!l10n.get("Common.Form.Message.EnterValidDate")")
+			return false
+		}
+		if (dtStr.indexOf(dtCh,pos2+1)!=-1 || isInteger(stripCharsInBag(dtStr, dtCh))==false){
+//			alert("Please enter a valid date")
+			alert("$!l10n.get("Common.Form.Message.EnterValidDate")")
+			return false
+		}
+	return true
+	}
+	
+	function isSelected(theField){
+		if (theField.value < 1001){
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+			theField.focus();
+			return true;
+		} else {
+		  return false;
+		}
+	}
+
+	function formatDate(theValue){
+		strFormated= theValue;
+		return strFormated;
+	}
+
+	function formatAmount(theValue){
+		strFormated= theValue.toFixed(2);
+//		strFormated.toFixed(2);
+//		strFormated= Math.round(theValue * 100) / 100;
+		return strFormated;
+	}
+
+	function formatRate(theValue){
+		strFormated= theValue;
+		return strFormated;
+	}
+
+	function formatQuantity(theValue){
+		strFormated= theValue;
+		return strFormated;
+	}
+
+	function disableSave(){
+		okButton.disabled= true;
+	}
+
+	function trimString (str) {
+		while (str.charAt(0) == ' ')
+			str = str.substring(1);
+		while (str.charAt(str.length - 1) == ' ')
+			str = str.substring(0, str.length - 1);
+		return str;
+	}
+
+	function showWrongValue(theField){
+		showInfo("$!l10n.get("Common.Form.Message.WrongValue")");
+		theField.focus();
+	}
+
+	function getFormTemplate(formName)
+	{
+		formLocation= this.creamObject[formName].formTemplate;
+		return formLocation;
+	}
+
+
+	<!-- Changes:  Sandeep V. Tamhankar (stamhankar@hotmail.com) -->
+	
+	/* 1.1.2: Fixed a bug where trailing . in e-mail address was passing
+		(the bug is actually in the weak regexp engine of the browser; I
+		simplified the regexps to make it work).
+	1.1.1: Removed restriction that countries must be preceded by a domain,
+		so abc@host.uk is now legal.  However, there's still the 
+		restriction that an address must end in a two or three letter
+		word.
+	1.1: Rewrote most of the function to conform more closely to RFC 822.
+	1.0: Original  */
+	
+
+	function isEmail (emailStr) {
+	/* The following pattern is used to check if the entered e-mail address
+	fits the user@domain format.  It also is used to separate the username
+	from the domain. */
+	var emailPat=/^(.+)@(.+)$/
+	/* The following string represents the pattern for matching all special
+	characters.  We don't want to allow special characters in the address. 
+	These characters include ( ) < > @ , ; : \ " . [ ]    */
+	var specialChars="\\(\\)<>@,;:\\\\\\\"\\.\\[\\]"
+	/* The following string represents the range of characters allowed in a 
+	username or domainname.  It really states which chars aren't allowed. */
+	var validChars="\[^\\s" + specialChars + "\]"
+	/* The following pattern applies if the "user" is a quoted string (in
+	which case, there are no rules about which characters are allowed
+	and which aren't; anything goes).  E.g. "jiminy cricket"@disney.com
+	is a legal e-mail address. */
+	var quotedUser="(\"[^\"]*\")"
+	/* The following pattern applies for domains that are IP addresses,
+	rather than symbolic names.  E.g. joe@[123.124.233.4] is a legal
+	e-mail address. NOTE: The square brackets are required. */
+	var ipDomainPat=/^\[(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\]$/
+	/* The following string represents an atom (basically a series of
+	non-special characters.) */
+	var atom=validChars + '+'
+	/* The following string represents one word in the typical username.
+	For example, in john.doe@somewhere.com, john and doe are words.
+	Basically, a word is either an atom or quoted string. */
+	var word="(" + atom + "|" + quotedUser + ")"
+	// The following pattern describes the structure of the user
+	var userPat=new RegExp("^" + word + "(\\." + word + ")*$")
+	/* The following pattern describes the structure of a normal symbolic
+	domain, as opposed to ipDomainPat, shown above. */
+	var domainPat=new RegExp("^" + atom + "(\\." + atom +")*$")
+	
+	
+	/* Finally, let's start trying to figure out if the supplied address is
+	valid. */
+	
+	/* Begin with the coarse pattern to simply break up user@domain into
+	different pieces that are easy to analyze. */
+	var matchArray=emailStr.match(emailPat)
+	if (matchArray==null) {
+	/* Too many/few @'s or something; basically, this address doesn't
+	even fit the general mould of a valid e-mail address. */
+		showInfo("$!l10n.get("Common.Form.Message.WrongValue")")
+//		alert("Email address seems incorrect (check @ and .'s)")
+		return false
+	}
+	var user=matchArray[1]
+	var domain=matchArray[2]
+	
+	// See if "user" is valid 
+	if (user.match(userPat)==null) {
+	// user is not valid
+	showInfo("$!l10n.get("Common.Form.Message.WrongValue")")
+//	alert("The username doesn't seem to be valid.")
+	return false
+	}
+	
+	/* if the e-mail address is at an IP address (as opposed to a symbolic
+	host name) make sure the IP address is valid. */
+	var IPArray=domain.match(ipDomainPat)
+	if (IPArray!=null) {
+	// this is an IP address
+		for (var i=1;i<=4;i++) {
+		if (IPArray[i]>255) {
+			showInfo("$!l10n.get("Common.Form.Message.WrongValue")")
+//			alert("Destination IP address is invalid!")
+			return false
+		}
+	}
+	return true
+	}
+	
+	// Domain is symbolic name
+	var domainArray=domain.match(domainPat)
+	if (domainArray==null) {
+		showInfo("$!l10n.get("Common.Form.Message.WrongValue")")
+//		alert("The domain name doesn't seem to be valid.")
+	return false
+	}
+	
+	/* domain name seems valid, but now make sure that it ends in a
+	three-letter word (like com, edu, gov) or a two-letter word,
+	representing country (uk, nl), and that there's a hostname preceding 
+	the domain or country. */
+	
+	/* Now we need to break up the domain to get a count of how many atoms
+	it consists of. */
+	var atomPat=new RegExp(atom,"g")
+	var domArr=domain.match(atomPat)
+	var len=domArr.length
+	if (domArr[domArr.length-1].length<2 || 
+	domArr[domArr.length-1].length>3) {
+	// the address must end in a two letter or three letter word.
+	showInfo("$!l10n.get("Common.Form.Message.WrongValue")")
+//	alert("The address must end in a three-letter domain, or two letter country.")
+	return false
+	}
+	
+	// Make sure there's a host name preceding the domain.
+	if (len<2) {
+	var errStr="This address is missing a hostname!"
+	showInfo("$!l10n.get("Common.Form.Message.WrongValue")")
+//	alert(errStr)
+	return false
+	}
+	
+	// If we've gotten this far, everything's valid!
+	return true;
+	}
+

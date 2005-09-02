@@ -1,0 +1,99 @@
+#set ( $module = "Main" )
+#portalCommon()
+#portalHeader(999 "Help.vm")
+
+<table height="100%" width="100%" align="center" cols=1 cellpadding=0 cellspacing=0 border=0>
+<tr align="center" valign="middle">
+	<td align="center">
+	<table height="100%" width="100%" align="center" cols=2 cellpadding=0 cellspacing=0 border=0>
+	<tr align="center" valign="middle">
+		<td align="center">
+			<table cols=2 cellpadding=1 cellspacing=5 border=0>
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left"><span class="helplink" onClick="doShortcutHelp(HELP_INDEX)">$!l10n.get("Help.List.Header.HelpIndex")</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left"><span class="helplink" onClick="doShortcutHelp(HELP_FAQ)">$!l10n.get("Help.List.Header.FAQ")</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left"><span class="helplink" onClick="doShortcutHelp(HELP_CREDITS)">$!l10n.get("Help.List.Header.Credits")</span></td>
+	        </tr>        
+			</table>
+		</td>
+		<td align="center">
+			<table cols=2 cellpadding=1 cellspacing=5 border=0>
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left"><span class="helplink" onClick="doShortcutHelp(HELP_FORUMS)">$!l10n.get("Help.List.Header.WebForums")</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left"><span class="helplink" onClick="doShortcutHelp(HELP_MAILING)">$!l10n.get("Help.List.Header.MailingLists")</span></td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left">&nbsp;</td>
+	        </tr>        
+	        <tr>
+				<td align="left"><span class="helplink" onClick="doShortcutHelp(HELP_BUGS)">$!l10n.get("Help.List.Header.Bugs")</span></td>
+	        </tr>        
+			</table>
+		</td>
+	</tr>        
+	</table>
+	</td>
+</tr>        
+<tr align="center" valign="bottom">
+	<td align="center">
+		<span>&nbsp;</span>
+	</td>
+</tr>        
+<tr align="center" valign="bottom">
+	<td align="center">
+		<span>&nbsp;</span>
+	</td>
+</tr>        
+<tr align="center" valign="bottom">
+	<td align="center">
+	<table>
+		<tr align="center" valign="bottom">
+			<td align="center">
+				<span style="font-family:Arial,Arial,helvetica,sans-serif;font-size:x-small;color:gray;">Cream 2.0.0 - Maintained and distributed under GNU GPL by Campware - Copyright @ 2003-2005 MDLF</span>
+			</td>
+		</tr>   
+		<tr align="center" height="12" valign="bottom">
+			<td align="center">
+				<span>&nbsp;</span>
+			</td>
+		</tr>        
+	</table>     
+	</td>
+</tr>        
+</table>
+		
+#portalFooter()
+    

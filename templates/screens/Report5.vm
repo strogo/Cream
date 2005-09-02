@@ -1,0 +1,34 @@
+#set ( $module = "Report" )
+
+#reportHeader($!reptitle)
+<tr><td>
+<table  width="100%" align="center" cols=9 cellpadding=2 cellspacing=0 border=0>
+	#if ($!entries)
+		<tr>
+			<td class="reptblhead" align="left">&nbsp;$!l10n.get("Report.Headers.Name1")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.Name2")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.Street1")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.Street2")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.City")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.Zip")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.State")&nbsp;</td>
+			<td class="reptblhead" align="left">$!l10n.get("Report.Headers.Country")&nbsp;</td>
+			<td class="reptblhead" align="right">$!l10n.get("Report.Headers.Quantity")&nbsp;</td>
+		</tr>        
+	    #foreach ($entry in $entries)
+			<tr class="repcontent">
+				<td class="repcontent" align="left">&nbsp;$!entry.CustomerRelatedByRecipientId.CustomerName1</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.CustomerName2</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Address1</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Address2</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.City</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Zip</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.State</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Country.CountryName</td>
+				<td class="repcontent" align="right">$!entry.Quantity&nbsp;</td>
+			</tr>        
+	    #end
+	#end
+</table>
+</td></tr>
+#reportFooter()

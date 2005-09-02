@@ -1,0 +1,114 @@
+#set ( $module = "Main" )
+#formCommon()
+
+
+<form method="post" action="$link.setPage("CustomerList.vm").setAction("SQL")">
+<table align="center" cellpadding=5 cellspacing=0 border=0>
+<tr>
+<td align="center" >
+    <table align="center" cellpadding="2"  border=0>
+      <tr>  
+      		#if($mode=="insert")
+        		#formCell ("Code" "customercode" "AUTO")
+        	#else
+        		#formCell ("Code" "customercode" $entry.CustomerCode)
+			#end        	
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ("Name" "customername1" $entry.CustomerName1)
+      </tr>
+      <tr>
+        #formCell ("" "customername2" $entry.CustomerName2)
+      </tr>
+      <tr>
+        #formCell ("Display" "customerdisplay" $entry.CustomerDisplay)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ("Address" "address1" $entry.Address1)
+      </tr>
+      <tr>
+        #formCell ("" "address2" $entry.Address2)
+      </tr>
+      <tr>
+        #formCell ("" "address3" $entry.Address3)
+      </tr>
+      <tr>
+        #formCell ("City" "city" $entry.City)
+      </tr>
+      <tr>
+        #formCell ("Zip" "zip" $entry.Zip)
+      </tr>
+      <tr>
+        #formCell ("State" "state" $entry.State)
+      </tr>
+      <tr>
+        #formCell ("Country" "country" $entry.CountryId)
+      </tr>
+    </table>
+</td>
+<td align="center" >
+    <table align="center" cellpadding="2" border=0>
+      <tr>
+        #formCell ("Status" "status" $entry.Status)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ("Type" "customertype" $entry.CustomerType)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ("Category" "customercatid" $entry.CustomerCatId)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ("Phone 1" "phone1" $entry.Phone1)
+      </tr>
+      <tr>
+        #formCell ("Phone 2" "phone2" $entry.Phone2)
+      </tr>
+      <tr>
+        #formCell ("Fax" "fax" $entry.Fax)
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+        #formCell ("Email" "email" $entry.Email)
+      </tr>
+      <tr>
+        #formCell ("Email Type" "emailtype" $entry.EmailType)
+      </tr>
+      <tr>
+        #formCell ("WWW" "www" $entry.Www)
+      </tr>
+    </table>
+</td>
+
+</tr>
+
+</table>
+</form>

@@ -1,0 +1,280 @@
+#set ( $module = "Main" )
+#formCommon()
+
+var rowId=1;
+var tabInd=26;
+
+function ProductObject (desc, unprc){
+	this.description=desc;
+	this.unitPrice=unprc;
+}
+
+var orderProduct= new Array();
+
+#foreach ($product in $products)
+orderProduct[$product.ProductId]=new ProductObject("$product.ProductDescription", "$!af.format($product.BasePrice)");
+#end        	
+
+
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.customerid.value=$!entry.CustomerId;
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.recipientid.value=$!entry.RecipientId;
+	myForm.carrierid.value=$!entry.CarrierId;
+	myForm.currencyid.value=$!entry.CurrencyId;
+	myForm.payterm.value=$!entry.PayTerm;
+	myForm.paymethod.value=$!entry.PayMethod;
+
+	#if ($!mode=="insert")
+		doAddItem();
+	#else
+		#foreach ($entryitem in $entryitems)
+			doAddItem();
+			suf= '_' + rowId;
+			myForm['productid' + suf].value="$!entryitem.ProductId";
+			myForm['description' + suf].value="$!entryitem.Description";
+			myForm['unitprice' + suf].value="$!af.format($!entryitem.UnitPrice)";
+			myForm['quantity' + suf].value="$!entryitem.Quantity";
+			myForm['itemcurrtotal' + suf].value="$!af.format($!entryitem.ItemCurrTotal)";
+	
+		#end
+	#end
+	myForm.customerid.focus();
+
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.issueddate)) return false;
+	if (parent.isNotDate(myForm.issueddate)) return false;
+	if (myForm.status.value==50){
+		if (parent.isEmpty(myForm.closeddate)) return false;
+		if (parent.isNotDate(myForm.closeddate)) return false;
+	}
+	if (parent.isSelected(myForm.customerid)) return false;
+	if (parent.isSelected(myForm.recipientid)) return false;
+
+	var len = myForm.elements.length;
+	for (var i = 0; i < len; i++) {
+	    var e = myForm.elements[i];
+	    if (e.name.substring(0, 11) == "description") {
+			if (parent.isEmpty(e)) return false;
+	    }
+	    else if (e.name.substring(0, 9) == "unitprice") {
+			if (parent.isNotAmount(e)) return false;
+	    }
+	    else if (e.name.substring(0, 8) == "quantity") {
+			if (parent.isNotQuantity(e)) return false;
+	    }
+	}
+
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='customerid'){
+		myForm.recipientid.value=formField.value;
+	}
+	else if (formField.name=='status'){
+		if (myForm.status.value==50){
+			myForm.closeddate.disabled=false;
+			myForm.closeddate.value="$!df.format($!today)";
+		}
+		else{
+			myForm.closeddate.disabled=true;
+			myForm.closeddate.value="";
+		}
+	}
+	else if (formField.name.substring(0, 9)=='productid'){
+		sufix= formField.name.substring(9, formField.name.length);
+		setProductData(sufix);
+	}
+	else if (formField.name.substring(0, 9)=='unitprice'){
+		sufix= formField.name.substring(9, formField.name.length);
+		formField.value= parseFloat(formField.value);
+		calcItemTotal(sufix);
+	}
+	else if (formField.name.substring(0, 8)=='quantity'){
+		sufix= formField.name.substring(8, formField.name.length);
+		formField.value= parseInt(formField.value);
+		calcItemTotal(sufix);
+	}
+}
+
+function doAddItem(){
+	rowId++;
+
+	itemstr1='<a href="javascript: void 0" ONCLICK="doDeleteItem(this)"><img src="$ui.image($ui.itemDelete)" width="16" height="16" border=0 alt="Delete Item"></a>';
+	itemstr2='<select name="productid_' + rowId + '" tabIndex="' + tabInd + '" value="$!entry.ProductId" onchange="valueChanged(this);" width="100" STYLE="width: 100px">';
+	#foreach ($product in $products)
+		itemstr2+='<option value="$product.ProductId">$product.ProductCode</option>'
+	#end        	
+	itemstr2+='</select>';
+	tabInd++;
+	itemstr3='<input type="text" tabIndex="' + tabInd + '" maxLength="254" name="description_' + rowId + '" value="" STYLE="width: 250px">';
+	tabInd++;
+	itemstr4='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="unitprice_' + rowId + '" value="0.00" onchange="valueChanged(this);" STYLE="width: 70px; text-align: right;">';
+	tabInd++;
+	itemstr5='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="quantity_' + rowId + '" value="1" onchange="valueChanged(this);" STYLE="width: 50px; text-align: right;">';
+	tabInd++;
+	itemstr6='<input type="text" maxLength="10" DISABLED name="itemcurrtotal_' + rowId + '" value="0.00" STYLE="width: 70px; text-align: right;">';
+
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+    var row = table.insertRow(table.rows.length);
+
+    var cell1 = row.insertCell(0);
+    cell1.innerHTML = itemstr1;
+    var cell2 = row.insertCell(1);
+    cell2.innerHTML = itemstr2;
+    var cell3 = row.insertCell(2);
+    cell3.innerHTML = itemstr3;
+    var cell4 = row.insertCell(3);
+    cell4.innerHTML = itemstr4;
+    var cell5 = row.insertCell(4);
+    cell5.innerHTML = itemstr5;
+    var cell6 = row.insertCell(5);
+    cell6.innerHTML = itemstr6;
+}
+
+function setProductData(sufix){
+	prid= myForm['productid' + sufix].value;
+	
+	myForm['description' + sufix].value=this.orderProduct[prid].description;
+	myForm['unitprice' + sufix].value=this.orderProduct[prid].unitPrice;
+
+	calcItemTotal(sufix);
+}
+
+function doDeleteItem(cell){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	var rowIndex= document.all ? cell.parentElement.parentElement.rowIndex : cell.parentNode.parentNode.rowIndex;
+
+	table.deleteRow(rowIndex);
+	if (table.rows.length<2){
+		doAddItem();
+	}
+
+	calcTotal();
+}
+
+function checkEmptyTable(){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	if (table.rows.length<2){
+		doAddItem();
+	}
+}
+
+function calcItemTotal(sufix){
+	price= parseFloat(myForm['unitprice' + sufix].value);
+	qty= parseInt(myForm['quantity' + sufix].value);
+	
+	myForm['itemcurrtotal' + sufix].value=formatAmount(price * qty);
+	
+	calcTotal();
+}
+
+function calcTotal(){
+	var tot=0;
+	var len = myForm.elements.length;
+	for (var i = 0; i < len; i++) {
+	    var e = myForm.elements[i];
+	    if (e.name.substring(0, 8) == "itemcurr") {
+			tot=tot + parseFloat(e.value);
+	    }
+	}
+
+	myForm['currencyamount'].value=formatAmount(tot);
+}
+
+#formHeader("OrderForm.vm" "OrderSQL" "sorderid" $!entry.SorderId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "sordercode" $!entry.SorderCode 20 100 1)
+			<td width=16>&nbsp;</td>
+        #formCellDateDefault ($!l10n.get("Common.Form.Label.Issued") "issueddate" $!entry.IssuedDate $!today 10 100 2)
+			<td width=16>&nbsp;</td>
+   		#formSelectStatus ($!l10n.get("Common.Form.Label.Status") "status" $!entry.Status 100 3)
+      </tr>
+    <tr>
+	<td>
+	&nbsp;
+	</td>
+    </tr>
+
+      <tr>
+   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 5)
+			<td width=16>&nbsp;</td>
+   		#formSelectProject ($!l10n.get("Common.Form.Label.Project") "projectid" $!entry.ProjectId 100 6)
+			<td width=16>&nbsp;</td>
+		#if ($!entry.Status==50)
+        	#formCellDate ($!l10n.get("SalesOrder.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 7)
+        #else
+        	#formCellDisabled ($!l10n.get("SalesOrder.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 7)
+        #end
+      </tr>
+
+    <tr>
+	<td>
+	&nbsp;
+	</td>
+    </tr>
+
+      <tr>
+   		#formSelectCustomer ($!l10n.get("Shipment.Form.Label.ShipTo") "recipientid" $!entry.RecipientId 160 8)
+			<td width=16>&nbsp;</td>
+   		#formSelectPayterm ($!l10n.get("Payment.Form.Label.PayTerm") "payterm" $!entry.PayTerm 100 10)
+			<td width=16>&nbsp;</td>
+   		#formSelectCurrency ($!l10n.get("Payment.Form.Label.Currency") "currencyid" $!entry.CurrencyId 100 12)
+      </tr>
+      <tr>
+   		#formSelectCarrier ($!l10n.get("Shipment.Form.Label.Carrier") "carrierid" $!entry.CarrierId 160 9)
+			<td width=16>&nbsp;</td>
+   		#formSelectPaymethod ($!l10n.get("Payment.Form.Label.PayMethod") "paymethod" $!entry.PayMethod 100 11)
+			<td width=16>&nbsp;</td>
+        #formCellAmountDisabled ($!l10n.get("Payment.Form.Label.Total") "currencyamount" $!entry.CurrencyAmount 10 100 13)
+      </tr>
+	</table>
+  </td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+<td>
+	<table align=center cellpadding=0 cellspacing=0 border=0>
+	<tr>
+		<td>
+		<table id="itemList" name="itemList" align=center cellpadding=0 cellspacing=0 border=0>
+			<tr class="toolbar" align="center">
+				<td>
+				<a href="javascript: void 0" ONCLICK="doAddItem()"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Item"></a>
+				</td>
+				<td width="100">$!l10n.get("Common.Form.Items.Header.Id")</td>
+				<td width="250">$!l10n.get("Common.Form.Items.Header.Description")</td>
+				<td width="70">$!l10n.get("Common.Form.Items.Header.UnitPrice")</td>
+				<td width="50">$!l10n.get("Common.Form.Items.Header.Qty")</td>
+				<td width="70">$!l10n.get("Common.Form.Items.Header.Subtotal")</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+<input type="hidden" name="sordercode" value="$!entry.SorderCode">
+
+#documentFooter()
+	
+#formFooter("OrderForm.vm" "OrderSQL" "sorderid" $!entry.SorderId $mode)
