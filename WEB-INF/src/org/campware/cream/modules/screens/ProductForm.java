@@ -41,6 +41,7 @@ package org.campware.cream.modules.screens;
  */
 
 import org.apache.torque.util.Criteria;
+import org.apache.turbine.Turbine;
 
 import org.apache.velocity.context.Context;
 
@@ -49,6 +50,7 @@ import org.campware.cream.om.ProductPeer;
 import org.campware.cream.om.VendorPeer;
 import org.campware.cream.om.ProductCategoryPeer;
 import org.campware.cream.om.UomPeer;
+import org.campware.cream.om.CmsSectionPeer;
 
 /**
  * To read comments for this class, please see
@@ -71,6 +73,16 @@ public class ProductForm extends CreamForm
             Product entry = (Product) ProductPeer.doSelect(criteria).get(0);
             context.put("entry", entry);
 
+      		boolean bCmsIntegration = Turbine.getConfiguration().getBoolean("cms.integration.enabled", false);
+
+      		if (bCmsIntegration){
+                context.put("cmsintegration", "1");
+                context.put("entryitems", entry.getProductCmsSections());
+      		}else{
+                context.put("cmsintegration", "0");
+      		}
+            
+            
             return true;
         }
         catch (Exception e)
@@ -85,6 +97,15 @@ public class ProductForm extends CreamForm
         {
             Product entry = new Product();
             context.put("entry", entry);
+
+      		boolean bCmsIntegration = Turbine.getConfiguration().getBoolean("cms.integration.enabled", false);
+
+      		if (bCmsIntegration){
+                context.put("cmsintegration", "1");
+      		}else{
+                context.put("cmsintegration", "0");
+      		}
+            
             return true;
         }
         catch (Exception e)
@@ -106,6 +127,10 @@ public class ProductForm extends CreamForm
             prodcatcrit.add(ProductCategoryPeer.PRODUCT_CAT_ID, 999, Criteria.GREATER_THAN);
             prodcatcrit.addAscendingOrderByColumn(ProductCategoryPeer.PRODUCT_CAT_NAME);
             context.put("productcats", ProductCategoryPeer.doSelect(prodcatcrit));
+
+            Criteria cmsseccrit = new Criteria();
+            cmsseccrit.addAscendingOrderByColumn(CmsSectionPeer.CMS_SECTION_NAME);
+            context.put("cmssections", CmsSectionPeer.doSelect(cmsseccrit));
 
             Criteria uomcrit = new Criteria();
             uomcrit.add(UomPeer.UOM_ID, 900, Criteria.LESS_THAN);

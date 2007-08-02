@@ -1,8 +1,16 @@
-	
+var listOffset=0;	
+var listLimit=25;	
+var listRows=0;	
+
+
 	function showLastList()
 	{
 		if(lastReturnType==SCREEN_PORTAL){
 			showPortal(lastPortal);
+		} else if (lastReturnType==SCREEN_FORM && lastReturnId>1000){
+			needsReload=relatedScreen;
+			lastReturnType=SCREEN_LIST;
+			showDetail(lastReturnForm, lastReturnId);
 		} else{
 			showList(lastList);
 		}
@@ -10,12 +18,14 @@
 
 	function loadList (url) {
 	  window.frames['buffer'].document.location.replace(url);
+//	  window.frames['buffer'].document.location.href=url;
 	}
 
 	function copyListContent (listName) {
 		if (listName!=lastScreen || lastTop!=TOP_LIST)
 		{
 			showListTop(listName);
+			document.getElementById("ScreenBottom").style.display="";
 			if (listName<3000)
 			{
 				if (this.creamObject[listName].filterNumber==999)
@@ -39,15 +49,38 @@
 
 		document.getElementById('DataFrame').style.backgroundColor = "#ffffff";
 		document.getElementById('DataFrame').innerHTML = window.frames['buffer'].document.body.innerHTML;
+		listRows=document.getElementById("listData").entriesno.value;
+//		alert(listRows);
+
+		document.getElementById('RowNoStatus').innerHTML = '&nbsp;&nbsp;' + listRows + '&nbsp;'+ '$!l10n.get("Common.List.Status.Rows")';
+		rowsFrom=listOffset;
+		rowsTo=listOffset+listLimit;
+		if (rowsTo > listRows) rowsTo=listRows;
+		document.getElementById('RowsShown').innerHTML = '&nbsp;' + rowsFrom + '&nbsp;-&nbsp;' + rowsTo + '&nbsp;';
+		
+
 	}
 
 	function showList(listName)
 	{
-		listLocation= getListUrl(listName);
-
-		if (listName!=lastScreen || lastTop!=TOP_LIST)
+		if (listName!=lastScreen)
 		{
 			showListTop(listName);
+			document.getElementById("ScreenBottom").style.display="";
+			listOffset=0;
+			if (listName<3000)
+			{
+				if (this.creamObject[listName].filterNumber==999)
+				{
+					setFindFilter(listName);
+				}
+				document.getElementById("ListFilter").value=this.creamObject[listName].filterNumber;
+			}
+		}
+		else if (lastTop!=TOP_LIST)
+		{
+			showListTop(listName);
+			document.getElementById("ScreenBottom").style.display="";
 			if (listName<3000)
 			{
 				if (this.creamObject[listName].filterNumber==999)
@@ -62,6 +95,8 @@
 			setFindFilter(listName);
 			document.getElementById("ListFilter").value=this.creamObject[listName].filterNumber;
 		}
+
+		listLocation= getListUrl(listName);
 
 		showRetrieveInfo();
 		lastScreenType=SCREEN_LIST;
@@ -88,14 +123,46 @@
 		}
 		listLocation+="/sortcol/" + this.creamObject[listName].sortColumn;		
 		listLocation+="/sortord/" + this.creamObject[listName].sortOrder;		
+		listLocation+="/listoffset/" + listOffset;		
+		listLocation+="/listlimit/" + listLimit;		
 		
 		return listLocation;
 	}
 
+	function goListFirst()
+	{
+		listOffset=0;
+		showLastList();
+	}
+
+	function goListNext()
+	{
+		listOffset=listOffset + listLimit;
+		if (listOffset > listRows) listOffset=listOffset - listLimit;
+		showLastList();
+	}
+
+	function goListPrevious()
+	{
+		listOffset=listOffset - listLimit;
+		if (listOffset < 0) listOffset=0;
+		showLastList();
+	}
+
+	function goListLast()
+	{
+		lastRowsNo= listRows % listLimit;
+		if (lastRowsNo==0) lastRowsNo=listLimit;
+		listOffset= listRows - lastRowsNo;
+		if (listOffset<0) listOffset=0;
+		showLastList();
+	}
+
+
 	function showListTop(listName)
 	{
 
-		document.getElementById('DataFrame').style.height = screenHeight - listTopHeight - marginHeight;
+		document.getElementById('DataFrame').style.height = screenHeight - listTopHeight - listBottomHeight - marginHeight + "px";
 		document.getElementById('ScreenTop').innerHTML = getListTop(listName);
 //		document.getElementById('DataFrame').style.height = screenHeight - document.getElementById('ScreenTop').offsetHeight - 10;
 		lastTop=TOP_LIST;
@@ -108,7 +175,7 @@
 		listTopHeader+='<td>';
 		listTopHeader+='<table cellpadding=5 cellspacing=0 border=0 width="100%">';
 		listTopHeader+='<tr>';
-		listTopHeader+='<td class=ltitle align=left colspan=3><span>'+ getListTitle(listName)+'</span>&nbsp;&nbsp;<span></span></td>';
+		listTopHeader+='<td class=ltitle align=left colspan=3>&nbsp;<span>'+ getListTitle(listName)+'</span>&nbsp;&nbsp;<span></span></td>';
 		listTopHeader+='</tr>';
 
 		listToolbar='<tr class=toolbar>';
@@ -228,6 +295,7 @@
 
 		this.creamObject[listName].sortColumn= colNo;		
 
+		listOffset=0;		
 		showList(listName);
 	}
 
@@ -240,6 +308,7 @@
 			listName= lastScreen;
 			this.creamObject[listName].filterNumber= 999;		
 			this.creamObject[listName].findString= nn;		
+			listOffset=0;		
 			showList(listName);
 	    }
 	}
@@ -247,7 +316,8 @@
 	function doFilter(filterNo)
 	{
 		listName= lastScreen;
-		this.creamObject[listName].filterNumber=filterNo;		
+		this.creamObject[listName].filterNumber=filterNo;
+		listOffset=0;		
 		showList(listName);
 	}
 	

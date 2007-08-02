@@ -67,6 +67,8 @@ import java.sql.Connection;
 import org.campware.cream.om.InboxEvent;
 import org.campware.cream.om.InboxEventPeer;
 import org.campware.cream.om.InboxAttachment;
+import org.campware.cream.om.Contact;
+import org.campware.cream.om.ContactPeer;
 import org.campware.cream.om.Customer;
 import org.campware.cream.om.CustomerPeer;
 import org.campware.cream.modules.util.Base64;
@@ -103,16 +105,19 @@ public class Pop3Job extends ScheduledJob
 	public void run( JobEntry job ) throws Exception
 	{
 		// First we resolve online subscriptions
-		doReceiveMessages();
+  		boolean bPop3Receive = Turbine.getConfiguration().getBoolean("mail.pop3.enabled", false);
+
+  		if (bPop3Receive){
+  			doReceiveMessages();
+  		}
 	}
 
 
 	private void doReceiveMessages() throws Exception{
 
+        log.debug("Checking mail ");
 
-          log.debug("Checking mail ");
-
-		String host = Turbine.getConfiguration().getString("mail.pop3.host");
+  		String host = Turbine.getConfiguration().getString("mail.pop3.host");
 		String username = Turbine.getConfiguration().getString("mail.pop3.user");
 		String password = Turbine.getConfiguration().getString("mail.pop3.password");
 
@@ -209,14 +214,24 @@ public class Pop3Job extends ScheduledJob
 
             log.debug("Got message "+email+" "+name+" "+subject+" "+content);
 
+            Criteria contcrit = new Criteria();
+            contcrit.add(ContactPeer.EMAIL, (Object)email, Criteria.EQUAL);
+			if (ContactPeer.doSelect(contcrit).size()>0){
+               log.debug("From known contact");
+               Contact myContact = (Contact) ContactPeer.doSelect(contcrit).get(0);
+               entry.setCustomerId(myContact.getCustomerId());
+               entry.setContactId(myContact.getContactId());
+			} else {
+				
+				// find if customer exists
+	            Criteria criteria = new Criteria();
+				criteria.add(CustomerPeer.EMAIL, (Object)email, Criteria.EQUAL);
+				if (CustomerPeer.doSelect(criteria).size()>0){
+	               log.debug("From known customer");
+	               Customer myDistrib = (Customer) CustomerPeer.doSelect(criteria).get(0);
+	               entry.setCustomerId(myDistrib.getCustomerId());
+				}
 
-            // find if customer exists
-            Criteria criteria = new Criteria();
-			criteria.add(CustomerPeer.EMAIL, (Object)email, Criteria.EQUAL);
-			if (CustomerPeer.doSelect(criteria).size()>0){
-               log.debug("From known customer");
-               Customer myDistrib = (Customer) CustomerPeer.doSelect(criteria).get(0);
-               entry.setCustomerId(myDistrib.getCustomerId());
 			}
 
 			entry.setInboxEventCode(getTempCode());

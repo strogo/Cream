@@ -52,7 +52,7 @@ import org.campware.cream.om.UomPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class UomSQL extends CreamAction
+public class UomSQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -76,6 +76,7 @@ public class UomSQL extends CreamAction
         Uom entry = new Uom();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

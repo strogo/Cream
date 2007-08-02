@@ -1,0 +1,48 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	parent.document.getElementById('relDataFrame').innerHTML=document.body.innerHTML;
+
+}
+
+#utilHeader()
+
+	<table align="left" width="100%" cellpadding=2 cellspacing=0 border=0 style="background-color:white">
+	
+	#foreach ($entryitem in $entryitems)
+
+			#rowStatusClass ($!entryitem.getValue(4).asInt())
+				#set($doctype = $!entryitem.getValue(2).asInt())
+				#if ($doctype==10)
+					#addListPic($ui.message)
+				#elseif ($doctype==30)
+					#addListPic($ui.inforeq)
+				#elseif ($doctype==50)
+					#addListPic($ui.suppreq)
+				#elseif ($doctype==100)
+					#addListPic($ui.outbox)
+				#elseif ($doctype==110)
+					#addListPic($ui.osubs)
+				#elseif ($doctype==120)
+					#addListPic($ui.psubs)
+				#elseif ($doctype==130)
+					#addListPic($ui.service)
+				#elseif ($doctype==140)
+					#addListPic($ui.shipment)
+				#elseif ($doctype==150)
+					#addListPic($ui.payment)
+				#elseif ($doctype==160)
+					#addListPic($ui.sorder)
+				#elseif ($doctype==170)
+					#addListPic($ui.opportunity)
+				#end
+
+				<td width="90" align="left"><span class="llink" onClick="editRelated($!entryitem.getValue(2).asInt(), $!entryitem.getValue(1).asInt())">$!entryitem.getValue(3)&nbsp;</span></td>
+				<td width="350" align="left">$!entryitem.getValue(5)&nbsp;</td>
+				<td width="80" align="left">$!df.format($!entryitem.getValue(6).asDate())&nbsp;</td>
+			</tr>
+	#end
+	</table>
+
+#utilFooter()

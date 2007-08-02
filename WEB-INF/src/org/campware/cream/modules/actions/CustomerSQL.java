@@ -81,6 +81,7 @@ public class CustomerSQL extends CreamAction
 
 
         String myCode=data.getParameters().getString("customercode");
+        String myLogin=data.getParameters().getString("loginname");
 
         entry.setCreatedBy(data.getUser().getName());
         entry.setCreated(new Date());
@@ -97,6 +98,9 @@ public class CustomerSQL extends CreamAction
             try {
                 entry.save(conn);
                 entry.setCustomerCode(getRowCode("CU", entry.getCustomerId()));
+                if (myLogin.equals("AUTO")){
+                    entry.setLoginName(getRowCode("CU", entry.getCustomerId()));
+                }
                 entry.save(conn);
                 Transaction.commit(conn);
                 success = true;
@@ -109,7 +113,7 @@ public class CustomerSQL extends CreamAction
         {
             entry.save();
         }
-
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**
@@ -127,9 +131,13 @@ public class CustomerSQL extends CreamAction
         data.getParameters().setProperties(entry);
 
         String myCode=data.getParameters().getString("customercode");
+        String myLogin=data.getParameters().getString("loginname");
         if (myCode.equals("AUTO"))
         {
             entry.setCustomerCode(getRowCode("CU", entry.getCustomerId()));
+        }
+        if (myLogin.equals("AUTO")){
+            entry.setLoginName(getRowCode("CU", entry.getCustomerId()));
         }
 
         entry.setCreated(parseDateTime(data.getParameters().getString("created")));

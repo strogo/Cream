@@ -70,6 +70,7 @@ public class SchedulerSQL extends CreamAction
         TurbineScheduledJob entry = new TurbineScheduledJob();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

@@ -101,6 +101,7 @@ public class InboxEventSQL extends CreamAction
         } finally {
             if (!success) Transaction.safeRollback(conn);
         }
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

@@ -1,5 +1,5 @@
 #set ( $module = "System" )
-#formCommon()
+#formCommon(4001)
 
 var rowId=1;
 var tabInd=26;
@@ -13,6 +13,12 @@ function formInit(){
 	#end
 	myForm.inboxfid.value= $!prefs.InboxFid;
 	myForm.outboxfid.value= $!prefs.OutboxFid;
+	myForm.taskfid.value= $!prefs.TaskFid;
+	myForm.customerfid.value= $!prefs.CustomerFid;
+	myForm.contactfid.value= $!prefs.ContactFid;
+	myForm.projectfid.value= $!prefs.ProjectFid;
+	myForm.productfid.value= $!prefs.ProductFid;
+	myForm.opportunityfid.value= $!prefs.OpportunityFid;
 	myForm.newssubsfid.value= $!prefs.NewsSubsFid;
 	myForm.newsletterfid.value= $!prefs.NewsletterFid;
 	myForm.onlinesubsfid.value= $!prefs.OnlineSubsFid;
@@ -21,9 +27,6 @@ function formInit(){
 	myForm.shipmentfid.value= $!prefs.ShipmentFid;
 	myForm.paymentfid.value= $!prefs.PaymentFid;
 	myForm.sorderfid.value= $!prefs.SorderFid;
-	myForm.customerfid.value= $!prefs.CustomerFid;
-	myForm.projectfid.value= $!prefs.ProjectFid;
-	myForm.productfid.value= $!prefs.ProductFid;
 
 	myForm.password.value= "$!entry.Password";
 
@@ -128,17 +131,20 @@ function checkEmptyTable(){
 				<option value="1000">$!l10n.get("Home.Menu.Label")</option>
 				<option value="2010">$!l10n.get("Inbox.Menu.Label")</option>
 				<option value="2009">$!l10n.get("Outbox.Menu.Label")</option>
+				<option value="1005">$!l10n.get("Task.Menu.Label")</option>
+				<option value="1001">$!l10n.get("Customer.Menu.Label")</option>
+				<option value="1004">$!l10n.get("Contact.Menu.Label")</option>
+				<option value="1003">$!l10n.get("Product.Menu.Label")</option>
+				<option value="1002">$!l10n.get("Project.Menu.Label")</option>
+				<option value="1008">$!l10n.get("Opportunity.Menu.Label")</option>
 				<option value="2012">$!l10n.get("NewsSubscription.Menu.Label")</option>
 				<option value="2008">$!l10n.get("Newsletter.Menu.Label")</option>
+				<option value="2001">$!l10n.get("SalesOrder.Menu.Label")</option>
+				<option value="2005">$!l10n.get("Shipment.Menu.Label")</option>
+				<option value="2006">$!l10n.get("Service.Menu.Label")</option>
 				<option value="2003">$!l10n.get("OnlineSubscription.Menu.Label")</option>
 				<option value="2004">$!l10n.get("PrintSubscription.Menu.Label")</option>
-				<option value="2006">$!l10n.get("Service.Menu.Label")</option>
-				<option value="2005">$!l10n.get("Shipment.Menu.Label")</option>
 				<option value="2002">$!l10n.get("Payment.Menu.Label")</option>
-				<option value="2001">$!l10n.get("SalesOrder.Menu.Label")</option>
-				<option value="1001">$!l10n.get("Customer.Menu.Label")</option>
-				<option value="1002">$!l10n.get("Project.Menu.Label")</option>
-				<option value="1003">$!l10n.get("Product.Menu.Label")</option>
 			</select>
 			</td>
  		</tr>
@@ -168,7 +174,7 @@ function checkEmptyTable(){
 			#formLabel($!l10n.get("Inbox.Menu.Label"))
 			<td align="left">
 			<select name="inboxfid" tabIndex=10 value=$!prefs.InboxFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -181,10 +187,10 @@ function checkEmptyTable(){
 			</select>
 			</td>
 				<td width=16>&nbsp;</td>
-			#formLabel($!l10n.get("Shipment.Menu.Label"))
+			#formLabel($!l10n.get("Opportunity.Menu.Label"))
 			<td align="left">
-			<select name="shipmentfid" tabIndex=20 value=$!prefs.ShipmentFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="opportunityfid" tabIndex=12 value=$!prefs.OpportunityFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -201,7 +207,7 @@ function checkEmptyTable(){
 			#formLabel($!l10n.get("Outbox.Menu.Label"))
 			<td align="left">
 			<select name="outboxfid" tabIndex=11 value=$!prefs.OutboxFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -214,10 +220,10 @@ function checkEmptyTable(){
 			</select>
 			</td>
 				<td width=16>&nbsp;</td>
-			#formLabel($!l10n.get("Payment.Menu.Label"))
+			#formLabel($!l10n.get("NewsSubscription.Menu.Label"))
 			<td align="left">
-			<select name="paymentfid" tabIndex=22 value=$!prefs.PaymentFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="newssubsfid" tabIndex=12 value=$!prefs.NewsSubsFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -231,10 +237,12 @@ function checkEmptyTable(){
 			</td>
  		</tr>
  		<tr>
-			#formLabel($!l10n.get("NewsSubscription.Menu.Label"))
+			#formEmptyCell()
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Newsletter.Menu.Label"))
 			<td align="left">
-			<select name="newssubsfid" tabIndex=12 value=$!prefs.NewsSubsFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="newsletterfid" tabIndex=12 value=$!prefs.NewsletterFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -244,13 +252,29 @@ function checkEmptyTable(){
 				<option value="1007">$!l10n.get("Common.List.Filter.Option.Open")</option>
 				<option value="1008">$!l10n.get("Common.List.Filter.Option.Closed")</option>
 				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Task.Menu.Label"))
+			<td align="left">
+			<select name="taskfid" tabIndex=11 value=$!prefs.TaskFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
+				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
+				<option value="1003">$!l10n.get("Task.List.Filter.Option.Due")</option>
+				<option value="1004">$!l10n.get("Task.List.Filter.Option.Undated")</option>
+				<option value="1005">$!l10n.get("Task.List.Filter.Option.AssignedToMe")</option>
+				<option value="1007">$!l10n.get("Task.List.Filter.Option.Active")</option>
+				<option value="1008">$!l10n.get("Task.List.Filter.Option.Completed")</option>
+				<option value="1009">$!l10n.get("Task.List.Filter.Option.MyEntries")</option>
 			</select>
 			</td>
 				<td width=16>&nbsp;</td>
 			#formLabel($!l10n.get("SalesOrder.Menu.Label"))
 			<td align="left">
-			<select name="sorderfid" tabIndex=23 value=$!prefs.SorderFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="sorderfid" tabIndex=12 value=$!prefs.SorderFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -264,29 +288,12 @@ function checkEmptyTable(){
 			</td>
  		</tr>
  		<tr>
-			#formLabel($!l10n.get("Newsletter.Menu.Label"))
-			<td align="left">
-			<select name="newsletterfid" tabIndex=12 value=$!prefs.NewsletterFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
-				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
-				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
-				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
-				<option value="1004">$!l10n.get("Common.List.Filter.Option.ThisYear")</option>
-				<option value="1005">$!l10n.get("Common.List.Filter.Option.LastYear")</option>
-				<option value="1006">$!l10n.get("Common.List.Filter.Option.Drafts")</option>
-				<option value="1007">$!l10n.get("Common.List.Filter.Option.Open")</option>
-				<option value="1008">$!l10n.get("Common.List.Filter.Option.Closed")</option>
-				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
-			</select>
-			</td>
-				<td width=16>&nbsp;</td>
 			#formEmptyCell()
- 		</tr>
- 		<tr>
-			#formLabel($!l10n.get("OnlineSubscription.Menu.Label"))
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Shipment.Menu.Label"))
 			<td align="left">
-			<select name="onlinesubsfid" tabIndex=13 value=$!prefs.OnlineSubsFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="shipmentfid" tabIndex=12 value=$!prefs.ShipmentFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -298,11 +305,12 @@ function checkEmptyTable(){
 				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
 			</select>
 			</td>
-				<td width=16>&nbsp;</td>
+ 		</tr>
+ 		<tr>
 			#formLabel($!l10n.get("Customer.Menu.Label"))
 			<td align="left">
-			<select name="customerfid" tabIndex=24 value=$!prefs.CustomerFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="customerfid" tabIndex=11 value=$!prefs.CustomerFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Customer.List.Filter.Option.People")</option>
 				<option value="1002">$!l10n.get("Customer.List.Filter.Option.Institutions")</option>
 				<option value="1003">$!l10n.get("Customer.List.Filter.Option.Prospects")</option>
@@ -311,39 +319,11 @@ function checkEmptyTable(){
 				<option value="1006">$!l10n.get("Customer.List.Filter.Option.MyEntries")</option>
 			</select>
 			</td>
- 		</tr>
- 		<tr>
-			#formLabel($!l10n.get("PrintSubscription.Menu.Label"))
-			<td align="left">
-			<select name="printsubsfid" tabIndex=14 value=$!prefs.PrintSubsFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
-				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
-				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
-				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
-				<option value="1004">$!l10n.get("Common.List.Filter.Option.ThisYear")</option>
-				<option value="1005">$!l10n.get("Common.List.Filter.Option.LastYear")</option>
-				<option value="1006">$!l10n.get("Common.List.Filter.Option.Drafts")</option>
-				<option value="1007">$!l10n.get("Common.List.Filter.Option.Open")</option>
-				<option value="1008">$!l10n.get("Common.List.Filter.Option.Closed")</option>
-				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
-			</select>
-			</td>
 				<td width=16>&nbsp;</td>
-			#formLabel($!l10n.get("Project.Menu.Label"))
-			<td align="left">
-			<select name="projectfid" tabIndex=25 value=$!prefs.ProjectFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
-				<option value="1001">$!l10n.get("Project.List.Filter.Option.Open")</option>
-				<option value="1002">$!l10n.get("Project.List.Filter.Option.Closed")</option>
-				<option value="1003">$!l10n.get("Project.List.Filter.Option.MyEntries")</option>
-			</select>
-			</td>
- 		</tr>
- 		<tr>
 			#formLabel($!l10n.get("Service.Menu.Label"))
 			<td align="left">
-			<select name="servicefid" tabIndex=15 value=$!prefs.ServiceFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="servicefid" tabIndex=12 value=$!prefs.ServiceFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
 				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
 				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
@@ -355,11 +335,39 @@ function checkEmptyTable(){
 				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
 			</select>
 			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Contact.Menu.Label"))
+			<td align="left">
+			<select name="contactfid" tabIndex=11 value=$!prefs.CustomerFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+				<option value="1001">$!l10n.get("Customer.List.Filter.Option.Active")</option>
+				<option value="1002">$!l10n.get("Customer.List.Filter.Option.Inactive")</option>
+				<option value="1003">$!l10n.get("Customer.List.Filter.Option.MyEntries")</option>
+			</select>
+			</td>
 				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("OnlineSubscription.Menu.Label"))
+			<td align="left">
+			<select name="onlinesubsfid" tabIndex=12 value=$!prefs.OnlineSubsFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
+				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
+				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
+				<option value="1004">$!l10n.get("Common.List.Filter.Option.ThisYear")</option>
+				<option value="1005">$!l10n.get("Common.List.Filter.Option.LastYear")</option>
+				<option value="1006">$!l10n.get("Common.List.Filter.Option.Drafts")</option>
+				<option value="1007">$!l10n.get("Common.List.Filter.Option.Open")</option>
+				<option value="1008">$!l10n.get("Common.List.Filter.Option.Closed")</option>
+				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
 			#formLabel($!l10n.get("Product.Menu.Label"))
 			<td align="left">
-			<select name="productfid" tabIndex=26 value=$!prefs.ProductFid STYLE="width: 140px">
-				<option value="1000"> ---</option>
+			<select name="productfid" tabIndex=11 value=$!prefs.ProductFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="1001">$!l10n.get("Product.List.Filter.Option.StockItems")</option>
 				<option value="1002">$!l10n.get("Product.List.Filter.Option.Services")</option>
 				<option value="1003">$!l10n.get("Product.List.Filter.Option.OnlineSubscriptions")</option>
@@ -368,6 +376,50 @@ function checkEmptyTable(){
 				<option value="1006">$!l10n.get("Product.List.Filter.Option.Inactive")</option>
 				<option value="1007">$!l10n.get("Product.List.Filter.Option.MyEntries")</option>
 			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("PrintSubscription.Menu.Label"))
+			<td align="left">
+			<select name="printsubsfid" tabIndex=12 value=$!prefs.PrintSubsFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
+				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
+				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
+				<option value="1004">$!l10n.get("Common.List.Filter.Option.ThisYear")</option>
+				<option value="1005">$!l10n.get("Common.List.Filter.Option.LastYear")</option>
+				<option value="1006">$!l10n.get("Common.List.Filter.Option.Drafts")</option>
+				<option value="1007">$!l10n.get("Common.List.Filter.Option.Open")</option>
+				<option value="1008">$!l10n.get("Common.List.Filter.Option.Closed")</option>
+				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
+			</select>
+			</td>
+ 		</tr>
+ 		<tr>
+			#formLabel($!l10n.get("Project.Menu.Label"))
+			<td align="left">
+			<select name="projectfid" tabIndex=11 value=$!prefs.ProjectFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+				<option value="1001">$!l10n.get("Common.List.Filter.Option.Open")</option>
+				<option value="1002">$!l10n.get("Common.List.Filter.Option.Closed")</option>
+				<option value="1003">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
+			#formLabel($!l10n.get("Payment.Menu.Label"))
+			<td align="left">
+			<select name="paymentfid" tabIndex=12 value=$!prefs.PaymentFid STYLE="width: 140px">
+				<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+				<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>
+				<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>
+				<option value="1003">$!l10n.get("Common.List.Filter.Option.LastMonth")</option>
+				<option value="1004">$!l10n.get("Common.List.Filter.Option.ThisYear")</option>
+				<option value="1005">$!l10n.get("Common.List.Filter.Option.LastYear")</option>
+				<option value="1006">$!l10n.get("Common.List.Filter.Option.Drafts")</option>
+				<option value="1007">$!l10n.get("Common.List.Filter.Option.Open")</option>
+				<option value="1008">$!l10n.get("Common.List.Filter.Option.Closed")</option>
+				<option value="1009">$!l10n.get("Common.List.Filter.Option.MyEntries")</option>
+			</select>
+			
 			</td>
  		</tr>
 	</table>

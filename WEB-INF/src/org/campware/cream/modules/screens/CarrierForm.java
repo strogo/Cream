@@ -51,7 +51,7 @@ import org.campware.cream.om.CarrierPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CarrierForm extends CreamForm
+public class CarrierForm extends CreamLookupForm
 {
     protected void initScreen()
     {

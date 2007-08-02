@@ -62,6 +62,7 @@ public class CreamUtil extends SecureScreen
 
     private int defModuleType;
     private String defModuleName=new String();
+    protected String userName=new String();
 
     protected void initScreen()
     {
@@ -79,6 +80,7 @@ public class CreamUtil extends SecureScreen
             initScreen();
             int entryId = data.getParameters().getInt("id");
             
+            userName= data.getUser().getName();
             if (entryId>0)
             {
                 Criteria criteria = new Criteria();

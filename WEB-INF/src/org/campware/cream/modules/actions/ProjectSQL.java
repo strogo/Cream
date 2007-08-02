@@ -110,6 +110,7 @@ public class ProjectSQL extends CreamAction
             entry.save();
         }
 
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

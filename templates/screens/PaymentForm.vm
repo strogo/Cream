@@ -1,5 +1,5 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(2002)
 
 var rowId=1;
 var tabInd=26;
@@ -39,7 +39,20 @@ function formInit(){
 	myForm.paymethod.value=$!entry.PayMethod;
 
 	#if ($!mode=="insert")
-		doAddItem();
+		#foreach ($entryitem in $entryitems)
+			myRow= doAddItem();
+			suf= '_' + myRow;
+			myForm['productid' + suf].value="$!entryitem.ProductId";
+			myForm['description' + suf].value="$!entryitem.Description";
+			myForm['unitprice' + suf].value="$!af.format($!entryitem.UnitPrice)";
+			myForm['quantity' + suf].value="$!entryitem.Quantity";
+			myForm['itemcurrtotal' + suf].value="$!af.format($!entryitem.ItemCurrTotal)";
+		#end
+		var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+		if (table.rows.length<2){
+			doAddItem();
+		}
+		
 	#else
 		#foreach ($entryitem in $entryitems)
 			myRow= doAddItem();
@@ -67,11 +80,16 @@ function formValidate(){
 	if (parent.isEmpty(myForm.currencyrate)) return false;
 	if (parent.isNotRate(myForm.currencyrate)) return false;
 
+	var setsub=true;
 	var len = myForm.elements.length;
 	for (var i = 0; i < len; i++) {
 	    var e = myForm.elements[i];
 	    if (e.name.substring(0, 11) == "description") {
 			if (parent.isEmpty(e)) return false;
+			if (setsub){
+				myForm.subject.value=e.value;
+				setsub=false;
+			}
 	    }
 	    else if (e.name.substring(0, 9) == "unitprice") {
 			if (parent.isNotAmount(e)) return false;
@@ -313,6 +331,7 @@ function calcTotal(){
 </td>
 </tr>
 <input type="hidden" name="paymentcode" value="$!entry.PaymentCode">
+<input type="hidden" name="subject" value="$!entry.Subject">
 
 #documentFooter()
 	

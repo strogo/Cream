@@ -1,0 +1,15 @@
+#set ( $module = "Options" )
+#listCommon()
+#listHeader(3014 "IndustryList.vm" "IndustrySQL" 3)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+	        <tr class=rowopen valign="center">
+				#addToggle($entry.IndustryId)
+				#addListPic($ui.space)
+				<td width="100%"><span class="llink" onClick="doEdit('$entry.IndustryId')">$entry.IndustryName</span></td>
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

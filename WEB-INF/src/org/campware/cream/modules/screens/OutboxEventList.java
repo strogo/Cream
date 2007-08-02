@@ -47,6 +47,8 @@ import java.util.Calendar;
 import org.apache.turbine.util.RunData;
 
 import org.apache.torque.util.Criteria;
+import org.campware.cream.om.ContactPeer;
+import org.campware.cream.om.InboxEventPeer;
 import org.campware.cream.om.OutboxEventPeer;
 import org.campware.cream.om.CustomerPeer;
 
@@ -74,6 +76,8 @@ public class OutboxEventList extends CreamList
         } else if (sortNo==3){
             return CustomerPeer.CUSTOMER_DISPLAY;
         } else if (sortNo==4){
+            return ContactPeer.CONTACT_DISPLAY;
+        } else if (sortNo==5){
             return OutboxEventPeer.ISSUED_DATE;
         }
         
@@ -152,6 +156,7 @@ public class OutboxEventList extends CreamList
         try
         {
             criteria.addJoin(CustomerPeer.CUSTOMER_ID, OutboxEventPeer.CUSTOMER_ID);
+            criteria.addJoin(ContactPeer.CONTACT_ID, OutboxEventPeer.CONTACT_ID);
             return OutboxEventPeer.doSelect(criteria);
         }
         catch (Exception e)

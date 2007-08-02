@@ -1,16 +1,19 @@
 ﻿<%@ CodePage=65001 Language="VBScript"%>
 <%
 Option Explicit
+Response.Buffer = True
 %>
 <!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: connector.asp
  * 	This is the File Manager Connector for ASP.
@@ -56,15 +59,18 @@ DoResponse
 Sub DoResponse()
 	Dim sCommand, sResourceType, sCurrentFolder
 	
-	' Get the main request informaiton.
+	' Get the main request information.
 	sCommand = Request.QueryString("Command")
 	If ( sCommand = "" ) Then Exit Sub
 
 	sResourceType = Request.QueryString("Type")
 	If ( sResourceType = "" ) Then Exit Sub
-
+	
 	sCurrentFolder = Request.QueryString("CurrentFolder")
 	If ( sCurrentFolder = "" ) Then Exit Sub
+
+	' Check if it is an allower resource type.
+	if ( Not IsAllowedType( sResourceType ) ) Then Exit Sub
 
 	' Check the current folder syntax (must begin and start with a slash).
 	If ( Right( sCurrentFolder, 1 ) <> "/" ) Then sCurrentFolder = sCurrentFolder & "/"
@@ -99,4 +105,16 @@ Sub DoResponse()
 
 	Response.End
 End Sub
+
+Function IsAllowedType( resourceType )
+	Dim oRE
+	Set oRE	= New RegExp
+	oRE.IgnoreCase	= True
+	oRE.Global		= True
+	oRE.Pattern		= "^(File|Image|Flash|Media)$"
+	
+	IsAllowedType = oRE.Test( resourceType )
+	
+	Set oRE	= Nothing
+End Function
 %>

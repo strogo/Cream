@@ -1,0 +1,21 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(1004 "ContactList.vm" "ContactSQL" 7)
+  
+	#if ($entries)
+
+		#foreach ($entry in $entries)
+			#rowStatusClass ($!entry.Status)
+				#addToggle ($!entry.ContactId)
+				#addListPic($ui.contact)
+
+				<td width="15%"><span class="llink" onClick="doEdit('$entry.ContactId')">$!entry.ContactCode</span></td>
+				#listCellPrc (25 $!entry.ContactDisplay)
+				#listCellPrc (25 $!entry.Customer.CustomerDisplay)
+				#listCellPrc (25 $!entry.ContactCategory.ContactCatName)
+				#listCellPrc (10 $!entry.CountryRelatedByCountryId.CountryCode)
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

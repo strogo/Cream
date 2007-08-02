@@ -52,6 +52,10 @@ public class UploadHandler {
 //                  mappingFile = new File(path + "/CUSTOMER.pzmap.xml");
                   mappingFile = new File(TurbineServlet.getRealPath("/uploads/CUSTOMER.pzmap.xml"));
                 }
+                else if (imptype==30) {
+//                  mappingFile = new File(path + "/CUSTOMER.pzmap.xml");
+                  mappingFile = new File(TurbineServlet.getRealPath("/uploads/NEWSSUBS.pzmap.xml"));
+                }
                 else {
 //                  mappingFile = new File(path + "/PRODUCT.pzmap.xml");
                   mappingFile = new File(TurbineServlet.getRealPath("/uploads/PRODUCT.pzmap.xml"));
@@ -164,16 +168,20 @@ public class UploadHandler {
 //                    }
 //                    else {
                       pr.setCustomerCode(getTempCode());
+                      pr.setLoginName(getTempCode());
 //                    }
                     pr.setCreated(new Date(System.currentTimeMillis()));
                     pr.setModified(new Date(System.currentTimeMillis()));
-                    pr.setCreatedBy("Import Service");
-                    pr.setModifiedBy("Import Service");
+                    pr.setCreatedBy("import");
+                    pr.setModifiedBy("import");
+                    pr.setPasswordValue("blank");
                     pr.save();
 //                    if (ds.getString("CustomerCode") == null ||
 //                        ds.getString("CustomerCode").length() == 0) {
                       pr.setCustomerCode(getRowCode("CU",
                           (new Integer(pr.getPrimaryKey().toString())).intValue()));
+                      pr.setLoginName(getRowCode("CU",
+                              (new Integer(pr.getPrimaryKey().toString())).intValue()));
                       pr.save();
 //                    }
                   }
@@ -184,6 +192,59 @@ public class UploadHandler {
                   k++;
                 }
               }
+              else if (imptype==30) {
+                  while (ds.next()) {
+
+                    //skip the header
+                    if ("Email".equals(ds.getString("Email"))){
+                    continue;
+                    }
+
+
+                    NewsSubscription pr = new NewsSubscription();
+                    try {
+
+                      pr.setStatus(30);
+                      pr.setPriority(30);
+                      pr.setEmail(ds.getString("Email"));
+                      
+                      String sTempProduct= new String(ds.getString("ProductId"));
+                      String sTempProject= new String(ds.getString("CampaignId"));
+                      
+                      if (sTempProduct.trim().length()>1){
+                          pr.setProductId(getProductIdByCode(sTempProduct));
+	                    }else{
+	                        pr.setProductId(1000);
+	                    }
+
+                      if (sTempProject.trim().length()>1 && !sTempProject.trim().equalsIgnoreCase("---")){
+                          pr.setProjectId(getProjectIdByCode(sTempProject));
+                      }else{
+                          pr.setProjectId(1000);
+                      }
+                      pr.setNewsSubsCode(getTempCode());
+                      pr.setIssuedDate(new Date(System.currentTimeMillis()));
+
+                      
+                      pr.setCreated(new Date(System.currentTimeMillis()));
+                      pr.setModified(new Date(System.currentTimeMillis()));
+                      pr.setCreatedBy("import");
+                      pr.setModifiedBy("import");
+                      pr.save();
+//                      if (ds.getString("CustomerCode") == null ||
+//                          ds.getString("CustomerCode").length() == 0) {
+                        pr.setNewsSubsCode(getRowCode("NS",
+                            (new Integer(pr.getPrimaryKey().toString())).intValue()));
+                        pr.save();
+//                      }
+                    }
+                    catch (Exception ex1) {
+                      out.append("\\nError while extracting line(Skipped!): " + ds.getRowNo() + " - " + ex1);
+                      continue;
+                    }
+                    k++;
+                  }
+                }
               else {
                 while (ds.next()) {
                   Product pr = new Product();
@@ -221,8 +282,8 @@ public class UploadHandler {
 
                     pr.setCreated(new Date(System.currentTimeMillis()));
                     pr.setModified(new Date(System.currentTimeMillis()));
-                    pr.setCreatedBy("Import Service");
-                    pr.setModifiedBy("Import Service");
+                    pr.setCreatedBy("import");
+                    pr.setModifiedBy("import");
                     pr.save();
 //                    if (ds.getString("ProductCode") == null ||
 //                        ds.getString("ProductCode").length() == 0) {
@@ -238,8 +299,6 @@ public class UploadHandler {
                   k++;
                 }
               }
-//              out.append("\\n\\nSummary:  ");
-//              out.append("\\nType: " + type);
               out.append("\\nSuccessfuly written " + k + " rows to database.");
 
               long tempo2 = (new Date()).getTime();
@@ -293,6 +352,44 @@ public class UploadHandler {
   }
   return 1000;
 }
+
+  private static int getProductIdByCode(Object name){
+	    try {
+	    Criteria langcrit = new Criteria();
+	    langcrit.add(ProductPeer.PRODUCT_CODE, name, Criteria.EQUAL);
+
+	    List list = ProductPeer.doSelect(langcrit);
+	    Product item;
+	    for (Iterator iter = list.iterator(); iter.hasNext();
+	         ) {
+	      item = (Product) iter.next();
+	      return item.getProductId();
+	    }
+	  }
+	  catch (TorqueException ex2) {
+	    ex2.printStackTrace();
+	  }
+	  return 1000;
+	}
+
+  private static int getProjectIdByCode(Object name){
+	    try {
+	    Criteria langcrit = new Criteria();
+	    langcrit.add(ProjectPeer.PROJECT_CODE, name, Criteria.EQUAL);
+
+	    List list = ProjectPeer.doSelect(langcrit);
+	    Project item;
+	    for (Iterator iter = list.iterator(); iter.hasNext();
+	         ) {
+	      item = (Project) iter.next();
+	      return item.getProjectId();
+	    }
+	  }
+	  catch (TorqueException ex2) {
+	    ex2.printStackTrace();
+	  }
+	  return 1000;
+	}
 
 
 

@@ -1,5 +1,5 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(2001)
 
 var rowId=1;
 var tabInd=26;
@@ -24,6 +24,7 @@ function formInit(){
 	myForm.recipientid.value=$!entry.RecipientId;
 	myForm.carrierid.value=$!entry.CarrierId;
 	myForm.currencyid.value=$!entry.CurrencyId;
+	myForm.opportunityid.value=$!entry.OpportunityId;
 	myForm.payterm.value=$!entry.PayTerm;
 	myForm.paymethod.value=$!entry.PayMethod;
 
@@ -41,6 +42,13 @@ function formInit(){
 	
 		#end
 	#end
+
+	if (parent.needsReload>1 && parent.needsReload!=ORDER){
+		reloadRelated(parent.needsReload);
+		parent.needsReload=1;
+	}
+
+
 	myForm.customerid.focus();
 
 }
@@ -56,10 +64,15 @@ function formValidate(){
 	if (parent.isSelected(myForm.recipientid)) return false;
 
 	var len = myForm.elements.length;
+	var setsub=true;
 	for (var i = 0; i < len; i++) {
 	    var e = myForm.elements[i];
 	    if (e.name.substring(0, 11) == "description") {
 			if (parent.isEmpty(e)) return false;
+			if (setsub){
+				myForm.subject.value=e.value;
+				setsub=false;
+			}
 	    }
 	    else if (e.name.substring(0, 9) == "unitprice") {
 			if (parent.isNotAmount(e)) return false;
@@ -75,6 +88,9 @@ function formValidate(){
 function valueChanged(formField){
 	if (formField.name=='customerid'){
 		myForm.recipientid.value=formField.value;
+		if (formField.value > 1000){
+			loadUtil('$link.setPage("CustomerOpportunities.vm")', formField.value);
+		}
 	}
 	else if (formField.name=='status'){
 		if (myForm.status.value==50){
@@ -187,6 +203,97 @@ function calcTotal(){
 	myForm['currencyamount'].value=formatAmount(tot);
 }
 
+#if($mode!="insert")
+
+function addRelated(doctype){
+	parent.showNewRelated(doctype, ORDER, $!entry.SorderId);
+}
+
+function addRelatedDoc(){
+	alert("Not implemented yet!");
+}
+
+function editRelated(doctype, docid){
+	var docForm="";
+	if (doctype==110)
+		docForm=ONLINE_SUBSCRIPTION;
+	else if (doctype==120)
+		docForm=PRINT_SUBSCRIPTION;
+	else if (doctype==130)
+		docForm=SERVICE;
+	else if (doctype==140)
+		docForm=SHIPMENT;
+	else if (doctype==150)
+		docForm=PAYMENT;
+	else if (doctype==160)
+		docForm=ORDER;
+	else if (doctype==170)
+		docForm=OPPORTUNITY;
+
+	showRelated(ORDER, $!entry.SorderId, docForm, docid);
+}
+
+function reloadRelated(doctype){
+	showFormTab(3);
+
+}
+
+function showFormTab(frmTab){
+	if (frmTab==3){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("docTab").style.display='block';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relDocs").style.display='block';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("OrderRelDocs.vm")', $!entry.SorderId);
+
+	} else{
+		document.getElementById("notesTab").style.display='block';
+		document.getElementById("docTab").style.display='none';
+
+		document.getElementById("notes").style.display='block';
+		document.getElementById("relDocs").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='none';
+	}
+}
+
+function showRelDocsMenu(menupic)
+    {
+		if (document.getElementById('relDocsMenu')){
+			document.getElementById('relDataFrame').removeChild(document.getElementById('relDocsMenu'));
+		}else{
+			hl = document.createElement('div');
+			hl.id="relDocsMenu";
+			hl.style.position = "absolute";
+			hl.style.top = document.getElementById("relDataFrame").firstChild.offsetTop; 
+			hl.style.left = document.getElementById("relDataFrame").firstChild.offsetLeft;
+			hl.style.zIndex = "100";
+			hl.style.backgroundColor = "white";
+			hl.style.fontWeight = "bold";
+			hl.style.color = "#7694C8";
+			hl.style.border = "solid 1px #7694C8"
+			hl.style.textAlign = "center";
+			menuHtml = '<table>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.shipment)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(SHIPMENT)">$!l10n.get("Shipment.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.service)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(SERVICE)">$!l10n.get("Service.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.osubs)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(ONLINE_SUBSCRIPTION)">$!l10n.get("OnlineSubscription.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.psubs)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(PRINT_SUBSCRIPTION)">$!l10n.get("PrintSubscription.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.payment)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(PAYMENT)">$!l10n.get("Payment.Form.NewTitle")</a></td></tr>';
+			menuHtml += '</table>';
+			hl.innerHTML = menuHtml;
+			document.getElementById("relDataFrame").appendChild(hl);
+//			document.body.appendChild(hl);
+		}
+		
+    }
+
+
+#end
+
 #formHeader("OrderForm.vm" "OrderSQL" "sorderid" $!entry.SorderId $mode)
 
 <tr>
@@ -208,34 +315,42 @@ function calcTotal(){
       <tr>
    		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 5)
 			<td width=16>&nbsp;</td>
-   		#formSelectProject ($!l10n.get("Common.Form.Label.Project") "projectid" $!entry.ProjectId 100 6)
+   		#formSelectCarrier ($!l10n.get("Shipment.Form.Label.Carrier") "carrierid" $!entry.CarrierId 100 8)
 			<td width=16>&nbsp;</td>
 		#if ($!entry.Status==50)
-        	#formCellDate ($!l10n.get("SalesOrder.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 7)
+        	#formCellDate ($!l10n.get("SalesOrder.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 12)
         #else
-        	#formCellDisabled ($!l10n.get("SalesOrder.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 7)
+        	#formCellDisabled ($!l10n.get("SalesOrder.Form.Label.Closed") "closeddate" $!entry.ClosedDate 10 100 12)
         #end
       </tr>
 
-    <tr>
-	<td>
-	&nbsp;
-	</td>
-    </tr>
-
       <tr>
-   		#formSelectCustomer ($!l10n.get("Shipment.Form.Label.ShipTo") "recipientid" $!entry.RecipientId 160 8)
+   		#formSelectCustomer ($!l10n.get("Shipment.Form.Label.ShipTo") "recipientid" $!entry.RecipientId 160 6)
+			<td width=16>&nbsp;</td>
+   		#formEmptyCell ()
+			<td width=16>&nbsp;</td>
+   		#formEmptyCell ()
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("SalesOrder.Form.Label.Opportunity"))
+		<td align="left">
+		<select name="opportunityid" tabIndex=7 value=$!entry.OpportunityId width="160" STYLE="width: 160px">
+		#foreach ($opportunity in $opportunities)
+			<option value="$opportunity.OpportunityId">$opportunity.OpportunityName</option>
+		#end        	
+		</select>
+		</td>
 			<td width=16>&nbsp;</td>
    		#formSelectPayterm ($!l10n.get("Payment.Form.Label.PayTerm") "payterm" $!entry.PayTerm 100 10)
 			<td width=16>&nbsp;</td>
-   		#formSelectCurrency ($!l10n.get("Payment.Form.Label.Currency") "currencyid" $!entry.CurrencyId 100 12)
+   		#formSelectCurrency ($!l10n.get("Payment.Form.Label.Currency") "currencyid" $!entry.CurrencyId 100 13)
       </tr>
       <tr>
-   		#formSelectCarrier ($!l10n.get("Shipment.Form.Label.Carrier") "carrierid" $!entry.CarrierId 160 9)
+   		#formSelectProject ($!l10n.get("Common.Form.Label.Project") "projectid" $!entry.ProjectId 160 7)
 			<td width=16>&nbsp;</td>
    		#formSelectPaymethod ($!l10n.get("Payment.Form.Label.PayMethod") "paymethod" $!entry.PayMethod 100 11)
 			<td width=16>&nbsp;</td>
-        #formCellAmountDisabled ($!l10n.get("Payment.Form.Label.Total") "currencyamount" $!entry.CurrencyAmount 10 100 13)
+        #formCellAmountDisabled ($!l10n.get("Payment.Form.Label.Total") "currencyamount" $!entry.CurrencyAmount 10 100 14)
       </tr>
 	</table>
   </td>
@@ -247,14 +362,12 @@ function calcTotal(){
 </tr>
 <tr>
 <td>
-	<table align=center cellpadding=0 cellspacing=0 border=0>
+	<table align=center cellpadding=0 cellspacing=0 border=0 style="border: solid 1px #7694C8;">
 	<tr>
-		<td>
+		<td valign="top">
 		<table id="itemList" name="itemList" align=center cellpadding=0 cellspacing=0 border=0>
-			<tr class="toolbar" align="center">
-				<td>
-				<a href="javascript: void 0" ONCLICK="doAddItem()"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Item"></a>
-				</td>
+			<tr class="toolbar" align="center" style="border: solid 1px #7694C8;">
+				<td><a href="javascript: void 0" ONCLICK="doAddItem()"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Item"></a></td>
 				<td width="100">$!l10n.get("Common.Form.Items.Header.Id")</td>
 				<td width="250">$!l10n.get("Common.Form.Items.Header.Description")</td>
 				<td width="70">$!l10n.get("Common.Form.Items.Header.UnitPrice")</td>
@@ -272,9 +385,136 @@ function calcTotal(){
 &nbsp;
 </td>
 </tr>
+<tr>
+<td>
+#if($mode!="insert")
+
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="204" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:200px; width: 556px">$!entry.Notes</textarea>
+
+			<table id="relDocs" name="relDocs" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="showRelDocsMenu(this)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Common.List.Header.Date")</td>
+					</tr>
+			</table>
+			<DIV ID="relDataFrame" NAME="relDataFrame" STYLE=" width: 556px; height:181px; position: relative; overflow: scroll; overflow-x:hidden; background-color:white;display:none;">
+			</DIV>
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="docsTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="docTab" name="docTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="docsTab3" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Documents")</td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#else
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="204" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:200px; width: 556px">$!entry.Notes</textarea>
+
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr align="left">
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="docsTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td class=frmtabrest align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#end
+</td>
+</tr>
+
+
 
 <input type="hidden" name="sordercode" value="$!entry.SorderCode">
+<input type="hidden" name="subject" value="$!entry.Subject">
 
-#documentFooter()
+	<tr>
+	<td>
+	<table width="556" align=center cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+		&nbsp;
+		</td>
+		</tr>
+		#if ($!entry.Created)
+			<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+			<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+		
+			<tr>
+				<td align=center>
+			    <table align=center width="100%" cellpadding=0 cellspacing=0 border=0>
+			      <tr>  
+			      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+			      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+			      </tr>  
+				</table>
+				</td>
+			</tr>
+			<tr>
+			<td>
+			&nbsp;
+			</td>
+			</tr>
+		#end        	
+	</table>
+	</td>
+	</tr>
 	
 #formFooter("OrderForm.vm" "OrderSQL" "sorderid" $!entry.SorderId $mode)

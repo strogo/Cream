@@ -1,6 +1,27 @@
 #set ( $module = "Main" )
 
-#formCommon()
+
+$page.setHttpEquiv("Pragma", "no-cache")
+$page.setBgColor("$ui.formBg")
+#if($mode=="insert")
+	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent(2009, true);")	
+#else
+	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent(2009, false);")	
+#end
+
+<head>
+
+<script type="text/javascript" src="$content.getAbsoluteURI('/resources/FCKeditor/fckeditor.js')">
+</script>
+
+<script id="formScript" language="JavaScript">
+	var myForm=document.getElementById('formData');
+	
+	function highlight(theField){
+		theField.focus();
+		theField.select();
+	}
+
 
 function CustomerEmail (eml){
 	this.email=eml;
@@ -17,6 +38,7 @@ function formInit(){
 	myForm.statustemp.value=$entry.Status;
 	myForm.priority.value=$entry.Priority;
 	myForm.customerid.value=$entry.CustomerId;
+	myForm.contactid.value=$entry.ContactId;
 	myForm.productid.value=$entry.ProductId;
 	myForm.projectid.value=$entry.ProjectId;
 
@@ -37,7 +59,8 @@ function formValidate(){
 	 }
 
 #if($mode=="insert" || $!entry.Status==10)
-	var newHtml= window.frames['utilEditor'].document.getElementById('FCKeditor1___Frame').contentWindow.document.getElementById('eEditorArea').contentWindow.document.body.innerHTML;
+	var oEditor = FCKeditorAPI.GetInstance('FCKeditor1') ;
+	var newHtml= oEditor.GetXHTML(true);
 	myForm.body.value=newHtml;
 #end
 
@@ -51,6 +74,7 @@ function valueChanged(formField){
 		if (myForm.receiverto.value==""){
 			myForm.receiverto.value=custEmail[formField.value].email;
 		}
+	loadUtil('$link.setPage("CustomerContacts.vm")', formField.value);
 	}
 }
 
@@ -60,8 +84,6 @@ function valueChanged(formField){
 	<td>
     <table align=center cellpadding=0 cellspacing=0 border=0>
 <tr>
-<td>
-</td>
 <td>
     <table align=center cellpadding=0 cellspacing=0 border=0>
       <tr>  
@@ -97,15 +119,26 @@ function valueChanged(formField){
 	&nbsp;
 	</td>
  </tr>
+ <tr class="formline">
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+ <tr>
+	<td>
 
 
+	<table align="center" cellpadding=0 width="100%" cellspacing=0 border=0>
+		<tr>
+			<td>
+		<table align="center" cellpadding=0 cellspacing=0 border=0>
+
  		<tr>
-   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 520 7)
- 		</tr>
- 		<tr>
+	   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 7)
+				<td width=16>&nbsp;</td>
 			#formLabel($!l10n.get("Common.Form.Label.Product"))
 			<td align="left">
-			<select name="productid" tabIndex="8" value="$!entry.ProductId" width="520" STYLE="width: 520px">
+			<select name="productid" tabIndex="9" value="$!entry.ProductId" width="160" STYLE="width: 160px">
 			#foreach ($product in $products)
 				<option value="$product.ProductId">$!product.ProductDisplay</option>
 			#end        	
@@ -113,20 +146,42 @@ function valueChanged(formField){
 			</td>
  		</tr>
  		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Contact"))
+			<td align="left">
+			<select name="contactid" tabIndex="8" value="$!entry.ContactId" width="160" STYLE="width: 160px">
+			#foreach ($contact in $contacts)
+				<option value="$contact.ContactId">$!contact.ContactDisplay</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
 			#formLabel($!l10n.get("Common.Form.Label.Project"))
 			<td align="left">
-			<select name="projectid" tabIndex="9" value="$!entry.ProjectId" width="520" STYLE="width: 520px">
+			<select name="projectid" tabIndex="10" value="$!entry.ProjectId" width="160" STYLE="width: 160px">
 			#foreach ($project in $projects)
 				<option value="$project.ProjectId">$!project.ProjectName</option>
 			#end        	
 			</select>
 			</td>
  		</tr>
-		 <tr>
-			<td>
-			&nbsp;
-			</td>
-		 </tr>
+
+	</table>
+	</td>
+ </tr>
+	</table>
+	</td>
+ </tr>
+ <tr>
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+ <tr class="formline">
+	<td>
+	&nbsp;
+	</td>
+ </tr>
+		 
 <input type="hidden" name="outboxeventcode" value="$!entry.OutboxEventCode">
 <input type="hidden" name="eventtype" value="$!entry.EventType">
 <input type="hidden" name="emailformat" value="20">
@@ -134,6 +189,11 @@ function valueChanged(formField){
 <input type="hidden" name="status" value="$!entry.Status">
 <input type="hidden" name="editorlang" value="$!l10n.getLocale().getLanguage()">
 
+<tr>
+	<td>
+
+
+	<table align="center" cellpadding=0 width="100%" cellspacing=0 border=0>
 
   		#if($mode=="insert" || $!entry.Status==10)
 	 		<tr>
@@ -149,8 +209,13 @@ function valueChanged(formField){
 			 </tr>
 			<tr>
 				<td align=left colspan=2>
-				<IFRAME id="utilEditor" name="utilEditor" valign="top" src="$content.getAbsoluteURI('/resources/FCKeditor/body.html')" style="width: 580px; height:272px" frameborder="0" scrolling="no">
-				</IFRAME>
+				  <textarea rows=16 id="FCKeditor1" name="FCKeditor1" width="100%" style="width: 100%">$!entry.body</textarea>
+				  <script type="text/javascript">
+				    oFCKeditor = new FCKeditor( 'FCKeditor1' ) ;
+				    oFCKeditor.BasePath = "$content.getAbsoluteURI('/resources/FCKeditor/')" ;
+				    oFCKeditor.ToolbarSet = 'Default';
+				    oFCKeditor.ReplaceTextarea();
+				  </script>
 				</td>
 			</tr>
 		#else
@@ -175,7 +240,7 @@ function valueChanged(formField){
 		#end
 			<tr>
 				<td align=left colspan=2>
-				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none; width: 100%">$!entry.Body</textarea>
+				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none; width: 100%; border-style:inset; border-width:1px;">$!entry.Body</textarea>
 				</td>
 			</tr>
 
@@ -192,6 +257,9 @@ function valueChanged(formField){
 		</tr>
 
 #end
+	</table>
+	</td>
+ </tr>
 
 #if ($!entry.IssuedDate)
 	<input type="hidden" name="issueddate" value="$!dtf.format($!entry.IssuedDate)">

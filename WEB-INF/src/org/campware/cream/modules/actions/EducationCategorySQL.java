@@ -52,7 +52,7 @@ import org.campware.cream.om.EducationCategoryPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class EducationCategorySQL extends CreamAction
+public class EducationCategorySQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -76,6 +76,7 @@ public class EducationCategorySQL extends CreamAction
         EducationCategory entry = new EducationCategory();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

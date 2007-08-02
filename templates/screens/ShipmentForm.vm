@@ -1,5 +1,5 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(2005)
 
 var rowId=1;
 var tabInd=26;
@@ -24,7 +24,21 @@ function formInit(){
 	myForm.carrierid.value=$!entry.CarrierId;
 
 	#if ($!mode=="insert")
-		doAddItem();
+		#foreach ($entryitem in $entryitems)
+			#if ($entryitem.Product.ProductType == 10)
+				myRow= doAddItem();
+				suf= '_' + myRow;
+				myForm['productid' + suf].value="$!entryitem.ProductId";
+				myForm['description' + suf].value="$!entryitem.Description";
+				myForm['uomcode' + suf].value="$!entryitem.Product.Uom.UomCode";
+				myForm['quantity' + suf].value="$!entryitem.Quantity";
+			#end
+		#end
+		var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+		if (table.rows.length<2){
+			doAddItem();
+		}
+		
 	#else
 		#foreach ($entryitem in $entryitems)
 			myRow= doAddItem();
@@ -49,11 +63,16 @@ function formValidate(){
 	if (parent.isSelected(myForm.customerid)) return false;
 	if (parent.isSelected(myForm.recipientid)) return false;
 
+	var setsub=true;
 	var len = myForm.elements.length;
 	for (var i = 0; i < len; i++) {
 	    var e = myForm.elements[i];
 	    if (e.name.substring(0, 11) == "description") {
 			if (parent.isEmpty(e)) return false;
+			if (setsub){
+				myForm.subject.value=e.value;
+				setsub=false;
+			}
 	    }
 	    else if (e.name.substring(0, 8) == "quantity") {
 			if (parent.isNotQuantity(e)) return false;
@@ -237,6 +256,7 @@ function doClearItems(){
 </td>
 </tr>
 <input type="hidden" name="shipmentcode" value="$!entry.ShipmentCode">
+<input type="hidden" name="subject" value="$!entry.Subject">
 
 #documentFooter()
 

@@ -1,0 +1,15 @@
+#set ( $module = "Options" )
+#listCommon()
+#listHeader(3020 "SalutationList.vm" "SalutationSQL" 3)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+	        <tr class=rowopen valign="center">
+				#addToggle($entry.SalutationId)
+				#addListPic($ui.space)
+				<td width="100%"><span class="llink" onClick="doEdit('$entry.SalutationId')">$entry.SalutationName</span></td>
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

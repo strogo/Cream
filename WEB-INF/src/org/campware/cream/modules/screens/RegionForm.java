@@ -51,7 +51,7 @@ import org.campware.cream.om.RegionPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class RegionForm extends CreamForm
+public class RegionForm extends CreamLookupForm
 {
     protected void initScreen()
     {

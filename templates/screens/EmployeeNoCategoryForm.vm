@@ -1,0 +1,20 @@
+#set ( $module = "Options" )
+#formCommon(3017)
+
+function formInit(){
+	highlight(myForm.employeenocatname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.employeenocatname)) return false;
+	
+	return true;
+}
+
+#formHeader("EmployeeNoCategoryForm.vm" "EmployeeNoCategorySQL" "employeenocatid" $!entry.EmployeeNoCatId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "employeenocatname" $!entry.EmployeeNoCatName 50 200 1)
+      </tr>
+
+#formFooter("EmployeeNoCategoryForm.vm" "EmployeeNoCategorySQL" "employeenocatid" $!entry.EmployeeNoCatId $mode)

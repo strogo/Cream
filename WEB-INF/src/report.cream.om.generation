@@ -1,56 +1,53 @@
 
-targetdatabase = postgresql
-dbprops.idMethod = sequence
+targetdatabase = mysql
+dbprops.idMethod = $dbprops.get("idMethod")
 # Taken from java.sql.Types in the IBM 1.3 JDK
-# JDBC to PostgreSQL mappings.
+# JDBC to MySQL mappings.
 #
-# See http://www.postgresql.org/idocs/index.php?datatype.html for more
-# information on PostgreSQL data types.
+# A good MySQL resource for determining these mappings is at
+# http://www.mysql.com/doc/C/o/Column_types.html
 
-BIT = boolean
-TINYINT = int2
-SMALLINT = int2
-INTEGER = integer
-BIGINT = int8
-FLOAT = float
-REAL = float
-BOOLEANCHAR = char
-BOOLEANINT = int2
-
-DOUBLE = double precision
-# numeric(precision, scale) / decimal(precision, scale)
-NUMERIC = numeric
-DECIMAL = decimal
-CHAR = char
-VARCHAR = varchar
-LONGVARCHAR = text
-DATE = date
-TIME = time
-TIMESTAMP = timestamp
-BINARY = bytea
-VARBINARY = bytea
-LONGVARBINARY = bytea
-NULL =
+BIT = BIT
+TINYINT = TINYINT
+SMALLINT = SMALLINT
+INTEGER = INTEGER
+BIGINT = BIGINT
+FLOAT = FLOAT
+REAL = REAL
+DOUBLE = DOUBLE
+NUMERIC = DECIMAL
+DECIMAL = DECIMAL
+CHAR = CHAR
+VARCHAR = VARCHAR
+LONGVARCHAR = MEDIUMTEXT
+DATE = DATETIME
+TIME = TIME
+TIMESTAMP = TIMESTAMP
+BINARY = BLOB
+VARBINARY = MEDIUMBLOB
+LONGVARBINARY = LONGBLOB
+NULL = NULL
 OTHER =
 JAVA_OBJECT =
 DISTINCT =
 STRUCT =
 ARRAY =
-BLOB =
-CLOB = text
+BLOB = LONGBLOB
+CLOB = LONGTEXT
 REF =
 
-AUTOINCREMENT = serial
+AUTOINCREMENT = AUTO_INCREMENT
 NOTNULL = NOT NULL
-
-primaryKeyInsideTableDirective = true
-indexInsideTableDirective = false
-
-removeNotNullWithAutoIncrement = true
-
+ 
+removeNotNullWithAutoIncrement = false
 suppressDefaults = false
-idMethod=sequence
+maxColumnNameLength = 64
 
+
+# See mysql docs for valid table type names.
+# For example, if you wanted to use the transactional type InnoDB,
+# then specify "tableType = InnoDB"
+#tableType = MyISAM
 
   
         
@@ -59,122 +56,13 @@ idMethod=sequence
     org.campware.cream.om
     org.campware.cream.om.map
 
-        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+        Failed to create dir or dir already exists: /var/work/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
 
-        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/map/
+        Failed to create dir or dir already exists: /var/work/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/map/
 
-        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
-
-                  TURBINE_USER
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                TURBINE_PERMISSION
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                TURBINE_ROLE
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                TURBINE_GROUP
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                TURBINE_ROLE_PERMISSION
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                TURBINE_USER_GROUP_ROLE
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                TURBINE_SCHEDULED_JOB
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                      
-        
-    
-    org.campware.cream.om
-    org.campware.cream.om
-    org.campware.cream.om.map
-
-        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
-
-        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/map/
-
-        Failed to create dir or dir already exists: /home/nenad/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+        Failed to create dir or dir already exists: /var/work/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
 
                   CREAM_USER
-        
-                
-
-                  
-        
-              
-                  
-        
-                
-                
-        
-                                NOTIFICATION
         
                 
 
@@ -222,6 +110,30 @@ idMethod=sequence
                 
                 
         
+                                CONTACT_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                INDUSTRY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
                                 COUNTRY
         
                 
@@ -247,6 +159,18 @@ idMethod=sequence
                 
         
                                 LANGUAGE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                NOTIFICATION
         
                 
 
@@ -330,7 +254,103 @@ idMethod=sequence
                 
                 
         
+                                AGE_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                REVENUE_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                EMPLOYEE_NO_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                LEAD_SOURCE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                JOB_POSITION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SALUTATION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                OPPORTUNITY_CATEGORY
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
                                 CUSTOMER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CONTACT
         
                 
 
@@ -355,6 +375,18 @@ idMethod=sequence
                 
         
                                 PROJECT
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                OPPORTUNITY
         
                 
 
@@ -498,6 +530,18 @@ idMethod=sequence
                 
                 
         
+                                TASK
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
                                 SORDER_ITEM
         
                 
@@ -535,6 +579,187 @@ idMethod=sequence
                 
         
                                 SERVICE_ITEM
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                ONLINE_SUBSCRIPTION_IP
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CMS_SECTION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PRODUCT_CMS_SECTION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CUSTOMER_DOC
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                CONTACT_DOC
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                PROJECT_DOC
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                SORDER_DOC
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                      
+        
+    
+    org.campware.cream.om
+    org.campware.cream.om
+    org.campware.cream.om.map
+
+        Failed to create dir or dir already exists: /var/work/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+
+        Failed to create dir or dir already exists: /var/work/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/map/
+
+        Failed to create dir or dir already exists: /var/work/Projects/cream/tomcat/WEB-INF/src/org/campware/cream/om/
+
+                  TURBINE_USER
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_PERMISSION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_ROLE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_GROUP
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_ROLE_PERMISSION
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_USER_GROUP_ROLE
+        
+                
+
+                  
+        
+              
+                  
+        
+                
+                
+        
+                                TURBINE_SCHEDULED_JOB
         
                 
 

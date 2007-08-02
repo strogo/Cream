@@ -1,0 +1,27 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	myForm=parent.document.getElementById('formData');
+
+	myForm.opportunityid.length=0;
+
+	#foreach ($opportunity in $opportunities)
+		if (document.all) {
+			ordo = parent.document.createElement("OPTION");
+			ordo.text = '$!opportunity.OpportunityName';
+			ordo.value = '$!opportunity.OpportunityId';
+			myForm.sorderid.add(ordo);
+		}else{
+			ordo = new Option();
+			ordo.text = '$!opportunity.OpportunityName';
+			ordo.value = '$!opportunity.OpportunityId';
+			myForm.opportunityid.options[myForm.opportunityid.length] = ordo;
+		}
+	#end
+	myForm.opportunityid.focus();
+
+}
+
+#utilHeader()
+#utilFooter()

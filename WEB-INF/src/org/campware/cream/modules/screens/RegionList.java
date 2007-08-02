@@ -48,7 +48,7 @@ import org.campware.cream.om.RegionPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class RegionList extends CreamList
+public class RegionList extends CreamLookupList
 {
 
     protected void initScreen()

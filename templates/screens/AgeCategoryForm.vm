@@ -1,0 +1,20 @@
+#set ( $module = "Options" )
+#formCommon(3015)
+
+function formInit(){
+	highlight(myForm.agecatname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.agecatname)) return false;
+	
+	return true;
+}
+
+#formHeader("AgeCategoryForm.vm" "AgeCategorySQL" "agecatid" $!entry.AgeCatId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "agecatname" $!entry.AgeCatName 50 200 1)
+      </tr>
+
+#formFooter("AgeCategoryForm.vm" "AgeCategorySQL" "agecatid" $!entry.AgeCatId $mode)

@@ -1,0 +1,20 @@
+#set ( $module = "Options" )
+#formCommon(3019)
+
+function formInit(){
+	highlight(myForm.jobpositionname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.jobpositionname)) return false;
+	
+	return true;
+}
+
+#formHeader("JobPositionForm.vm" "JobPositionSQL" "jobpositionid" $!entry.JobPositionId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "jobpositionname" $!entry.JobPositionName 50 200 1)
+      </tr>
+
+#formFooter("JobPositionForm.vm" "JobPositionSQL" "jobpositionid" $!entry.JobPositionId $mode)

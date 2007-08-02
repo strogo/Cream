@@ -1,0 +1,15 @@
+#set ( $module = "Options" )
+#listCommon()
+#listHeader(3016 "RevenueCategoryList.vm" "RevenueCategorySQL" 3)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+	        <tr class=rowopen valign="center">
+				#addToggle($entry.RevenueCatId)
+				#addListPic($ui.space)
+				<td width="100%"><span class="llink" onClick="doEdit('$entry.RevenueCatId')">$entry.RevenueCatName</span></td>
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

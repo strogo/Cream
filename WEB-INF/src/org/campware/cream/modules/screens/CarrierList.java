@@ -48,7 +48,7 @@ import org.campware.cream.om.CarrierPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CarrierList extends CreamList
+public class CarrierList extends CreamLookupList
 {
 
     protected void initScreen()

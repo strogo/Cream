@@ -48,7 +48,7 @@ import org.campware.cream.om.HouseholdCategoryPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class HouseholdCategoryList extends CreamList
+public class HouseholdCategoryList extends CreamLookupList
 {
 
     protected void initScreen()

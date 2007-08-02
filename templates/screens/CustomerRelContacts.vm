@@ -1,0 +1,25 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	parent.document.getElementById('relDataFrame').innerHTML=document.body.innerHTML;
+
+}
+
+#utilHeader()
+
+	<table align="left" width="100%" cellpadding=2 cellspacing=0 border=0 style="background-color:white">
+	
+	#foreach ($entryitem in $entryitems)
+
+		#rowStatusClass ($!entryitem.Status)
+		#addListPic($ui.contact)
+		<td width="90" align="left"><span class="llink" onClick="editRelated(1004, $!entryitem.ContactId)">$!entryitem.ContactCode&nbsp;</span></td>
+		<td width="300" align="left">$!entryitem.ContactDisplay&nbsp;</td>
+		<td width="130" align="left">$!entryitem.PhoneWork&nbsp;</td>
+		</tr>
+	#end
+
+	</table>
+
+#utilFooter()

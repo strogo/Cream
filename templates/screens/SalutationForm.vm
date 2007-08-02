@@ -1,0 +1,20 @@
+#set ( $module = "Options" )
+#formCommon(3020)
+
+function formInit(){
+	highlight(myForm.salutationname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.salutationname)) return false;
+	
+	return true;
+}
+
+#formHeader("SalutationForm.vm" "SalutationSQL" "salutationid" $!entry.SalutationId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "salutationname" $!entry.SalutationName 15 200 1)
+      </tr>
+
+#formFooter("SalutationForm.vm" "SalutationSQL" "salutationid" $!entry.SalutationId $mode)

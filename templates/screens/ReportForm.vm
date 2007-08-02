@@ -1,5 +1,5 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(5001)
 
 function formInit(){
 	myForm.reptitle.value=myForm.reportid.options[myForm.reportid.selectedIndex].text;
@@ -25,12 +25,56 @@ function valueChanged(formField){
 			myForm.uomid.value=999;
 			myForm.vendorid.value=999;
 
+			myForm.customerid.disabled=false;
+			myForm.customertype.disabled=false;
+			myForm.customercatid.disabled=false;
+			myForm.countryid.disabled=false;
+			myForm.regionid.disabled=false;
+			myForm.languageid.disabled=false;
+			myForm.industryid.disabled=false;
+			myForm.leadsourceid.disabled=false;
+
 			myForm.productid.disabled=true;
 			myForm.producttype.disabled=true;
 			myForm.productcatid.disabled=true;
 			myForm.uomid.disabled=true;
 			myForm.vendorid.disabled=true;
+
+		}else if (formField.value==7){
+
+			myForm.customerid.value=999;
+			myForm.customertype.value=1;
+			myForm.customercatid.value=999;
+			myForm.countryid.value=999;
+			myForm.regionid.value=999;
+			myForm.languageid.value=999;
+			myForm.industryid.value=999;
+			myForm.leadsourceid.value=999;
+
+			myForm.customerid.disabled=true;
+			myForm.customertype.disabled=true;
+			myForm.customercatid.disabled=true;
+			myForm.countryid.disabled=true;
+			myForm.regionid.disabled=true;
+			myForm.languageid.disabled=true;
+			myForm.industryid.disabled=true;
+			myForm.leadsourceid.disabled=true;
+
+			myForm.productid.disabled=false;
+			myForm.producttype.disabled=false;
+			myForm.productcatid.disabled=false;
+			myForm.uomid.disabled=false;
+			myForm.vendorid.disabled=false;
 		}else{
+			myForm.customerid.disabled=false;
+			myForm.customertype.disabled=false;
+			myForm.customercatid.disabled=false;
+			myForm.countryid.disabled=false;
+			myForm.regionid.disabled=false;
+			myForm.languageid.disabled=false;
+			myForm.industryid.disabled=false;
+			myForm.leadsourceid.disabled=false;
+
 			myForm.productid.disabled=false;
 			myForm.producttype.disabled=false;
 			myForm.productcatid.disabled=false;
@@ -54,6 +98,8 @@ function showReport(){
 		myUrl="$link.setPage("Report5.vm").setAction("ReportSQL")";
 	}else if (myForm.reportid.value==6){
 		myUrl="$link.setPage("Report6.vm").setAction("ReportSQL")";
+	}else if (myForm.reportid.value==7){
+		myUrl="$link.setPage("Report7.vm").setAction("ReportSQL")";
 	}
 		
 	myForm.action= myUrl;
@@ -69,7 +115,7 @@ function showReport(){
     <tr>&nbsp;</tr>
  <tr>
 	<td>
-		<table align="center" cellpadding=10 width="100%" cellspacing=0 border=0 style="border: solid 2px #B6C7E5;">
+		<table align="center" cellpadding=10 width="100%" cellspacing=0 border=0 style="border: solid 1px #7694C8;">
 		<tr>
 			<td>
 		<table align="center" cellpadding=0 width="100%" cellspacing=0 border=0>
@@ -81,6 +127,7 @@ function showReport(){
 			<select name="reportid"  tabIndex="1" value="1" onchange="valueChanged(this);" width="340" STYLE="width: 340px">
 				<option value="1">$!l10n.get("Report.Form.Report.Name1")</option>
 				<option value="2">$!l10n.get("Report.Form.Report.Name2")</option>
+				<option value="7">$!l10n.get("Report.Form.Report.Name7")</option>
 				<option value="3">$!l10n.get("Report.Form.Report.Name3")</option>
 				<option value="4">$!l10n.get("Report.Form.Report.Name4")</option>
 				<option value="5">$!l10n.get("Report.Form.Report.Name5")</option>
@@ -132,7 +179,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Customer"))
 			<td align="left">
 			<select name="customerid" tabIndex="10" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($customer in $customers)
 				<option value="$customer.CustomerId">$customer.CustomerDisplay</option>
 			#end        	
@@ -142,7 +189,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Project"))
 			<td align="left">
 			<select name="projectid" tabIndex="20" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($project in $projects)
 				<option value="$project.ProjectId">$project.ProjectName</option>
 			#end        	
@@ -153,7 +200,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Type"))
 			<td align="left">
 			<select name="customertype" tabIndex="11" value="1" width="140" STYLE="width: 140px">
-				<option value="1">(*)</option>
+				<option value="1">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="10">$!l10n.get("Customer.Form.Type.Person")</option>
 				<option value="20">$!l10n.get("Customer.Form.Type.Institution")</option>
 			</select>
@@ -162,7 +209,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Category"))
 			<td align="left">
 			<select name="projectcatid" tabIndex="21" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($projectcat in $projectcats)
 				<option value="$projectcat.ProjectCatId">$projectcat.ProjectCatName</option>
 			#end        	
@@ -173,7 +220,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Category"))
 			<td align="left">
 			<select name="customercatid" tabIndex="12" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($customercat in $customercats)
 				<option value="$customercat.CustomerCatId">$customercat.CustomerCatName</option>
 			#end        	
@@ -183,12 +230,12 @@ function showReport(){
 			#formEmptyCell()
 		</tr>
 		<tr>
-			#formLabel($!l10n.get("Customer.Form.Label.Language"))
+			#formLabel($!l10n.get("Customer.Form.Label.Industry"))
 			<td align="left">
-			<select name="languageid" tabIndex="13" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
-			#foreach ($language in $languages)
-				<option value="$language.LanguageId">$language.LanguageName</option>
+			<select name="industryid" tabIndex="13" value="999" width="140" STYLE="width: 140px">
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+			#foreach ($industry in $industries)
+				<option value="$industry.IndustryId">$industry.IndustryName</option>
 			#end        	
 			</select>
 			</td>
@@ -196,7 +243,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Product"))
 			<td align="left">
 			<select name="productid" tabIndex="30" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($product in $products)
 				<option value="$product.ProductId">$product.ProductDisplay</option>
 			#end        	
@@ -204,12 +251,12 @@ function showReport(){
 			</td>
 		</tr>
 		<tr>
-			#formLabel($!l10n.get("Customer.Form.Label.Country"))
+			#formLabel($!l10n.get("Customer.Form.Label.Language"))
 			<td align="left">
-			<select name="countryid" tabIndex="14" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
-			#foreach ($country in $countries)
-				<option value="$country.CountryId">$country.CountryName</option>
+			<select name="languageid" tabIndex="13" value="999" width="140" STYLE="width: 140px">
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+			#foreach ($language in $languages)
+				<option value="$language.LanguageId">$language.LanguageName</option>
 			#end        	
 			</select>
 			</td>
@@ -217,7 +264,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Type"))
 			<td align="left">
 			<select name="producttype" tabIndex="31" value="1" width="140" STYLE="width: 140px">
-				<option value="1">(*)</option>
+				<option value="1">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				<option value="10">$!l10n.get("Product.Form.Type.StockItem")</option>
 				<option value="20">$!l10n.get("Product.Form.Type.Service")</option>
 				<option value="30">$!l10n.get("Product.Form.Type.OnlineSubscription")</option>
@@ -226,12 +273,12 @@ function showReport(){
 			</td>
 		</tr>
 		<tr>
-			#formLabel($!l10n.get("Customer.Form.Label.Region"))
+			#formLabel($!l10n.get("Customer.Form.Label.LeadSource"))
 			<td align="left">
-			<select name="regionid" tabIndex="15" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
-			#foreach ($region in $regions)
-				<option value="$region.RegionId">$region.RegionName</option>
+			<select name="leadsourceid" tabIndex="13" value="999" width="140" STYLE="width: 140px">
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+			#foreach ($leadsource in $leadsources)
+				<option value="$leadsource.LeadSourceId">$leadsource.LeadSourceName</option>
 			#end        	
 			</select>
 			</td>
@@ -239,7 +286,7 @@ function showReport(){
 			#formLabel($!l10n.get("Common.Form.Label.Category"))
 			<td align="left">
 			<select name="productcatid" tabIndex="32" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($productcat in $productcats)
 				<option value="$productcat.ProductCatId">$productcat.ProductCatName</option>
 			#end        	
@@ -247,12 +294,12 @@ function showReport(){
 			</td>
 		</tr>
 		<tr>
-			#formLabel($!l10n.get("Customer.Form.Label.HouseholdIncome"))
+			#formLabel($!l10n.get("Customer.Form.Label.Country"))
 			<td align="left">
-			<select name="householdcatid" tabIndex="16" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
-			#foreach ($householdcat in $householdcats)
-				<option value="$householdcat.HouseholdCatId">$householdcat.HouseholdCatName</option>
+			<select name="countryid" tabIndex="14" value="999" width="140" STYLE="width: 140px">
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+			#foreach ($country in $countries)
+				<option value="$country.CountryId">$country.CountryName</option>
 			#end        	
 			</select>
 			</td>
@@ -260,7 +307,7 @@ function showReport(){
 			#formLabel($!l10n.get("Product.Form.Label.UOM"))
 			<td align="left">
 			<select name="uomid" tabIndex="33" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 				#foreach ($uom in $uoms)
 					#if($uom.UomCode=="DAY")
 						<option value="$uom.UomId">$!l10n.get("Product.Form.Uom.Day")</option>
@@ -282,12 +329,12 @@ function showReport(){
 			</td>
 		</tr>
 		<tr>
-			#formLabel($!l10n.get("Customer.Form.Label.Education"))
+			#formLabel($!l10n.get("Customer.Form.Label.Region"))
 			<td align="left">
-			<select name="educationcatid" tabIndex="17" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
-			#foreach ($educationcat in $educationcats)
-				<option value="$educationcat.EducationCatId">$educationcat.EducationCatName</option>
+			<select name="regionid" tabIndex="15" value="999" width="140" STYLE="width: 140px">
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
+			#foreach ($region in $regions)
+				<option value="$region.RegionId">$region.RegionName</option>
 			#end        	
 			</select>
 			</td>
@@ -295,7 +342,7 @@ function showReport(){
 			#formLabel($!l10n.get("Product.Form.Label.Vendor"))
 			<td align="left">
 			<select name="vendorid" tabIndex="34" value="999" width="140" STYLE="width: 140px">
-				<option value="999">(*)</option>
+				<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 			#foreach ($vendor in $vendors)
 				<option value="$vendor.VendorId">$vendor.VendorName</option>
 			#end        	

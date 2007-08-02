@@ -48,7 +48,7 @@ import org.campware.cream.om.ProductCategoryPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class ProductCategoryList extends CreamList
+public class ProductCategoryList extends CreamLookupList
 {
 
     protected void initScreen()

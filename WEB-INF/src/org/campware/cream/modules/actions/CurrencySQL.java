@@ -52,7 +52,7 @@ import org.campware.cream.om.CurrencyPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class CurrencySQL extends CreamAction
+public class CurrencySQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -75,6 +75,7 @@ public class CurrencySQL extends CreamAction
         Currency entry = new Currency();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

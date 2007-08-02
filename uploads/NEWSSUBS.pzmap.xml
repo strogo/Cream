@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE PZMAP [
+	<!ELEMENT PZMAP (COLUMN*)>
+	<!ELEMENT COLUMN EMPTY>
+	<!ATTLIST COLUMN name CDATA  #REQUIRED
+			  length CDATA #IMPLIED	>
+
+]>
+<PZMAP>
+
+	<COLUMN name="Email" />
+	<COLUMN name="ProductId" />
+	<COLUMN name="CampaignId" />
+	
+</PZMAP> 

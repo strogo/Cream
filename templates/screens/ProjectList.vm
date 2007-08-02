@@ -1,6 +1,6 @@
 #set ( $module = "Main" )
 #listCommon()
-#listHeader(1002 "ProjectList.vm" "ProjectSQL" 8)
+#listHeader(1002 "ProjectList.vm" "ProjectSQL" 7)
 
 	#if ($entries)
 
@@ -11,9 +11,8 @@
 				<td width="15%"><span class="llink" onClick="doEdit('$entry.ProjectId')">$!entry.ProjectCode</span></td>
 				#listCellPrc (30 $!entry.ProjectName)
 				#listCellPrc (30 $!entry.ProjectCategory.ProjectCatName)
-				#listCellPrcDate (15 $!entry.StartDate)
 				#listCellPrcAmount (10 $!entry.Expenses)
-				#addListPic($ui.space)
+				#listCellPrcDate (15 $!entry.StartDate)
 			</tr>        
 	    #end
 	#end

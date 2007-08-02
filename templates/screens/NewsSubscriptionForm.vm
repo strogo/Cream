@@ -1,5 +1,5 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(2012)
 
 function formInit(){
 	myForm.status.value=$!entry.Status;
@@ -58,7 +58,7 @@ function valueChanged(formField){
 	</td>
       </tr>
       <tr>
-        #formCell ($!l10n.get("NewsSubscription.Form.Label.Email") "email" $!entry.Email 70 160 5)
+        #formCell ($!l10n.get("NewsSubscription.Form.Label.Email") "email" $!entry.Email 254 160 5)
 			<td width=16>&nbsp;</td>
    		#formEmptyCell ()
 			<td width=16>&nbsp;</td>

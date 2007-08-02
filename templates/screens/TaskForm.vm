@@ -1,0 +1,282 @@
+#set ( $module = "Main" )
+#formCommon(1005)
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+
+	myForm.priority.value=$!entry.Priority;
+	myForm.customerid.value=$!entry.CustomerId;
+	myForm.contactid.value=$!entry.ContactId;
+	myForm.productid.value=$!entry.ProductId;
+	myForm.projectid.value=$!entry.ProjectId;
+	myForm.progress.value=$!entry.Progress;
+	myForm.access.value=$!entry.Access;
+	#if ($!mode=="insert")
+		myForm.assignedto.value="$!currentuser";
+		myForm.startdate.disabled=true;
+		myForm.duedate.disabled=true;
+	#else
+		myForm.assignedto.value="$!entry.AssignedTo";
+		var tempStart="$!entry.StartDate"
+		var tempDue="$!entry.DueDate"
+		if (tempStart==""){
+			myForm.startdate.disabled=true;
+		}else{
+			myForm.startdate.value="$!df.format($!entry.StartDate)";
+			myForm.usestart.checked=1;
+		}
+		if (tempDue==""){
+			myForm.duedate.disabled=true;
+		}else{
+			myForm.duedate.value="$!df.format($!entry.DueDate)";
+			myForm.usedue.checked=1;
+		}
+	#end
+
+	myForm.priority.focus();
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.subject)) return false;
+	if (myForm.startdate.value!=""){
+		if (parent.isNotDate(myForm.startdate)) return false;
+	}
+	if (myForm.duedate.value!=""){
+		if (parent.isNotDate(myForm.duedate)) return false;
+	}
+	
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='customerid'){
+		loadUtil('$link.setPage("CustomerContacts.vm")', formField.value);
+	}
+	else if (formField.name=='status'){
+		if (formField.value==50){
+			myForm.progress.value=100;
+		}
+	}
+}
+
+function toggleCheckBox(formField){
+	if (formField.name=='usestart'){
+		if (formField.checked==1){
+			myForm.startdate.value="$!df.format($!today)";
+			myForm.startdate.disabled=false;
+		}else{
+			myForm.startdate.value="";
+			myForm.startdate.disabled=true;
+		}
+	}
+	else if (formField.name=='usedue'){
+		if (formField.checked==1){
+			myForm.duedate.value="$!df.format($!today)";
+			myForm.duedate.disabled=false;
+		}else{
+			myForm.duedate.value="";
+			myForm.duedate.disabled=true;
+		}
+	}
+}
+
+#formHeader("TaskForm.vm" "TaskSQL" "taskid" $!entry.TaskId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCellDisabled ($!l10n.get("Common.Form.Label.Code") "taskcode" $!entry.TaskCode 20 100 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="status" tabIndex="2" value="$!entry.Status" onchange="valueChanged(this);" width="100" STYLE="width: 100px">
+			<option value="30">$!l10n.get("Task.Form.Status.Active")</option>
+			<option value="50">$!l10n.get("Task.Form.Status.Completed")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Common.Form.Label.Priority"))
+		<td align="left">
+		<select name="priority" tabIndex="10" value="$!entry.Priority" STYLE="width: 130px">
+			<option value="10">$!l10n.get("Common.Form.Priority.Low")</option>
+			<option value="30">$!l10n.get("Common.Form.Priority.Normal")</option>
+			<option value="50">$!l10n.get("Common.Form.Priority.High")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 14)
+      </tr>
+      <tr>
+	        #formLabel ($!l10n.get("Task.Form.Label.StartDate"))
+	        <td align="left">
+		        <table align="left" width="100%" cellpadding=0 cellspacing=0 border=0>
+		        <tr>
+		        <td><input type="checkbox" name="usestart" onclick="toggleCheckBox(this)" style="margin:0;"></td>
+			<td width="100%" align="right"><input type="text" maxLength="10" tabIndex="11" name="startdate" STYLE="width: 110px;"></td>
+			</tr>
+			</table>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Contact"))
+		<td align="left">
+			<select name="contactid" tabIndex="15" value="$!entry.ContactId" width="160" STYLE="width: 160px">
+			#foreach ($contact in $contacts)
+				<option value="$contact.ContactId">$!contact.ContactDisplay</option>
+			#end        	
+			</select>
+		</td>
+      </tr>
+      <tr>
+	        #formLabel ($!l10n.get("Task.Form.Label.DueDate"))
+	        <td align="left">
+		        <table align="left" width="100%" cellpadding=0 cellspacing=0 border=0>
+		        <tr>
+		        <td align="left"><input type="checkbox" name="usedue" onclick="toggleCheckBox(this)" style="margin:0;"></td>
+			<td width="100%" align="right"><input type="text" maxLength="10" tabIndex="11" name="duedate" STYLE="width: 110px;"></td>
+			</tr>
+			</table>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Product"))
+		<td align="left">
+			<select name="productid" tabIndex="16" value="$!entry.ProductId" width="160" STYLE="width: 160px">
+			#foreach ($product in $products)
+				<option value="$product.ProductId">$!product.ProductDisplay</option>
+			#end        	
+			</select>
+		</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Task.Form.Label.Progress"))
+		<td align="left">
+		<select name="progress" tabIndex="13" value="$!entry.Progress" STYLE="width: 80px">
+			<option value="0">0%</option>
+			<option value="5">5%</option>
+			<option value="10">10%</option>
+			<option value="15">15%</option>
+			<option value="20">20%</option>
+			<option value="25">25%</option>
+			<option value="30">30%</option>
+			<option value="35">35%</option>
+			<option value="40">40%</option>
+			<option value="45">45%</option>
+			<option value="50">50%</option>
+			<option value="55">55%</option>
+			<option value="60">60%</option>
+			<option value="65">65%</option>
+			<option value="70">70%</option>
+			<option value="75">75%</option>
+			<option value="80">80%</option>
+			<option value="85">85%</option>
+			<option value="90">90%</option>
+			<option value="95">95%</option>
+			<option value="100">100%</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Project"))
+		<td align="left">
+			<select name="projectid" tabIndex="17" value="$!entry.ProjectId" width="160" STYLE="width: 160px">
+			#foreach ($project in $projects)
+				<option value="$project.ProjectId">$!project.ProjectName</option>
+			#end        	
+			</select>
+		</td>
+      </tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+      <tr>
+		#formLabel($!l10n.get("Task.Form.Label.Access"))
+		<td align="left">
+		<select name="access" tabIndex="20" value="$!entry.Access" STYLE="width: 130px">
+			<option value="10">$!l10n.get("Task.Form.Access.Private")</option>
+			<option value="50">$!l10n.get("Task.Form.Access.Public")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Task.Form.Label.AssignedTo"))
+		<td align="left">
+			<select name="assignedto" tabIndex="21" width="160" STYLE="width: 160px">
+			#foreach ($creamuser in $creamusers)
+				<option value="$creamuser.UserName">$!creamuser.UserName</option>
+			#end        	
+			</select>
+		</td>
+      </tr>
+
+<tr>
+<td>
+&nbsp;
+</td>
+<td>
+&nbsp;
+</td>
+<td style="width:100px">
+&nbsp;
+</td>
+<td>
+&nbsp;
+</td>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr>
+	#formCellSpan ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 254 4 30)
+
+</tr>
+	 		<tr>
+			  <td class="frmlabel" align="left" valign="top">
+			        $!l10n.get("Task.Form.Label.Description")&nbsp;
+			  </td>
+			<td align="left" colspan="4">
+				<textarea rows="10" name="description" tabIndex="31" STYLE="padding-left:0px; padding-right:0px; width: 100%;">$!entry.Description</textarea>
+			</td>
+	 		</tr>
+
+	</table>
+  </td>
+</tr>
+
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+<input type="hidden" name="taskcode" value="$!entry.TaskCode">
+
+
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+	<tr>
+		<td align=center>
+	    <table align=center width="100%" cellpadding=10 cellspacing=0 border=0>
+	      <tr>  
+	      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+	      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+	      </tr>  
+		</table>
+		</td>
+	</tr>
+	<tr>
+	<td>
+	&nbsp;
+	</td>
+	</tr>
+#end        	
+	
+	
+#formFooter("TaskForm.vm" "TaskSQL" "taskid" $!entry.TaskId $mode)

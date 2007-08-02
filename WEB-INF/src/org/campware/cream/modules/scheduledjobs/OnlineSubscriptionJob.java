@@ -142,6 +142,8 @@ public class OnlineSubscriptionJob extends ScheduledJob
 			context.put("custom4", subclose.getCustomerRelatedByCustomerId().getCustom4()); 
 			context.put("custom5", subclose.getCustomerRelatedByCustomerId().getCustom5()); 
 			context.put("custom6", subclose.getCustomerRelatedByCustomerId().getCustom6()); 
+			context.put("login", subclose.getCustomerRelatedByCustomerId().getLoginName()); 
+			context.put("password", subclose.getCustomerRelatedByCustomerId().getPasswordValue()); 
 			context.put("productdisplay", subclose.getProduct().getProductDisplay()); 
 			context.put("productdescription", subclose.getProduct().getProductDescription()); 
 			context.put("startdate", formatDate(subclose.getStartDate())); 

@@ -1,6 +1,6 @@
 #set ( $module = "Main" )
 #listCommon()
-#listHeader(2010 "InboxEventList.vm" "InboxEventSQL" 6)
+#listHeader(2010 "InboxEventList.vm" "InboxEventSQL" 7)
   
 	#if ($entries)
 		#foreach ($entry in $entries)
@@ -16,8 +16,9 @@
 				#end
 
 				<td width="15%"><span class="llink" onClick="doEdit('$!entry.InboxEventId')">$!entry.InboxEventCode</span></td>
-				#listCellPrc (40 $!entry.Subject)
-				#listCellPrc (30 $!entry.Customer.CustomerDisplay)
+				#listCellPrc (30 $!entry.Subject)
+				#listCellPrc (20 $!entry.Customer.CustomerDisplay)
+				#listCellPrc (20 $!entry.Contact.ContactDisplay)
 				#listCellPrcDate (15 $!entry.IssuedDate)
 	        </tr>        
 		#end

@@ -53,12 +53,15 @@ import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 import org.apache.velocity.context.Context;
 import org.campware.cream.om.CustomerPeer;
+import org.campware.cream.om.ContactPeer;
 import org.campware.cream.om.ProductPeer;
 import org.campware.cream.om.ProjectPeer;
 import org.campware.cream.om.InboxEventPeer;
 import org.campware.cream.om.OutboxEventPeer;
+import org.campware.cream.om.TaskPeer;
 import org.campware.cream.om.NewsSubscriptionPeer;
 import org.campware.cream.om.NewsletterPeer;
+import org.campware.cream.om.OpportunityPeer;
 import org.campware.cream.om.SorderPeer;
 import org.campware.cream.om.PaymentPeer;
 import org.campware.cream.om.ShipmentPeer;
@@ -88,6 +91,15 @@ public class Home extends SecureScreen
             List countrecord = BasePeer.doSelect(criteria);
             String recordno= ((Record) countrecord.get(0)).getValue(1).asString();
             context.put ("customerno", recordno);
+
+            // contact count
+        	criteria = new Criteria();
+            criteria.addSelectColumn("COUNT(" + ContactPeer.CONTACT_ID + ")");
+            criteria.add(ContactPeer.STATUS, new Integer(30), Criteria.EQUAL);
+    
+            countrecord = BasePeer.doSelect(criteria);
+            recordno= ((Record) countrecord.get(0)).getValue(1).asString();
+            context.put ("contactno", recordno);
 
             // product count
         	criteria = new Criteria();
@@ -125,6 +137,19 @@ public class Home extends SecureScreen
             recordno= ((Record) countrecord.get(0)).getValue(1).asString();
             context.put ("outboxno", recordno);
 
+            // task count
+        	criteria = new Criteria();
+            criteria.addSelectColumn("COUNT(" + TaskPeer.TASK_ID + ")");
+            criteria.add(TaskPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            Criteria.Criterion b1 = criteria.getNewCriterion(TaskPeer.ACCESS, new Integer(50), Criteria.EQUAL);
+            Criteria.Criterion b2 = criteria.getNewCriterion(TaskPeer.CREATED_BY, (Object) data.getUser().getName(), Criteria.EQUAL);
+            Criteria.Criterion b3 = criteria.getNewCriterion(TaskPeer.ASSIGNED_TO, (Object) data.getUser().getName(), Criteria.EQUAL);
+            criteria.add( b1.or( b2.or(b3)));
+
+            countrecord = BasePeer.doSelect(criteria);
+            recordno= ((Record) countrecord.get(0)).getValue(1).asString();
+            context.put ("taskno", recordno);
+
             // news subscription count
         	criteria = new Criteria();
             criteria.addSelectColumn("COUNT(" + NewsSubscriptionPeer.NEWS_SUBS_ID + ")");
@@ -142,6 +167,15 @@ public class Home extends SecureScreen
             countrecord = BasePeer.doSelect(criteria);
             recordno= ((Record) countrecord.get(0)).getValue(1).asString();
             context.put ("newsletterno", recordno);
+
+            // opportunity count
+        	criteria = new Criteria();
+            criteria.addSelectColumn("COUNT(" + OpportunityPeer.OPPORTUNITY_ID + ")");
+            criteria.add(OpportunityPeer.STATUS, new Integer(30), Criteria.EQUAL);
+    
+            countrecord = BasePeer.doSelect(criteria);
+            recordno= ((Record) countrecord.get(0)).getValue(1).asString();
+            context.put ("opportunityno", recordno);
 
             // sales order count
         	criteria = new Criteria();

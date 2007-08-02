@@ -1,12 +1,14 @@
 ﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fckstylecommand.js
  * 	FCKStyleCommand Class: represents the "Style" command.
@@ -27,10 +29,14 @@ var FCKStyleCommand = function()
 
 FCKStyleCommand.prototype.Execute = function( styleName, styleComboItem )
 {
+	FCKUndo.SaveUndoStep() ;
+
 	if ( styleComboItem.Selected )
 		styleComboItem.Style.RemoveFromSelection() ;
 	else
 		styleComboItem.Style.ApplyToSelection() ;
+
+	FCKUndo.SaveUndoStep() ;
 
 	FCK.Focus() ;
 	
@@ -39,18 +45,19 @@ FCKStyleCommand.prototype.Execute = function( styleName, styleComboItem )
 
 FCKStyleCommand.prototype.GetState = function()
 {
+	if ( !FCK.EditorDocument )
+		return FCK_TRISTATE_DISABLED ;
+
 	var oSelection = FCK.EditorDocument.selection ;
 	
 	if ( FCKSelection.GetType() == 'Control' )
 	{
 		var e = FCKSelection.GetSelectedElement() ;
-			if ( e )
-				return this.StylesLoader.StyleGroups[ e.tagName ] ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ;
-			else
-				FCK_TRISTATE_OFF ;
+		if ( e )
+			return this.StylesLoader.StyleGroups[ e.tagName ] ? FCK_TRISTATE_OFF : FCK_TRISTATE_DISABLED ;
 	}
-	else
-		return FCK_TRISTATE_OFF ;
+
+	return FCK_TRISTATE_OFF ;
 }
 
 FCKStyleCommand.prototype.GetActiveStyles = function()

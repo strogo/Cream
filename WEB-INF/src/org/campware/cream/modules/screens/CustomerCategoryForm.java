@@ -51,7 +51,7 @@ import org.campware.cream.om.CustomerCategoryPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CustomerCategoryForm extends CreamForm
+public class CustomerCategoryForm extends CreamLookupForm
 {
     protected void initScreen()
     {

@@ -22,7 +22,6 @@
 <td><img src="$ui.image($value)" width=16 height=16></td>
 #end
 
-
 #macro (addCollHeadPrc $prcnt $body)
 <td width="$prcnt%" align="left"><a href="/Sort.vm">$body</a></td>
 #end
@@ -37,6 +36,12 @@
 
 #macro (formLabel $label)
   <td class=frmlabel align="left">
+        $label&nbsp;
+  </td>
+#end
+
+#macro (formLabelRight $label)
+  <td class=frmlabel align="right">
         $label&nbsp;
   </td>
 #end
@@ -166,6 +171,30 @@
   #set ( $px = "px" )
   #formLabel($label)
   <td align="left">
+	#if ($value)
+      <input type="text" maxLength="$maxlength" tabIndex="$taborder" name="$name" value="$value" STYLE="width: $size$px">
+	#else
+      <input type="text" maxLength="$maxlength" tabIndex="$taborder" name="$name" value="" STYLE="width: $size$px">
+	#end
+  </td>
+#end
+
+#macro (formCellSpan $label $name $value $maxlength $colnum $taborder)
+  #set ( $px = "px" )
+  #formLabel($label)
+  <td align="left" colspan="$colnum">
+	#if ($value)
+      <input type="text" maxLength="$maxlength" tabIndex="$taborder" name="$name" value="$value" STYLE="padding-left:0px; padding-right:0px; width: 100%;">
+	#else
+      <input type="text" maxLength="$maxlength" tabIndex="$taborder" name="$name" value="" STYLE="padding-left:0px; padding-right:0px; width: 100%;">
+	#end
+  </td>
+#end
+
+#macro (formCellRight $label $name $value $maxlength $size $taborder)
+  #set ( $px = "px" )
+  #formLabelRight($label)
+  <td align="right">
 	#if ($value)
       <input type="text" maxLength="$maxlength" tabIndex="$taborder" name="$name" value="$value" STYLE="width: $size$px">
 	#else
@@ -344,6 +373,14 @@
   </td>
 #end
 
+#macro (formCheckBoxWithChange $label $name $checked $taborder)
+  <td>
+  </td>
+  <td class=frmlabel align="left">
+    <input type="checkbox" name="$name" onclick="valueChanged(this);" tabIndex="$taborder" #if($checked)checked=1#end/>$label
+  </td>
+#end
+
 #macro (formListBox $label $list)
   #formLabel($label)
   <td align="left">
@@ -494,10 +531,15 @@
 	</body>
 #end
 
-#macro (formCommon)
+#macro (formCommon $retForm)
 	$page.setHttpEquiv("Pragma", "no-cache")
 	$page.setBgColor("$ui.formBg")
-	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent();")	
+
+	#if($mode=="insert")
+	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent($retForm, true);")	
+	#else
+	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent($retForm, false);")	
+	#end
 
 	<head>
 	<script id="formScript" language="JavaScript">
@@ -511,15 +553,36 @@
 
 #macro (formHeader $tplName $actName $idName $idValue $sqlmode)
 
-		function saveForm(retUrl){
+		function saveFormAndReturn(retUrl){
 			myAction='$actName';
 			myUrl= retUrl + '/action/' + myAction;
 			myForm.action= myUrl;
+			#if($sqlmode=="insert")
+				myForm.actionevent.name="eventSubmit_doInsertrow";
+			#else
+				myForm.actionevent.name="eventSubmit_doUpdaterow";
+			#end
 			myForm.submit();
 		}
 	
 		function saveFormAndNew(){
 			myForm.action="$link.setPage("$tplName").setAction("$actName")";
+			#if($sqlmode=="insert")
+				myForm.actionevent.name="eventSubmit_doInsertrow";
+			#else
+				myForm.actionevent.name="eventSubmit_doUpdaterow";
+			#end
+			myForm.submit();
+		}
+	
+		function saveForm(){
+			#if($sqlmode=="insert")
+				myForm.action="$link.setPage("$tplName").setAction("$actName")" + "/formid/0";
+				myForm.actionevent.name="eventSubmit_doInsertrowandstay";
+			#else
+				myForm.action="$link.setPage("$tplName").setAction("$actName")" + "/formid/$idValue";
+				myForm.actionevent.name="eventSubmit_doUpdaterowandstay";
+			#end
 			myForm.submit();
 		}
 	
@@ -531,6 +594,12 @@
 			delForm.submit();
 		}
 	
+		function showRelRetrieveInfo()
+		{
+			document.getElementById('relDataFrame').innerHTML='<table align="center" height="100%"><tr><td valign="center"><img src="$ui.image($ui.throbber)" width=22 height=22></td><td valign="center"><p>$!l10n.get("Common.Message.RetrievingData")...</p></td></tr></table>';
+		}	
+
+
 	</script>
 	</head>
 	<body #TurbineHtmlBodyAttributes()>
@@ -544,10 +613,10 @@
 #macro (formFooter $tplName $actName $idName $idValue $sqlmode)
 		    </table>
 			#if($sqlmode=="insert")
-			    <input type="hidden" name="eventSubmit_doInsertrow" value="Insert"/>
+			    <input type="hidden" name="actionevent" value="Insert"/>
 			#else
 			    <input type="hidden" name="$idName" value="$idValue"/>
-			    <input type="hidden" name="eventSubmit_doUpdaterow" value="Update"/>
+			    <input type="hidden" name="actionevent" value="Update"/>
 			#end        	
 		  </div>
 		</form>
@@ -612,6 +681,7 @@
 	<body #TurbineHtmlBodyAttributes()>
 		<form id="listData" name="listData" target="buffer" method="post" action="$link.setPage("$tplName").setAction("$actName")">
 		    <input type="hidden" name="actname" value="$actName"/>
+		    <input type="hidden" name="entriesno" value="$entriesno"/>
 			<table  width="100%" cols=$colNo cellpadding=2 cellspacing=0 border=0>
 #end
 

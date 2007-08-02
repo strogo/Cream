@@ -52,7 +52,7 @@ import org.campware.cream.om.VendorPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class VendorSQL extends CreamAction
+public class VendorSQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -75,6 +75,7 @@ public class VendorSQL extends CreamAction
         Vendor entry = new Vendor();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

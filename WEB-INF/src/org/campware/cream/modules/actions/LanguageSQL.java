@@ -52,7 +52,7 @@ import org.campware.cream.om.LanguagePeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class LanguageSQL extends CreamAction
+public class LanguageSQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -76,6 +76,7 @@ public class LanguageSQL extends CreamAction
         Language entry = new Language();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

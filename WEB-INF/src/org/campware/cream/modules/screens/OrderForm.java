@@ -40,17 +40,28 @@ package org.campware.cream.modules.screens;
  * <http://www.apache.org/>.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 
 import org.apache.velocity.context.Context;
 
+import org.campware.cream.om.ContactPeer;
+import org.campware.cream.om.Opportunity;
+import org.campware.cream.om.PaymentItemPeer;
 import org.campware.cream.om.Sorder;
 import org.campware.cream.om.SorderPeer;
+import org.campware.cream.om.OpportunityPeer;
 import org.campware.cream.om.ProductPeer;
 import org.campware.cream.om.ProjectPeer;
 import org.campware.cream.om.CarrierPeer;
 import org.campware.cream.om.CustomerPeer;
 import org.campware.cream.om.CurrencyPeer;
+import org.campware.cream.om.SorderDocPeer;
+
+import com.workingdogs.village.Record;
 
 /**
  * To read comments for this class, please see
@@ -73,6 +84,38 @@ public class OrderForm extends CreamForm
             Sorder entry = (Sorder) SorderPeer.doSelect(criteria).get(0);
             context.put("entry", entry);
             context.put("entryitems", entry.getSorderItems());
+
+            Criteria prodcrit = new Criteria();
+            prodcrit.add(ProductPeer.PRODUCT_ID, 999, Criteria.GREATER_THAN);
+            prodcrit.addAscendingOrderByColumn(ProductPeer.PRODUCT_CODE);
+            context.put("products", ProductPeer.doSelect(prodcrit));
+
+            Criteria projcrit = new Criteria();
+            Criteria.Criterion pj1 = projcrit.getNewCriterion(ProjectPeer.PROJECT_ID, new Integer(1000), Criteria.EQUAL);
+            Criteria.Criterion pj2 = projcrit.getNewCriterion(ProjectPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            Criteria.Criterion pj3 = projcrit.getNewCriterion(ProjectPeer.PROJECT_ID, new Integer(entry.getProjectId()), Criteria.EQUAL);
+            projcrit.add( pj1.or(pj2.or(pj3)));
+            projcrit.addAscendingOrderByColumn(ProjectPeer.PROJECT_NAME);
+            context.put("projects", ProjectPeer.doSelect(projcrit));
+
+            Criteria custcrit = new Criteria();
+            Criteria.Criterion cu1 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(1000), Criteria.EQUAL);
+            Criteria.Criterion cu2 = custcrit.getNewCriterion(CustomerPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            Criteria.Criterion cu3 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(entry.getCustomerId()), Criteria.EQUAL);
+            Criteria.Criterion cu4 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(entry.getRecipientId()), Criteria.EQUAL);
+            custcrit.add( cu1.or(cu2.or(cu3.or(cu4))));
+            custcrit.addAscendingOrderByColumn(CustomerPeer.CUSTOMER_DISPLAY);
+            context.put("customers", CustomerPeer.doSelect(custcrit));
+
+            Criteria oppcrit = new Criteria();
+            Criteria.Criterion op1 = oppcrit.getNewCriterion(OpportunityPeer.OPPORTUNITY_ID, new Integer(1000), Criteria.EQUAL);
+            Criteria.Criterion op2 = oppcrit.getNewCriterion(OpportunityPeer.OPPORTUNITY_ID, new Integer(entry.getOpportunityId()), Criteria.EQUAL);
+            Criteria.Criterion op3 = oppcrit.getNewCriterion(OpportunityPeer.CUSTOMER_ID, new Integer(entry.getCustomerId()), Criteria.EQUAL);
+            Criteria.Criterion op4 = oppcrit.getNewCriterion(OpportunityPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            oppcrit.add( op1.or( op2.or(op3.and(op4))));
+            oppcrit.addAscendingOrderByColumn(OpportunityPeer.OPPORTUNITY_NAME);
+            context.put("opportunities", OpportunityPeer.doSelect(oppcrit));
+
             return true;
         }
         catch (Exception e)
@@ -87,6 +130,32 @@ public class OrderForm extends CreamForm
         {
             Sorder entry = new Sorder();
             context.put("entry", entry);
+
+			Criteria prodcrit = new Criteria();
+            Criteria.Criterion pd1 = prodcrit.getNewCriterion(ProductPeer.PRODUCT_ID, new Integer(1000), Criteria.EQUAL);
+            Criteria.Criterion pd2 = prodcrit.getNewCriterion(ProductPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            prodcrit.add( pd1.or(pd2));
+            prodcrit.addAscendingOrderByColumn(ProductPeer.PRODUCT_CODE);
+            context.put("products", ProductPeer.doSelect(prodcrit));
+
+            Criteria projcrit = new Criteria();
+            Criteria.Criterion pj1 = projcrit.getNewCriterion(ProjectPeer.PROJECT_ID, new Integer(1000), Criteria.EQUAL);
+            Criteria.Criterion pj2 = projcrit.getNewCriterion(ProjectPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            projcrit.add( pj1.or(pj2));
+            projcrit.addAscendingOrderByColumn(ProjectPeer.PROJECT_NAME);
+            context.put("projects", ProjectPeer.doSelect(projcrit));
+
+            Criteria custcrit = new Criteria();
+            Criteria.Criterion cu1 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(1000), Criteria.EQUAL);
+            Criteria.Criterion cu2 = custcrit.getNewCriterion(CustomerPeer.STATUS, new Integer(30), Criteria.EQUAL);
+            custcrit.add( cu1.or(cu2));
+            custcrit.addAscendingOrderByColumn(CustomerPeer.CUSTOMER_DISPLAY);
+            context.put("customers", CustomerPeer.doSelect(custcrit));
+
+            Criteria oppcrit = new Criteria();
+            oppcrit.add(OpportunityPeer.OPPORTUNITY_ID, 1000, Criteria.EQUAL);
+            context.put("opportunities", OpportunityPeer.doSelect(oppcrit));
+
             return true;
         }
         catch (Exception e)
@@ -95,31 +164,96 @@ public class OrderForm extends CreamForm
         }
     }
 
-    protected boolean getLookups(Context context)
+	protected boolean getNewRelated(int relform, int relid, Context context)
+	{
+		try
+		{
+			Sorder entry = new Sorder();
+
+			if (relform==CUSTOMER){
+				
+				entry.setCustomerId(relid);
+				entry.setRecipientId(relid);
+
+				Criteria prodcrit = new Criteria();
+	            Criteria.Criterion pd1 = prodcrit.getNewCriterion(ProductPeer.PRODUCT_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion pd2 = prodcrit.getNewCriterion(ProductPeer.STATUS, new Integer(30), Criteria.EQUAL);
+	            prodcrit.add( pd1.or(pd2));
+	            prodcrit.addAscendingOrderByColumn(ProductPeer.PRODUCT_CODE);
+	            context.put("products", ProductPeer.doSelect(prodcrit));
+
+	            Criteria projcrit = new Criteria();
+	            Criteria.Criterion pj1 = projcrit.getNewCriterion(ProjectPeer.PROJECT_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion pj2 = projcrit.getNewCriterion(ProjectPeer.STATUS, new Integer(30), Criteria.EQUAL);
+	            projcrit.add( pj1.or(pj2));
+	            projcrit.addAscendingOrderByColumn(ProjectPeer.PROJECT_NAME);
+	            context.put("projects", ProjectPeer.doSelect(projcrit));
+
+	            Criteria custcrit = new Criteria();
+	            Criteria.Criterion cu1 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion cu2 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(relid), Criteria.EQUAL);
+	            custcrit.add( cu1.or(cu2));
+	            custcrit.addAscendingOrderByColumn(CustomerPeer.CUSTOMER_DISPLAY);
+	            context.put("customers", CustomerPeer.doSelect(custcrit));
+		
+	            Criteria oppcrit = new Criteria();
+	            Criteria.Criterion op1 = oppcrit.getNewCriterion(OpportunityPeer.OPPORTUNITY_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion op2 = oppcrit.getNewCriterion(OpportunityPeer.CUSTOMER_ID, new Integer(relid), Criteria.EQUAL);
+	            Criteria.Criterion op3 = oppcrit.getNewCriterion(OpportunityPeer.STATUS, new Integer(30), Criteria.EQUAL);
+	            oppcrit.add( op1.or(op2.and(op3)));
+	            oppcrit.addAscendingOrderByColumn(OpportunityPeer.OPPORTUNITY_NAME);
+	            context.put("opportunities", OpportunityPeer.doSelect(oppcrit));
+
+			}else if(relform==PROJECT){
+				
+				entry.setProjectId(relid);
+
+				Criteria prodcrit = new Criteria();
+	            Criteria.Criterion pd1 = prodcrit.getNewCriterion(ProductPeer.PRODUCT_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion pd2 = prodcrit.getNewCriterion(ProductPeer.STATUS, new Integer(30), Criteria.EQUAL);
+	            prodcrit.add( pd1.or(pd2));
+	            prodcrit.addAscendingOrderByColumn(ProductPeer.PRODUCT_CODE);
+	            context.put("products", ProductPeer.doSelect(prodcrit));
+
+	            Criteria projcrit = new Criteria();
+	            Criteria.Criterion pj1 = projcrit.getNewCriterion(ProjectPeer.PROJECT_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion pj2 = projcrit.getNewCriterion(ProjectPeer.PROJECT_ID, new Integer(relid), Criteria.EQUAL);
+	            projcrit.add( pj1.or( pj2));
+	            projcrit.addAscendingOrderByColumn(ProjectPeer.PROJECT_NAME);
+	            context.put("projects", ProjectPeer.doSelect(projcrit));
+
+	            Criteria custcrit = new Criteria();
+	            Criteria.Criterion cu1 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(1000), Criteria.EQUAL);
+	            Criteria.Criterion cu2 = custcrit.getNewCriterion(CustomerPeer.STATUS, new Integer(30), Criteria.EQUAL);
+	            custcrit.add( cu1.or(cu2));
+	            custcrit.addAscendingOrderByColumn(CustomerPeer.CUSTOMER_DISPLAY);
+	            context.put("customers", CustomerPeer.doSelect(custcrit));
+		
+	            Criteria oppcrit = new Criteria();
+	            oppcrit.add(OpportunityPeer.OPPORTUNITY_ID, 1000, Criteria.EQUAL);
+	            oppcrit.addAscendingOrderByColumn(OpportunityPeer.OPPORTUNITY_NAME);
+	            context.put("opportunities", OpportunityPeer.doSelect(oppcrit));
+
+			}
+
+			context.put("entry", entry);
+            
+			return true;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+
+	protected boolean getLookups(Context context)
     {
         try
         {
-            Criteria prodcrit = new Criteria();
-            prodcrit.add(ProductPeer.PRODUCT_ID, 999, Criteria.GREATER_THAN);
-            prodcrit.addAscendingOrderByColumn(ProductPeer.PRODUCT_CODE);
-            context.put("products", ProductPeer.doSelect(prodcrit));
-
-            Criteria projcrit = new Criteria();
-            projcrit.add(ProjectPeer.PROJECT_ID, 999, Criteria.GREATER_THAN);
-            projcrit.addAscendingOrderByColumn(ProjectPeer.PROJECT_NAME);
-            context.put("projects", ProjectPeer.doSelect(projcrit));
-
             Criteria carrcrit = new Criteria();
             carrcrit.add(CarrierPeer.CARRIER_ID, 999, Criteria.GREATER_THAN);
             carrcrit.addAscendingOrderByColumn(CarrierPeer.CARRIER_NAME);
             context.put("carriers", CarrierPeer.doSelect(carrcrit));
-
-            Criteria custcrit = new Criteria();
-            Criteria.Criterion b1 = custcrit.getNewCriterion(CustomerPeer.CUSTOMER_ID, new Integer(1000), Criteria.EQUAL);
-            Criteria.Criterion b2 = custcrit.getNewCriterion(CustomerPeer.STATUS, new Integer(29), Criteria.GREATER_THAN);
-            custcrit.add( b1.or( b2));
-            custcrit.addAscendingOrderByColumn(CustomerPeer.CUSTOMER_DISPLAY);
-            context.put("customers", CustomerPeer.doSelect(custcrit));
 
             Criteria currcrit = new Criteria();
             currcrit.add(CurrencyPeer.CURRENCY_ID, 1000, Criteria.GREATER_THAN);
@@ -133,6 +267,5 @@ public class OrderForm extends CreamForm
             return false;
         }
     }
-
 
 }

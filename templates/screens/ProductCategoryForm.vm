@@ -1,5 +1,5 @@
 #set ( $module = "Options" )
-#formCommon()
+#formCommon(3012)
 
 function formInit(){
 	highlight(myForm.productcatname);

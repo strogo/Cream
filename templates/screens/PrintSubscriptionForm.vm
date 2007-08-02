@@ -1,5 +1,5 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(2004)
 
 function ProductObject (disp, u){
 	this.productDisplay=disp;
@@ -71,6 +71,7 @@ function valueChanged(formField){
 	}
 	else if (formField.name=='productid'){
 		myForm.productdisplay.value=this.orderProduct[formField.value].productDisplay;
+		myForm.subject.value=this.orderProduct[formField.value].productDisplay;
 		myForm.uomcode.value=this.orderProduct[formField.value].uomCode;
 	}
 }
@@ -153,6 +154,7 @@ function valueChanged(formField){
 </tr>
 
 <input type="hidden" name="printsubscode" value="$!entry.PrintSubsCode">
+<input type="hidden" name="subject" value="$!entry.Subject">
 
 #documentFooter()
 	

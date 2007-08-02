@@ -53,12 +53,15 @@ import java.sql.Connection;
 import org.campware.cream.om.Newsletter;
 import org.campware.cream.om.NewsletterPeer;
 import org.apache.turbine.util.velocity.VelocityHtmlEmail;
+import org.apache.turbine.util.velocity.VelocityEmail;
 import org.apache.turbine.Turbine;
 
 import org.campware.cream.om.Customer;
 import org.campware.cream.om.CustomerPeer;
 import org.campware.cream.om.NewsSubscription;
 import org.campware.cream.om.NewsSubscriptionPeer;
+import org.campware.cream.om.PaymentItemPeer;
+import org.campware.cream.om.PaymentPeer;
 
 /**
  * This class provides a simple set of methods to
@@ -120,6 +123,7 @@ public class NewsletterSQL extends CreamAction
 	        } finally {
 	            if (!success) Transaction.safeRollback(conn);
 	        }
+	        setSavedId(entry.getPrimaryKey().toString());
 		}
     }
 
@@ -167,8 +171,11 @@ public class NewsletterSQL extends CreamAction
 	{
 
 		int relDocument= newsletterEntry.getRelDocument();
-		String mailSmtpFrom= Turbine.getConfiguration().getString("mail.smtp.from");
+		int emailFormat= newsletterEntry.getEmailFormat();
+		String mailSmtpFrom= Turbine.getConfiguration().getString("mail.smtp.from.email");
 		String mailSmtpFromName= Turbine.getConfiguration().getString("mail.smtp.from.name");
+		String newsletterSubject=newsletterEntry.getSubject();
+		String newsletterBody=newsletterEntry.getBody();
 		boolean bHasBadEmails= false;
 		
 		if (relDocument==20){
@@ -218,15 +225,122 @@ public class NewsletterSQL extends CreamAction
 				context.put("custom4", cust.getCustom4()); 
 				context.put("custom5", cust.getCustom5()); 
 				context.put("custom6", cust.getCustom6()); 
-				context.put("emailbody", velTool.evaluate(newsletterEntry.getBody())); 
+				context.put("emailbody", velTool.evaluate(newsletterBody)); 
 				try{
-					VelocityHtmlEmail ve = new VelocityHtmlEmail(data); 
-					ve.setCharset("UTF-8"); 
-					ve.addTo( sEmailAddress, "");
-					ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
-					ve.setSubject(newsletterEntry.getSubject()); 
-					ve.setHtmlTemplate("screens/SendEmail.vm");
-					ve.send(); 
+					if (emailFormat==10){
+						VelocityHtmlEmail ve = new VelocityHtmlEmail(data); 
+						ve.setCharset("UTF-8"); 
+						ve.addTo( sEmailAddress, "");
+						ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
+						ve.setSubject(newsletterSubject); 
+						ve.setHtmlTemplate("screens/SendEmail.vm");
+						ve.send(); 
+					}else{
+						VelocityEmail ve = new VelocityEmail(context); 
+						ve.setCharset("UTF-8"); 
+						ve.addTo(sEmailAddress, ""); 
+						ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
+						ve.setSubject(newsletterSubject); 
+						ve.setTemplate("screens/SendEmail.vm"); 
+//						ve.setWordWrap(72); 
+						ve.send();
+					}
+				}catch(Exception e){
+					if (!bHasBadEmails){
+						bHasBadEmails=true;
+						newsletterEntry.setNotes("Not sent to these addresses:");
+						
+					}
+					newsletterEntry.setNotes(newsletterEntry.getNotes() + "\n" + sEmailAddress);
+				}
+			  }
+			}
+		} else if (relDocument==30){
+			int customerCatId= newsletterEntry.getCustomerCatId();
+			int customerType= newsletterEntry.getCustomerType();
+			int custLanguageId= newsletterEntry.getCustLanguageId();
+			int custCountryId= newsletterEntry.getCustCountryId();
+			int relProductId= newsletterEntry.getRelProductId();
+			int relProjectId= newsletterEntry.getRelProjectId();
+			
+			Criteria criteria = new Criteria();
+			
+			if (customerCatId>999){
+				criteria.add(CustomerPeer.CUSTOMER_CAT_ID, new Integer(customerCatId), Criteria.EQUAL);
+			}
+			if (customerType>1){
+				criteria.add(CustomerPeer.CUSTOMER_TYPE, new Integer(customerType), Criteria.EQUAL);
+			}
+			if (custLanguageId>999){
+				criteria.add(CustomerPeer.LANGUAGE_ID, new Integer(custLanguageId), Criteria.EQUAL);
+			}
+			if (custCountryId>999){
+				criteria.add(CustomerPeer.COUNTRY_ID, new Integer(custCountryId), Criteria.EQUAL);
+			}
+			criteria.add(CustomerPeer.SEND_NEWS, new Integer(20), Criteria.EQUAL);
+			criteria.add(CustomerPeer.EMAIL, (Object)"EMAIL is NOT NULL", Criteria.CUSTOM);		
+			
+
+			String relPayments= new String();
+			
+			if (relProductId>999){
+				if (relProjectId>999){
+					relPayments= "CUSTOMER.CUSTOMER_ID in (Select PAYMENT_ITEM.CUSTOMER_ID from PAYMENT_ITEM where PRODUCT_ID=" + new Integer(relProductId).toString() +" AND PROJECT_ID=" + new Integer(relProjectId).toString() +")";
+					criteria.add(CustomerPeer.CUSTOMER_ID, (Object)relPayments, Criteria.CUSTOM);		
+				}else{
+					relPayments= "CUSTOMER.CUSTOMER_ID in (Select PAYMENT_ITEM.CUSTOMER_ID from PAYMENT_ITEM where PRODUCT_ID=" + new Integer(relProductId).toString() +")";
+					criteria.add(CustomerPeer.CUSTOMER_ID, (Object)relPayments, Criteria.CUSTOM);		
+				}
+			}else {
+				if (relProjectId>999){
+					relPayments= "CUSTOMER.CUSTOMER_ID in (Select PAYMENT_ITEM.CUSTOMER_ID from PAYMENT_ITEM where PROJECT_ID=" + new Integer(relProjectId).toString() +")";
+					criteria.add(CustomerPeer.CUSTOMER_ID, (Object)relPayments, Criteria.CUSTOM);		
+				}
+			}
+	
+	
+			List receivers = CustomerPeer.doSelect(criteria);
+			Iterator i = receivers.iterator();
+			VelocityTool velTool= new VelocityTool(context);
+	
+			while (i.hasNext())
+			{
+			  Customer cust = (Customer) i.next();
+	
+			  String sEmailAddress=cust.getEmail(); 
+	
+			  if (sEmailAddress.length()>1){
+				context.put("customerid", cust.getCustomerCode()); 
+				context.put("name", cust.getCustomerName1()); 
+				context.put("display", cust.getCustomerDisplay()); 
+				context.put("dear", cust.getDear()); 
+				context.put("email", cust.getEmail()); 
+				context.put("custom1", cust.getCustom1()); 
+				context.put("custom2", cust.getCustom2()); 
+				context.put("custom3", cust.getCustom3()); 
+				context.put("custom4", cust.getCustom4()); 
+				context.put("custom5", cust.getCustom5()); 
+				context.put("custom6", cust.getCustom6()); 
+				context.put("emailbody", velTool.evaluate(newsletterBody)); 
+				try{
+					if (emailFormat==10){
+						VelocityHtmlEmail ve = new VelocityHtmlEmail(data); 
+						ve.setCharset("UTF-8"); 
+						ve.addTo( sEmailAddress, "");
+						ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
+						ve.setSubject(newsletterSubject); 
+						ve.setHtmlTemplate("screens/SendEmail.vm");
+						ve.send(); 
+					}else{
+						VelocityEmail ve = new VelocityEmail(context); 
+						ve.setCharset("UTF-8"); 
+						ve.addTo(sEmailAddress, ""); 
+						ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
+						ve.setSubject(newsletterSubject); 
+						ve.setTemplate("screens/SendEmail.vm"); 
+//						ve.setWordWrap(72); 
+						ve.send();
+					}
 				}catch(Exception e){
 					if (!bHasBadEmails){
 						bHasBadEmails=true;
@@ -265,20 +379,30 @@ public class NewsletterSQL extends CreamAction
 				NewsSubscription cust = (NewsSubscription) i.next();
 				String sEmailAddress=cust.getEmail(); 
 	
-				if (sEmailAddress.length()>1){
 //					context.put("product", cust.getProduct().getProductDescription()); 
 //					context.put("project", cust.getProject().getProjectName()); 
 					context.put("subscriptionid", cust.getNewsSubsCode()); 
-					context.put("email", cust.getEmail()); 
-					context.put("emailbody", velTool.evaluate(newsletterEntry.getBody())); 
+					context.put("email", sEmailAddress); 
+					context.put("emailbody", velTool.evaluate(newsletterBody)); 
 					try{
-						VelocityHtmlEmail ve = new VelocityHtmlEmail(data); 
-						ve.setCharset("UTF-8"); 
-						ve.addTo( sEmailAddress, "");
-						ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
-						ve.setSubject(newsletterEntry.getSubject()); 
-						ve.setHtmlTemplate("screens/SendEmail.vm");
-						ve.send(); 
+						if (emailFormat==10){
+							VelocityHtmlEmail ve = new VelocityHtmlEmail(data); 
+							ve.setCharset("UTF-8"); 
+							ve.addTo( sEmailAddress, "");
+							ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
+							ve.setSubject(newsletterSubject); 
+							ve.setHtmlTemplate("screens/SendEmail.vm");
+							ve.send(); 
+						}else{
+							VelocityEmail ve = new VelocityEmail(context); 
+							ve.setCharset("UTF-8"); 
+							ve.addTo(sEmailAddress, ""); 
+							ve.setFrom(mailSmtpFrom, mailSmtpFromName); 
+							ve.setSubject(newsletterSubject); 
+							ve.setTemplate("screens/SendEmail.vm"); 
+//							ve.setWordWrap(72); 
+							ve.send();
+						}
 					}catch(Exception e){
 						if (!bHasBadEmails){
 							bHasBadEmails=true;
@@ -287,7 +411,6 @@ public class NewsletterSQL extends CreamAction
 						}
 						newsletterEntry.setNotes(newsletterEntry.getNotes() + "\n" + sEmailAddress);
 					}
-				}
 			}
 		} else{
 			return false;

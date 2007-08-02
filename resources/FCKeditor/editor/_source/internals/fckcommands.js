@@ -1,12 +1,14 @@
 ﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fckcommands.js
  * 	Define all commands available in the editor.
@@ -35,6 +37,7 @@ FCKCommands.GetCommand = function( commandName )
 		case 'DocProps'		: oCommand = new FCKDialogCommand( 'DocProps'	, FCKLang.DocProps				, 'dialog/fck_docprops.html'	, 400, 390, FCKCommands.GetFullPageState ) ; break ;
 		case 'Templates'	: oCommand = new FCKDialogCommand( 'Templates'	, FCKLang.DlgTemplatesTitle		, 'dialog/fck_template.html'	, 380, 450 ) ; break ;
 		case 'Link'			: oCommand = new FCKDialogCommand( 'Link'		, FCKLang.DlgLnkWindowTitle		, 'dialog/fck_link.html'		, 400, 330, FCK.GetNamedCommandState, 'CreateLink' ) ; break ;
+		case 'Unlink'		: oCommand = new FCKUnlinkCommand() ; break ;
 		case 'Anchor'		: oCommand = new FCKDialogCommand( 'Anchor'		, FCKLang.DlgAnchorTitle		, 'dialog/fck_anchor.html'		, 370, 170 ) ; break ;
 		case 'BulletedList'	: oCommand = new FCKDialogCommand( 'BulletedList', FCKLang.BulletedListProp		, 'dialog/fck_listprop.html'	, 370, 170 ) ; break ;
 		case 'NumberedList'	: oCommand = new FCKDialogCommand( 'NumberedList', FCKLang.NumberedListProp		, 'dialog/fck_listprop.html'	, 370, 170 ) ; break ;
@@ -45,11 +48,11 @@ FCKCommands.GetCommand = function( commandName )
 
 		case 'Image'		: oCommand = new FCKDialogCommand( 'Image'		, FCKLang.DlgImgTitle			, 'dialog/fck_image.html'		, 450, 400 ) ; break ;
 		case 'Flash'		: oCommand = new FCKDialogCommand( 'Flash'		, FCKLang.DlgFlashTitle			, 'dialog/fck_flash.html'		, 450, 400 ) ; break ;
-		case 'SpecialChar'	: oCommand = new FCKDialogCommand( 'SpecialChar', FCKLang.DlgSpecialCharTitle	, 'dialog/fck_specialchar.html'	, 400, 300 ) ; break ;
+		case 'SpecialChar'	: oCommand = new FCKDialogCommand( 'SpecialChar', FCKLang.DlgSpecialCharTitle	, 'dialog/fck_specialchar.html'	, 400, 320 ) ; break ;
 		case 'Smiley'		: oCommand = new FCKDialogCommand( 'Smiley'		, FCKLang.DlgSmileyTitle		, 'dialog/fck_smiley.html'		, FCKConfig.SmileyWindowWidth, FCKConfig.SmileyWindowHeight ) ; break ;
-		case 'Table'		: oCommand = new FCKDialogCommand( 'Table'		, FCKLang.DlgTableTitle			, 'dialog/fck_table.html'		, 400, 250 ) ; break ;
+		case 'Table'		: oCommand = new FCKDialogCommand( 'Table'		, FCKLang.DlgTableTitle			, 'dialog/fck_table.html'		, 450, 250 ) ; break ;
 		case 'TableProp'	: oCommand = new FCKDialogCommand( 'Table'		, FCKLang.DlgTableTitle			, 'dialog/fck_table.html?Parent', 400, 250 ) ; break ;
-		case 'TableCellProp': oCommand = new FCKDialogCommand( 'TableCell'	, FCKLang.DlgCellTitle			, 'dialog/fck_tablecell.html'	, 500, 250 ) ; break ;
+		case 'TableCellProp': oCommand = new FCKDialogCommand( 'TableCell'	, FCKLang.DlgCellTitle			, 'dialog/fck_tablecell.html'	, 550, 250 ) ; break ;
 		case 'UniversalKey'	: oCommand = new FCKDialogCommand( 'UniversalKey', FCKLang.UniversalKeyboard	, 'dialog/fck_universalkey.html', 415, 300 ) ; break ;
 
 		case 'Style'		: oCommand = new FCKStyleCommand() ; break ;
@@ -62,6 +65,7 @@ FCKCommands.GetCommand = function( commandName )
 		case 'Preview'		: oCommand = new FCKPreviewCommand() ; break ;
 		case 'Save'			: oCommand = new FCKSaveCommand() ; break ;
 		case 'NewPage'		: oCommand = new FCKNewPageCommand() ; break ;
+		case 'PageBreak'	: oCommand = new FCKPageBreakCommand() ; break ;
 
 		case 'TextColor'	: oCommand = new FCKTextColorCommand('ForeColor') ; break ;
 		case 'BGColor'		: oCommand = new FCKTextColorCommand('BackColor') ; break ;
@@ -77,6 +81,7 @@ FCKCommands.GetCommand = function( commandName )
 		case 'TableDeleteCells'		: oCommand = new FCKTableCommand('TableDeleteCells') ; break ;
 		case 'TableMergeCells'		: oCommand = new FCKTableCommand('TableMergeCells') ; break ;
 		case 'TableSplitCell'		: oCommand = new FCKTableCommand('TableSplitCell') ; break ;
+		case 'TableDelete'			: oCommand = new FCKTableCommand('TableDelete') ; break ;
 
 		case 'Form'			: oCommand = new FCKDialogCommand( 'Form'		, FCKLang.Form			, 'dialog/fck_form.html'		, 380, 230 ) ; break ;
 		case 'Checkbox'		: oCommand = new FCKDialogCommand( 'Checkbox'	, FCKLang.Checkbox		, 'dialog/fck_checkbox.html'	, 380, 230 ) ; break ;
@@ -89,6 +94,7 @@ FCKCommands.GetCommand = function( commandName )
 		case 'ImageButton'	: oCommand = new FCKDialogCommand( 'ImageButton', FCKLang.ImageButton	, 'dialog/fck_image.html?ImageButton', 450, 400 ) ; break ;
 
 		case 'SpellCheck'	: oCommand = new FCKSpellCheckCommand() ; break ;
+		case 'FitWindow'	: oCommand = new FCKFitWindow() ; break ;
 
 		case 'Undo'	: oCommand = new FCKUndoCommand() ; break ;
 		case 'Redo'	: oCommand = new FCKRedoCommand() ; break ;
@@ -103,7 +109,7 @@ FCKCommands.GetCommand = function( commandName )
 			else
 			{
 				alert( FCKLang.UnknownCommand.replace( /%1/g, commandName ) ) ;
-				return ;
+				return null ;
 			}
 	}
 	

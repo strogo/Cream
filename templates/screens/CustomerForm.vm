@@ -1,24 +1,61 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(1001)
 
 function formInit(){
 	myForm.status.value=$!entry.Status;
 	myForm.customertype.value=$!entry.CustomerType;
-	myForm.gendertemp.value=$!entry.Gender;
+	myForm.gender.value=$!entry.Gender;
+	myForm.industryid.value=$!entry.IndustryId;
 	myForm.customercatid.value=$!entry.CustomerCatId;
+	myForm.leadsourceid.value=$!entry.LeadSourceId;
 	myForm.languageid.value=$!entry.LanguageId;
 	myForm.emailformat.value=$!entry.EmailFormat;
 	myForm.countryid.value=$!entry.CountryId;
 	myForm.regionid.value=$!entry.RegionId;
-	myForm.householdcatidtemp.value=$!entry.HouseholdCatId;
-	myForm.educationcatidtemp.value=$!entry.EducationCatId;
+	myForm.shiptocountryid.value=$!entry.ShiptoCountryId;
+	myForm.shiptoregionid.value=$!entry.ShiptoRegionId;
+	myForm.householdcatid.value=$!entry.HouseholdCatId;
+	myForm.educationcatid.value=$!entry.EducationCatId;
+	myForm.agecatid.value=$!entry.AgeCatId;
+	myForm.employeenocatid.value=$!entry.EmployeeNoCatId;
+	myForm.revenuecatid.value=$!entry.RevenueCatId;
 
 	if (myForm.sendnews.value==10) myForm.sendnewstemp.checked=false;
 	if (myForm.customertype.value==20){
-		myForm.gendertemp.disabled=true;
-		myForm.householdcatidtemp.disabled=true;
-		myForm.educationcatidtemp.disabled=true;
+		document.getElementById('personfields1').style.display='none';
+		document.getElementById('personfields2').style.display='none';
+		document.getElementById('organfields1').style.display='';
+		document.getElementById('organfields2').style.display='';
 	}
+
+	#if (($!cmsintegration=="1"))
+	if (myForm.allowlogin.value==20){
+		myForm.allowlogintemp.checked=true;
+		myForm.logindisplay.value=myForm.loginname.value;
+		myForm.passworddisplay.value=myForm.passwordvalue.value;
+	}else{
+		myForm.logindisplay.disabled=true;
+		myForm.passworddisplay.disabled=true;
+		myForm.allowprofileedittemp.disabled=true;
+		if (myForm.loginexisted.value==20){
+			myForm.logindisplay.value=myForm.loginname.value;
+			myForm.passworddisplay.value=myForm.passwordvalue.value;
+		}else{
+			myForm.logindisplay.value='';
+			myForm.passworddisplay.value='';
+		}
+	}
+
+	if (myForm.allowprofileedit.value==20) myForm.allowprofileedittemp.checked=true;
+	#end
+
+	#if($mode!="insert")
+		if (parent.needsReload>1){
+			reloadRelated(parent.needsReload);
+			parent.needsReload=1;
+		}
+	#end
+
 	highlight(myForm.customername1);
 }
 
@@ -40,11 +77,13 @@ function formValidate(){
 		myForm.gender.value=10;
 		myForm.householdcatid.value=1000;
 		myForm.educationcatid.value=1000;
+		myForm.agecatid.value=1000;
 	}
 	else{
-		myForm.gender.value=myForm.gendertemp.value;
-		myForm.householdcatid.value=myForm.householdcatidtemp.value;
-		myForm.educationcatid.value=myForm.educationcatidtemp.value;
+		myForm.employeenocatid.value=1000;
+		myForm.revenuecatid.value=1000;
+		myForm.taxidno.value='';
+		myForm.ownership.value='';
 	}
 	if (myForm.sendnewstemp.checked){
 		 myForm.sendnews.value=20;
@@ -52,31 +91,306 @@ function formValidate(){
 	else {
 		 myForm.sendnews.value=10;
 	}
+
+	#if (($!cmsintegration=="1"))
+	if (myForm.allowlogintemp.checked){
+		if (parent.isNotLogin(myForm.logindisplay)) return false;
+		if (parent.isNotPassword(myForm.passworddisplay)) return false;
+		myForm.loginname.value=myForm.logindisplay.value;
+		myForm.passwordvalue.value = parent.hex_sha1(parent.trimString(myForm.passworddisplay.value));
+		
+		 myForm.allowlogin.value=20;
+		 myForm.loginexisted.value=20;
+	}
+	else {
+		myForm.allowlogin.value=10;
+		if (myForm.loginexisted.value!=20){
+			myForm.loginname.value=myForm.customercode.value;
+			myForm.passwordvalue.value=parent.hex_sha1('blank');
+		}
+	}
 	
+	if (myForm.allowprofileedittemp.checked){
+		 myForm.allowprofileedit.value=20;
+	}
+	else {
+		 myForm.allowprofileedit.value=10;
+	}
+	#else
+	
+		myForm.allowlogin.value=10;
+		if (myForm.loginexisted.value!=20){
+			myForm.loginname.value=myForm.customercode.value;
+			myForm.passwordvalue.value=parent.hex_sha1('blank');
+		}
+		 myForm.allowprofileedit.value=10;
+	#end
 	return true;
 }
 
 function valueChanged(formField){
 	if (formField.name=='customername1'){
-		myForm.customerdisplay.value=formField.value;
-		myForm.dear.value=formField.value;
+		if (myForm.customertype.value==20){
+			myForm.customerdisplay.value=formField.value;
+			myForm.dear.value=formField.value;
+		}else{
+			var fullName= trimString(formField.value);
+			var pos1=fullName.indexOf(' ');
+
+			if (fullName.length>1 && pos1>0){
+				var fName=fullName.substring(0, pos1);
+				var oName=fullName.substring(0, pos1);
+				var lName=trimString(fullName.substring(pos1+1, fullName.length ));
+				var pos2=lName.indexOf(' ');
+				while (pos2>0){
+					oName = oName + ' ' + trimString(lName.substring(0, pos2 ));
+					lName = trimString(lName.substring(pos2+1, lName.length));
+					pos2=lName.indexOf(' ');
+				}
+				
+				myForm.customerdisplay.value=lName + ', ' + oName;
+				myForm.dear.value=fName;
+			}else{
+				myForm.customerdisplay.value=fullName;
+				myForm.dear.value=fullName;
+			}
+			
+			
+		}
 	}
 	else if (formField.name=='customertype'){
 		if (formField.value==20){
-			myForm.gendertemp.value=10;
-			myForm.householdcatidtemp.value=1000;
-			myForm.educationcatidtemp.value=1000;
-			myForm.gendertemp.disabled=true;
-			myForm.householdcatidtemp.disabled=true;
-			myForm.educationcatidtemp.disabled=true;
+			document.getElementById('personfields1').style.display='none';
+			document.getElementById('personfields2').style.display='none';
+			document.getElementById('organfields1').style.display='';
+			document.getElementById('organfields2').style.display='';
+			
 		}else{
-			myForm.gendertemp.disabled=false;
-			myForm.householdcatidtemp.disabled=false;
-			myForm.educationcatidtemp.disabled=false;
+			document.getElementById('personfields1').style.display='';
+			document.getElementById('personfields2').style.display='';
+			document.getElementById('organfields1').style.display='none';
+			document.getElementById('organfields2').style.display='none';
 		}
 	}
+	#if (($!cmsintegration=="1"))
+	else if (formField.name=='allowlogintemp'){
+		if (myForm.allowlogintemp.checked){
+			myForm.logindisplay.disabled=false;
+			myForm.passworddisplay.disabled=false;
+			myForm.allowprofileedittemp.disabled=false;
+
+		}else{
+			myForm.logindisplay.disabled=true;
+			myForm.passworddisplay.disabled=true;
+			myForm.allowprofileedittemp.disabled=true;
+		}
+		if (myForm.loginexisted.value==20){
+			myForm.logindisplay.value=myForm.loginname.value;
+			myForm.passworddisplay.value=myForm.passwordvalue.value;
+		}else{
+			myForm.logindisplay.value='';
+			myForm.passworddisplay.value='';
+		}
+	}
+	#end
 
 }
+
+function copyAddressRight(){
+	myForm.shiptoaddress1.value=myForm.address1.value;
+	myForm.shiptoaddress2.value=myForm.address2.value;
+	myForm.shiptoaddress3.value=myForm.address3.value;
+	myForm.shiptocity.value=myForm.city.value;
+	myForm.shiptozip.value=myForm.zip.value;
+	myForm.shiptostate.value=myForm.state.value;
+	myForm.shiptocountryid.value=myForm.countryid.value;
+	myForm.shiptoregionid.value=myForm.regionid.value;
+}
+
+function copyAddressLeft(){
+	myForm.address1.value=myForm.shiptoaddress1.value;
+	myForm.address2.value=myForm.shiptoaddress2.value;
+	myForm.address3.value=myForm.shiptoaddress3.value;
+	myForm.city.value=myForm.shiptocity.value;
+	myForm.zip.value=myForm.shiptozip.value;
+	myForm.state.value=myForm.shiptostate.value;
+	myForm.countryid.value=myForm.shiptocountryid.value;
+	myForm.regionid.value=myForm.shiptoregionid.value;
+}
+
+#if($mode!="insert")
+
+function addRelated(doctype){
+	parent.showNewRelated(doctype, CUSTOMER, $!entry.CustomerId);
+}
+
+function addRelatedDoc(){
+	alert("Not implemented yet!");
+}
+
+function editRelated(doctype, docid){
+	var docForm="";
+	if (doctype==10)
+		docForm=INBOX;
+	else if (doctype==30)
+		docForm=INBOX;
+	else if (doctype==50)
+		docForm=INBOX;
+	else if (doctype==100)
+		docForm=OUTBOX;
+	else if (doctype==110)
+		docForm=ONLINE_SUBSCRIPTION;
+	else if (doctype==120)
+		docForm=PRINT_SUBSCRIPTION;
+	else if (doctype==130)
+		docForm=SERVICE;
+	else if (doctype==140)
+		docForm=SHIPMENT;
+	else if (doctype==150)
+		docForm=PAYMENT;
+	else if (doctype==160)
+		docForm=ORDER;
+	else if (doctype==170)
+		docForm=OPPORTUNITY;
+	else if (doctype==1004)
+		docForm=CONTACT;
+	else if (doctype==1005)
+		docForm=TASK;
+
+	showRelated(CUSTOMER, $!entry.CustomerId, docForm, docid);
+}
+
+function reloadRelated(doctype){
+	var docForm="";
+	if (doctype==1004)
+		showFormTab(2);
+	else if (doctype==1005)
+		showFormTab(4);
+	else if (doctype>2000)
+		showFormTab(3);
+	else
+		showFormTab(5);
+
+}
+
+function showFormTab(frmTab){
+	if (frmTab==2){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("contactTab").style.display='block';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relContacts").style.display='block';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("CustomerRelContacts.vm")', $!entry.CustomerId);
+
+	}else if (frmTab==3){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("contactTab").style.display='none';
+		document.getElementById("docTab").style.display='block';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relContacts").style.display='none';
+		document.getElementById("relDocs").style.display='block';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("CustomerRelDocs.vm")', $!entry.CustomerId);
+
+	}else if (frmTab==4){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("contactTab").style.display='none';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='block';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relContacts").style.display='none';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='block';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("CustomerRelTasks.vm")', $!entry.CustomerId);
+
+	} else{
+		document.getElementById("notesTab").style.display='block';
+		document.getElementById("contactTab").style.display='none';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='block';
+		document.getElementById("relContacts").style.display='none';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='none';
+	}
+}
+
+function elementPosition(elem) {
+	var x = 0;
+	var y = 0;
+				
+	while (elem.offsetParent) {	
+		x += elem.offsetLeft + (elem.clientLeft || 0);
+		y += elem.offsetTop + (elem.clientTop || 0);
+		elem = elem.offsetParent;
+	}
+	return {x: x, y: y};
+}
+
+
+function showRelDocsMenu(menupic)
+    {
+		if (document.getElementById('relDocsMenu')){
+//			document.getElementById('relDocs').removeChild(document.getElementById('relDocsMenu'));
+			document.getElementById('relDataFrame').removeChild(document.getElementById('relDocsMenu'));
+		}else{
+			hl = document.createElement('div');
+			hl.id="relDocsMenu";
+			hl.style.position = "absolute";
+
+//			var p= elementPosition(document.getElementById("relDataFrame"));
+//			hl.style.top = p.y; 
+//			hl.style.left = p.x;
+
+			hl.style.top = document.getElementById("relDataFrame").firstChild.offsetTop; 
+			hl.style.left = document.getElementById("relDataFrame").firstChild.offsetLeft;
+
+//			alert (hl.style.top + " " + hl.style.left);
+
+			hl.style.zIndex = "100";
+			hl.style.backgroundColor = "white";
+			hl.style.fontWeight = "bold";
+			hl.style.color = "#7694C8";
+			hl.style.border = "solid 1px #7694C8"
+			hl.style.textAlign = "center";
+			menuHtml = '<table><tr align="left"><td><img src="$ui.image($ui.inbox)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(INBOX)">$!l10n.get("Inbox.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.message)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(OUTBOX)">$!l10n.get("Outbox.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.opportunity)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(OPPORTUNITY)">$!l10n.get("Opportunity.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.sorder)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(ORDER)">$!l10n.get("SalesOrder.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.shipment)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(SHIPMENT)">$!l10n.get("Shipment.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.service)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(SERVICE)">$!l10n.get("Service.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.osubs)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(ONLINE_SUBSCRIPTION)">$!l10n.get("OnlineSubscription.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.psubs)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(PRINT_SUBSCRIPTION)">$!l10n.get("PrintSubscription.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.payment)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(PAYMENT)">$!l10n.get("Payment.Form.NewTitle")</a></td></tr>';
+			menuHtml += '</table>';
+			hl.innerHTML = menuHtml;
+			document.getElementById("relDataFrame").appendChild(hl);
+		}
+		
+    }
+
+
+
+#end
 
 #formHeader("CustomerForm.vm" "CustomerSQL" "customerid" $!entry.CustomerId $mode)
 
@@ -103,34 +417,22 @@ function valueChanged(formField){
 	</td>
       </tr>
       <tr>
-        #formCellWithChange ($!l10n.get("Common.Form.Label.Name") "customername1" $!entry.CustomerName1 70 160 3)
-			<td width=16>&nbsp;</td>
 		#formLabel($!l10n.get("Common.Form.Label.Type"))
 		<td align="left">
-		<select name="customertype" tabIndex="7" value="$!entry.CustomerType" onchange="valueChanged(this);" width="160" STYLE="width: 160px">
+		<select name="customertype" tabIndex="3" value="$!entry.CustomerType" onchange="valueChanged(this);" width="160" STYLE="width: 160px">
 			<option value="10">$!l10n.get("Customer.Form.Type.Person")</option>
 			<option value="20">$!l10n.get("Customer.Form.Type.Institution")</option>
 		</select>
 		</td>
-      </tr>
-      <tr>
-        #formCell ("" "customername2" $!entry.CustomerName2 70 160 4)
 			<td width=16>&nbsp;</td>
-		#formLabel($!l10n.get("Customer.Form.Label.Gender"))
-		<td align="left">
-		<select name="gendertemp" tabIndex="8" value="$!entry.Gender" width="160" STYLE="width: 160px">
-			<option value="10">---</option>
-			<option value="20">$!l10n.get("Customer.Form.Gender.Male")</option>
-			<option value="30">$!l10n.get("Customer.Form.Gender.Female")</option>
-		</select>
-		</td>
+		#formEmptyCell()
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Display") "customerdisplay" $!entry.CustomerDisplay 70 160 5)
+        #formCellWithChange ($!l10n.get("Common.Form.Label.Name") "customername1" $!entry.CustomerName1 70 160 4)
 			<td width=16>&nbsp;</td>
 		#formLabel($!l10n.get("Common.Form.Label.Category"))
 		<td align="left">
-		<select name="customercatid" tabIndex="9" value="$!entry.CustomerCatId" width="160" STYLE="width: 160px">
+		<select name="customercatid" tabIndex="8" value="$!entry.CustomerCatId" width="160" STYLE="width: 160px">
 		#foreach ($customercat in $customercats)
 			<option value="$customercat.CustomerCatId">$customercat.CustomerCatName</option>
 		#end        	
@@ -138,7 +440,19 @@ function valueChanged(formField){
 		</td>
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Dear") "dear" $!entry.Dear 70 160 6)
+        #formCell ("" "customername2" $!entry.CustomerName2 70 160 5)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Customer.Form.Label.Industry"))
+		<td align="left">
+		<select name="industryid" tabIndex="9" value="$!entry.IndustryId" width="160" STYLE="width: 160px">
+		#foreach ($industry in $industries)
+			<option value="$industry.IndustryId">$industry.IndustryName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Display") "customerdisplay" $!entry.CustomerDisplay 70 160 6)
 			<td width=16>&nbsp;</td>
 		#formLabel($!l10n.get("Customer.Form.Label.Language"))
 		<td align="left">
@@ -150,82 +464,227 @@ function valueChanged(formField){
 		</td>
       </tr>
       <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Dear") "dear" $!entry.Dear 70 160 7)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Customer.Form.Label.LeadSource"))
+		<td align="left">
+		<select name="leadsourceid" tabIndex="11" value="$!entry.LeadSourceId" width="160" STYLE="width: 160px">
+		#foreach ($leadsource in $leadsources)
+			<option value="$leadsource.LeadSourceId">$leadsource.LeadSourceName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
 		<td>
 		&nbsp;
 		</td>
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Address") "address1" $!entry.Address1 55 160 12)
-			<td width=16>&nbsp;</td>
         #formCell ($!l10n.get("Customer.Form.Label.Phone1")  "phone1" $!entry.Phone1 30 160 20)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Email")  "email" $!entry.Email 254 160 24)
       </tr>
       <tr>
-        #formCell ("" "address2" $!entry.Address2 55 160 13)
+        #formCell ($!l10n.get("Customer.Form.Label.Phone2")  "phone2" $!entry.Phone2 30 160 21)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Customer.Form.Label.Phone2")  "phone2" $!entry.Phone1 30 160 21)
+        #formCheckBox ($!l10n.get("Customer.Form.Label.SendNewsletters")  "sendnewstemp" true 25)
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.City")  "city" $!entry.City 35 160 15)
-			<td width=16>&nbsp;</td>
         #formCell ($!l10n.get("Customer.Form.Label.Fax")  "fax" $!entry.Fax 30 160 22)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.InfoUrl")  "www" $!entry.Www 254 160 26)
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Zip")  "zip" $!entry.Zip 12 100 16)
-			<td width=16>&nbsp;</td>
-		#formEmptyCell()
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.State")  "state" $!entry.State 35 160 17)
+        #formCell ($!l10n.get("Customer.Form.Label.Address") "address1" $!entry.Address1 55 160 31)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Customer.Form.Label.Email")  "email" $!entry.Email 70 160 24)
+        #formCell ($!l10n.get("Customer.Form.Label.ShiptoAddress") "shiptoaddress1" $!entry.ShiptoAddress1 55 160 41)
+      </tr>
+      <tr>
+        #formCell ("" "address2" $!entry.Address2 55 160 32)
+			<td width=16>&nbsp;</td>
+        #formCell ("" "shiptoaddress2" $!entry.ShiptoAddress2 55 160 42)
+      </tr>
+      <tr>
+        #formCell ("" "address3" $!entry.Address3 55 160 33)
+			<td width="40" align="center"><a href="javascript: void 0" ONCLICK="copyAddressRight()"><img src="$ui.image($ui.copyRight)" width="24" border="0"></td>
+        #formCell ("" "shiptoaddress3" $!entry.ShiptoAddress3 55 160 43)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.City")  "city" $!entry.City 35 160 34)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.City")  "shiptocity" $!entry.ShiptoCity 35 160 44)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.Zip")  "zip" $!entry.Zip 12 100 35)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Customer.Form.Label.Zip")  "shiptozip" $!entry.ShiptoZip 12 100 45)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Customer.Form.Label.State")  "state" $!entry.State 35 160 36)
+			<td width="40" align="center"><a href="javascript: void 0" ONCLICK="copyAddressLeft()"><img src="$ui.image($ui.copyLeft)" width="24" border="0"></a></td>
+        #formCell ($!l10n.get("Customer.Form.Label.State")  "shiptostate" $!entry.ShiptoState 35 160 46)
       </tr>
       <tr>
 		#formLabel($!l10n.get("Customer.Form.Label.Country") )
 		<td align="left">
-		<select name="countryid" tabIndex="18" value="$!entry.CountryId" width="160" STYLE="width: 160px">
+		<select name="countryid" tabIndex="37" value="$!entry.CountryId" width="160" STYLE="width: 160px">
 		#foreach ($country in $countries)
 			<option value="$country.CountryId">$country.CountryName</option>
 		#end        	
 		</select>
 		</td>
 			<td width=16>&nbsp;</td>
-        #formCheckBox ($!l10n.get("Customer.Form.Label.SendNewsletters")  "sendnewstemp" true 25)
+		#formLabel($!l10n.get("Customer.Form.Label.Country") )
+		<td align="left">
+		<select name="shiptocountryid" tabIndex="47" value="$!entry.ShiptoCountryId" width="160" STYLE="width: 160px">
+		#foreach ($country in $countries)
+			<option value="$country.CountryId">$country.CountryName</option>
+		#end        	
+		</select>
+		</td>
       </tr>
       <tr>
 		#formLabel($!l10n.get("Customer.Form.Label.Region") )
 		<td align="left">
-		<select name="regionid" tabIndex="19" value="$!entry.RegionId" width="160" STYLE="width: 160px">
+		<select name="regionid" tabIndex="38" value="$!entry.RegionId" width="160" STYLE="width: 160px">
 		#foreach ($region in $regions)
 			<option value="$region.RegionId">$region.RegionName</option>
 		#end        	
 		</select>
 		</td>
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Customer.Form.Label.InfoUrl")  "www" $!entry.Www 70 160 26)
+		#formLabel($!l10n.get("Customer.Form.Label.Region") )
+		<td align="left">
+		<select name="shiptoregionid" tabIndex="48" value="$!entry.ShiptoRegionId" width="160" STYLE="width: 160px">
+		#foreach ($region in $regions)
+			<option value="$region.RegionId">$region.RegionName</option>
+		#end        	
+		</select>
+		</td>
       </tr>
       <tr>
 		<td>
 		&nbsp;
 		</td>
       </tr>
-      <tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr id="personfields1" name="personfields1" style="display: inline-block;">
+		#formLabel($!l10n.get("Customer.Form.Label.Gender"))
+		<td align="left">
+		<select name="gender" tabIndex="51" value="$!entry.Gender" width="160" STYLE="width: 160px">
+			<option value="10">---</option>
+			<option value="20">$!l10n.get("Customer.Form.Gender.Male")</option>
+			<option value="30">$!l10n.get("Customer.Form.Gender.Female")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
 		#formLabel($!l10n.get("Customer.Form.Label.HouseholdIncome") )
 		<td align="left">
-		<select name="householdcatidtemp" tabIndex="27" value="$!entry.HouseholdCatId" width="160" STYLE="width: 160px">
+		<select name="householdcatid" tabIndex="53" value="$!entry.HouseholdCatId" width="160" STYLE="width: 160px">
 		#foreach ($income in $incomes)
 			<option value="$income.HouseholdCatId">$income.HouseholdCatName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr id="personfields2" name="personfields2" style="display: inline-block;">
+		#formLabel($!l10n.get("Customer.Form.Label.AgeCategory") )
+		<td align="left">
+		<select name="agecatid" tabIndex="52" value="$!entry.AgeCatId" width="160" STYLE="width: 160px">
+		#foreach ($agecat in $agecats)
+			<option value="$agecat.AgeCatId">$agecat.AgeCatName</option>
 		#end        	
 		</select>
 		</td>
 			<td width=16>&nbsp;</td>
 		#formLabel($!l10n.get("Customer.Form.Label.Education") )
 		<td align="left">
-		<select name="educationcatidtemp" tabIndex="28" value="$!entry.EducationCatId" width="160" STYLE="width: 160px">
+		<select name="educationcatid" tabIndex="54" value="$!entry.EducationCatId" width="160" STYLE="width: 160px">
 		#foreach ($education in $educations)
 			<option value="$education.EducationCatId">$education.EducationCatName</option>
 		#end        	
 		</select>
 		</td>
+      </tr>
+      <tr id="organfields1" name="organfields1" style="display: none;">
+		#formLabel($!l10n.get("Customer.Form.Label.EmployeeNo") )
+		<td align="left">
+		<select name="employeenocatid" tabIndex="61" value="$!entry.EmployeeNoCatId" width="160" STYLE="width: 160px">
+		#foreach ($employeecat in $employeecats)
+			<option value="$employeecat.EmployeeNoCatId">$employeecat.EmployeeNoCatName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+	        #formCell ($!l10n.get("Customer.Form.Label.TaxIdNo")  "taxidno" $!entry.TaxIdNo 30 160 63)
+      </tr>
+      <tr id="organfields2" name="organfields2" style="display: none;">
+		#formLabel($!l10n.get("Customer.Form.Label.Revenue") )
+		<td align="left">
+		<select name="revenuecatid" tabIndex="62" value="$!entry.RevenueCatId" width="160" STYLE="width: 160px">
+		#foreach ($revenue in $revenues)
+			<option value="$revenue.RevenueCatId">$revenue.RevenueCatName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formCell ($!l10n.get("Customer.Form.Label.Ownership")  "ownership" $!entry.Ownership 70 160 64)
       </tr>
       <tr>
 		<td>
@@ -233,41 +692,234 @@ function valueChanged(formField){
 		</td>
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Custom1")  "custom1" $!entry.Custom1 55 160 37)
+        #formCell ($!l10n.get("Customer.Form.Label.Custom1")  "custom1" $!entry.Custom1 128 160 71)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Customer.Form.Label.Custom4")  "custom4" $!entry.Custom4 55 160 40)
+        #formCell ($!l10n.get("Customer.Form.Label.Custom4")  "custom4" $!entry.Custom4 128 160 74)
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Custom2") "custom2" $!entry.Custom2 55 160 38)
+        #formCell ($!l10n.get("Customer.Form.Label.Custom2") "custom2" $!entry.Custom2 128 160 72)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Customer.Form.Label.Custom5") "custom5" $!entry.Custom5 55 160 41)
+        #formCell ($!l10n.get("Customer.Form.Label.Custom5") "custom5" $!entry.Custom5 128 160 75)
       </tr>
       <tr>
-        #formCell ($!l10n.get("Customer.Form.Label.Custom3") "custom3" $!entry.Custom3 55 160 39)
+        #formCell ($!l10n.get("Customer.Form.Label.Custom3") "custom3" $!entry.Custom3 128 160 73)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Customer.Form.Label.Custom6") "custom6" $!entry.Custom6 55 160 42)
+        #formCell ($!l10n.get("Customer.Form.Label.Custom6") "custom6" $!entry.Custom6 128 160 76)
       </tr>
+
+#if (($!cmsintegration=="1"))
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+	<td class=frmlabel align="left" colspan="2">
+		<input type="checkbox" name="allowlogintemp" onclick="valueChanged(this);" tabIndex="81"/>$!l10n.get("Customer.Form.Label.AllowCustomerLogin")
+	</td>
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Application.Login.User") "logindisplay" $!entry.LoginName 32 160 83)
+      </tr>
+      <tr>
+	<td class=frmlabel align="left" colspan="2">
+		<input type="checkbox" name="allowprofileedittemp" tabIndex="82" />$!l10n.get("Customer.Form.Label.AllowProfileEditing")
+	</td>
+			<td width=16>&nbsp;</td>
+        #formPasswordCell ($!l10n.get("Application.Login.Password") "passworddisplay" $!entry.PasswordValue 32 160 84)
+      </tr>
+#end
 	</table>
   </td>
 </tr>
 
-<input type="hidden" name="gender" value="$!entry.Gender">
-<input type="hidden" name="householdcatid" value="$!entry.HouseholdCatId">
-<input type="hidden" name="educationcatid" value="$!entry.EducationCatId">
 <input type="hidden" name="sendnews" value="$!entry.SendNews">
+<input type="hidden" name="allowlogin" value="$!entry.AllowLogin">
+<input type="hidden" name="allowprofileedit" value="$!entry.AllowProfileEdit">
+<input type="hidden" name="loginexisted" value="$!entry.LoginExisted">
+<input type="hidden" name="loginname" value="$!entry.LoginName">
+<input type="hidden" name="passwordvalue" value="$!entry.PasswordValue">
 <input type="hidden" name="emailformat" value="20">
+<input type="hidden" name="customerid" value="$!entry.CustomerId">
 
 <tr>
 <td>
 &nbsp;
 </td>
 </tr>
+
+
 <tr>
-	<td align=center>
-		<textarea rows="5" cols="96%" name="notes" tabIndex=43>$!entry.Notes</textarea>
-	</td>
+<td>
+
+#if($mode!="insert")
+
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="214" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:212px; width: 556px">$!entry.Notes</textarea>
+
+			<table id="relContacts" name="relContacts" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="addRelated(CONTACT)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="300" align="left">$!l10n.get("Common.List.Header.Name")</td>
+						<td width="130" align="left">$!l10n.get("Contact.Form.Label.PhoneWork")</td>
+					</tr>
+			</table>
+			<table id="relDocs" name="relDocs" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="showRelDocsMenu(this)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Common.List.Header.Date")</td>
+					</tr>
+			</table>
+			<table id="relTasks" name="relTasks" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="addRelated(TASK)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Task.List.Header.DueDate")</td>
+					</tr>
+			</table>
+			<DIV ID="relDataFrame" NAME="relDataFrame" STYLE=" width: 556px; height:191px; position: relative; overflow: scroll; overflow-x:hidden; background-color:white;display:none;">
+			</DIV>
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="contactsTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(2)">$!l10n.get("Contact.Menu.Label")</span></td>
+			<td id="docsTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="contactTab" name="contactTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab2" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="contactsTab2" class=frmtabhi align=center valign=center>$!l10n.get("Contact.Menu.Label")</td>
+			<td id="docsTab2" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab2" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="docTab" name="docTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="contactsTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(2)">$!l10n.get("Contact.Menu.Label")</span></td>
+			<td id="docsTab3" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Documents")</td>
+			<td id="tasksTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="taskTab" name="taskTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="contactsTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(2)">$!l10n.get("Contact.Menu.Label")</span></td>
+			<td id="docsTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab4" class=frmtabhi align=center valign=center>$!l10n.get("Task.Menu.Label")</td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#else
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="204" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:200px; width: 556px">$!entry.Notes</textarea>
+
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr align="left">
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="contactsTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Contact.Menu.Label")</span></td>
+			<td id="docsTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#end
+
+</td>
 </tr>
-<tr>
+
+
+#if ($!mode=="insert")
+
+#else
+
+
+#end
+
 <td>
 &nbsp;
 </td>

@@ -1,0 +1,29 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	parent.document.getElementById('relDataFrame').innerHTML=document.body.innerHTML;
+
+}
+
+#utilHeader()
+
+	<table align="left" width="100%" cellpadding=2 cellspacing=0 border=0 style="background-color:white">
+	
+	#foreach ($entryitem in $entryitems)
+
+		#rowStatusClass ($!entryitem.Status)
+		#addListPic($ui.task)
+		<td width="90" align="left"><span class="llink" onClick="editRelated(1005, $!entryitem.TaskId)">$!entryitem.TaskCode&nbsp;</span></td>
+		<td width="350" align="left">$!entryitem.Subject&nbsp;</td>
+		#if ($!entryitem.DueDate)
+			<td width="80" align="left">$!df.format($!entryitem.DueDate)&nbsp;</td>
+		#else
+			<td width="80" align="left">&nbsp;</td>
+		#end
+		</tr>
+	#end
+
+	</table>
+
+#utilFooter()

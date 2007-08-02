@@ -22,7 +22,7 @@
 				#else
 					#listCellPrc (15 "")
 				#end
-				#listCellPrc (10 $!entry.Country.CountryCode)
+				#listCellPrc (10 $!entry.CountryRelatedByCountryId.CountryCode)
 	        </tr>        
 		#end
 	#end

@@ -48,7 +48,7 @@ import org.campware.cream.om.LanguagePeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class LanguageList extends CreamList
+public class LanguageList extends CreamLookupList
 {
 
     protected void initScreen()

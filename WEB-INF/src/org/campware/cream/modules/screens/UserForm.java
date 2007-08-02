@@ -107,7 +107,7 @@ public class UserForm extends CreamForm
         try
         {
             Criteria rolecrit = new Criteria();
-            rolecrit.add(TurbineRolePeer.ROLE_ID, 999, Criteria.GREATER_THAN);
+            rolecrit.add(TurbineRolePeer.ROLE_ID, 1000, Criteria.GREATER_THAN);
             rolecrit.addAscendingOrderByColumn(TurbineRolePeer.ROLE_NAME);
             context.put("roles", TurbineRolePeer.doSelect(rolecrit));
 

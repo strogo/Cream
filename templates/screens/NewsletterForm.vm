@@ -1,12 +1,31 @@
 #set ( $module = "Main" )
 
-#formCommon()
+$page.setHttpEquiv("Pragma", "no-cache")
+$page.setBgColor("$ui.formBg")
+#if($mode=="insert")
+	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent(2008, true);")	
+#else
+	$page.addBodyAttribute("onLoad", "window.parent.copyFormContent(2008, false);")	
+#end
+
+<head>
+
+<script type="text/javascript" src="$content.getAbsoluteURI('/resources/FCKeditor/fckeditor.js')">
+</script>
+
+<script id="formScript" language="JavaScript">
+	var myForm=document.getElementById('formData');
+	
+	function highlight(theField){
+		theField.focus();
+		theField.select();
+	}
 
 function formInit(){
 	myForm.statustemp.value=$entry.Status;
 	myForm.priority.value=$entry.Priority;
 	myForm.languageid.value=$entry.LanguageId;
-	myForm.emailformat.value=$entry.EmailFormat;
+	myForm.emailformattemp.value=$entry.EmailFormat;
 	myForm.customercatidtemp.value=$entry.CustomerCatId;
 	myForm.customertypetemp.value=$entry.CustomerType;
 	myForm.custlanguageidtemp.value=$entry.CustLanguageId;
@@ -27,11 +46,28 @@ function formInit(){
 		myForm.reldocstatustemp.disabled=true;
 		myForm.relprojectidtemp.disabled=true;
 		myForm.relproductidtemp.disabled=true;
-	}else{
+	}else if (myForm.reldocument.value==10){
 		myForm.customercatidtemp.disabled=true;
 		myForm.customertypetemp.disabled=true;
 		myForm.custlanguageidtemp.disabled=true;
 		myForm.custcountryidtemp.disabled=true;
+	}else{
+		myForm.reldocstatustemp.disabled=true;
+	}
+
+#if($mode!="insert")
+	myForm.emailformattemp.disabled=true;
+#else
+	myForm.statustemp.value=10;
+	myForm.reldocstatustemp.value=30;
+	myForm.relprojectidtemp.value=1000;
+	myForm.relproductidtemp.value=1000;
+#end
+	if (myForm.emailformattemp.value==10 && myForm.statustemp.value==10){
+		var oEditor = FCKeditorAPI.GetInstance('FCKeditor1')
+		myForm.body.style.display="none";
+		document.getElementById('EmailEditor').style.display="";
+		oEditor.EditorDocument.designMode = "on";
 	}
 
 	myForm.languageid.focus();
@@ -64,7 +100,7 @@ function formValidate(){
 		myForm.custlanguageid.value=myForm.custlanguageidtemp.value;
 		myForm.custcountryid.value=myForm.custcountryidtemp.value;
 
-	}else{
+	}else if (myForm.reldocument.value==10){
 		myForm.reldocstatus.value=myForm.reldocstatustemp.value;
 		myForm.relprojectid.value=myForm.relprojectidtemp.value;
 		myForm.relproductid.value=myForm.relproductidtemp.value;
@@ -74,13 +110,26 @@ function formValidate(){
 		myForm.custlanguageid.value=999;
 		myForm.custcountryid.value=999;
 
+	}else{
+		myForm.reldocstatus.value=1;
+		myForm.relprojectid.value=myForm.relprojectidtemp.value;
+		myForm.relproductid.value=myForm.relproductidtemp.value;
+		myForm.customercatid.value=myForm.customercatidtemp.value;
+		myForm.customertype.value=myForm.customertypetemp.value;
+		myForm.custlanguageid.value=myForm.custlanguageidtemp.value;
+		myForm.custcountryid.value=myForm.custcountryidtemp.value;
+
 	}
 
 #if($mode=="insert" || $!entry.Status==10)
-	var newHtml= window.frames['utilEditor'].document.getElementById('FCKeditor1___Frame').contentWindow.document.getElementById('eEditorArea').contentWindow.document.body.innerHTML;
-	myForm.body.value=newHtml;
+	if (myForm.emailformattemp.value==10){
+		var oEditor = FCKeditorAPI.GetInstance('FCKeditor1') ;
+		var newHtml= oEditor.GetXHTML(true);
+		myForm.body.value=newHtml;
+	}
 #end
 
+	myForm.emailformat.value=myForm.emailformattemp.value;
 	myForm.status.value=myForm.statustemp.value;
 
 	return true;
@@ -101,7 +150,7 @@ function valueChanged(formField){
 			myForm.customertypetemp.disabled=false;
 			myForm.custlanguageidtemp.disabled=false;
 			myForm.custcountryidtemp.disabled=false;
-		}else{
+		}else if (formField.value==10){
 			myForm.customercatidtemp.value=999;
 			myForm.customertypetemp.value=1;
 			myForm.custlanguageidtemp.value=999;
@@ -114,6 +163,38 @@ function valueChanged(formField){
 			myForm.reldocstatustemp.disabled=false;
 			myForm.relprojectidtemp.disabled=false;
 			myForm.relproductidtemp.disabled=false;
+			myForm.reldocstatustemp.value=30;
+			myForm.relprojectidtemp.value=1000;
+			myForm.relproductidtemp.value=1000;
+		}else{
+			myForm.reldocstatustemp.value=1;
+			myForm.relprojectidtemp.value=999;
+			myForm.relproductidtemp.value=999;
+			myForm.customercatidtemp.value=999;
+			myForm.customertypetemp.value=1;
+			myForm.custlanguageidtemp.value=999;
+			myForm.custcountryidtemp.value=999;
+
+			myForm.reldocstatustemp.disabled=true;
+
+			myForm.customercatidtemp.disabled=false;
+			myForm.customertypetemp.disabled=false;
+			myForm.custlanguageidtemp.disabled=false;
+			myForm.custcountryidtemp.disabled=false;
+
+			myForm.relprojectidtemp.disabled=false;
+			myForm.relproductidtemp.disabled=false;
+		}
+	}else if (formField.name=='emailformattemp'){
+
+		if (formField.value==10){
+			var oEditor = FCKeditorAPI.GetInstance('FCKeditor1')
+			myForm.body.style.display="none";
+			document.getElementById('EmailEditor').style.display="";
+			oEditor.EditorDocument.designMode = "on";
+		} else {
+			document.getElementById('EmailEditor').style.display="none";
+			myForm.body.style.display="";
 		}
 	}
 
@@ -162,6 +243,14 @@ function valueChanged(formField){
 	</td>
  </tr>
       <tr>  
+		#formLabel($!l10n.get("Newsletter.Form.Label.EmailFormat"))
+		<td align="left">
+		<select name="emailformattemp" tabIndex="2" value="$!entry.EmailFormat" onchange="valueChanged(this);" width="100" STYLE="width: 100px">
+			<option value="10">$!l10n.get("Customer.Form.EmailFormat.Html")</option>
+			<option value="20">$!l10n.get("Customer.Form.EmailFormat.Text")</option>
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
 		#formLabel($!l10n.get("Newsletter.Form.Label.Language"))
 		<td align="left">
 		<select name="languageid" tabIndex="6" value="$!entry.LanguageId" width="100" STYLE="width: 100px">
@@ -170,8 +259,6 @@ function valueChanged(formField){
 		#end        	
 		</select>
 		</td>
-			<td width=16>&nbsp;</td>
-			#formEmptyCell()
 			<td width=16>&nbsp;</td>
    		#formCellDateDefault ($!l10n.get("Common.Form.Label.Date") "issueddate" $!entry.IssuedDate $!today 20 100 8)
  		</tr>
@@ -200,13 +287,14 @@ function valueChanged(formField){
 						<select name="reldocument" tabIndex="15" value="$!entry.RelDocument" onchange="valueChanged(this);" width="160" STYLE="width: 160px">
 							<option value="10">$!l10n.get("NewsSubscription.Menu.Label")</option>
 							<option value="20">$!l10n.get("Customer.Menu.Label")</option>
+							<option value="30">$!l10n.get("Payment.Menu.Label")</option>
 						</select>
 						</td>
 							<td width=16>&nbsp;</td>
 						#formLabel($!l10n.get("Common.Form.Label.Category"))
 						<td align="left">
 						<select name="customercatidtemp" tabIndex="19" value="$!entry.CustomerCatId" width="160" STYLE="width: 160px">
-							<option value="999">(*)</option>
+							<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 						#foreach ($customercat in $customercats)
 							<option value="$customercat.CustomerCatId">$customercat.CustomerCatName</option>
 						#end        	
@@ -217,7 +305,7 @@ function valueChanged(formField){
 						#formLabel($!l10n.get("Common.Form.Label.Status"))
 						<td align="left">
 						<select name="reldocstatustemp" tabIndex="16" value="$!entry.RelDocStatus" width="160" STYLE="width: 160px">
-							<option value="1">(*)</option>
+							<option value="1">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 							<option value="30">$!l10n.get("Common.Form.Status.Open")</option>
 							<option value="50">$!l10n.get("Common.Form.Status.Closed")</option>
 						</select>
@@ -226,7 +314,7 @@ function valueChanged(formField){
 						#formLabel($!l10n.get("Common.Form.Label.Type"))
 						<td align="left">
 						<select name="customertypetemp" tabIndex="20" value="$!entry.CustomerType" width="160" STYLE="width: 160px">
-							<option value="1">(*)</option>
+							<option value="1">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 							<option value="10">$!l10n.get("Customer.Form.Type.Person")</option>
 							<option value="20">$!l10n.get("Customer.Form.Type.Institution")</option>
 						</select>
@@ -236,7 +324,7 @@ function valueChanged(formField){
 						#formLabel($!l10n.get("Common.Form.Label.Product"))
 						<td align="left">
 						<select name="relproductidtemp" tabIndex="17" value="$!entry.RelProductId" width="160" STYLE="width: 160px">
-							<option value="999">(*)</option>
+							<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 						#foreach ($product in $products)
 							<option value="$product.ProductId">$product.ProductDisplay</option>
 						#end        	
@@ -246,7 +334,7 @@ function valueChanged(formField){
 						#formLabel($!l10n.get("Newsletter.Form.Label.Language"))
 						<td align="left">
 						<select name="custlanguageidtemp" tabIndex="21" value="$!entry.CustLanguageId" width="160" STYLE="width: 160px">
-							<option value="999">(*)</option>
+							<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 						#foreach ($language in $languages)
 							<option value="$language.LanguageId">$language.LanguageName</option>
 						#end        	
@@ -257,7 +345,7 @@ function valueChanged(formField){
 						#formLabel($!l10n.get("Common.Form.Label.Project"))
 						<td align="left">
 						<select name="relprojectidtemp" tabIndex="18" value="$!entry.RelProjectId" width="160" STYLE="width: 160px">
-							<option value="999">(*)</option>
+							<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 						#foreach ($project in $projects)
 							<option value="$project.ProjectId">$project.ProjectName</option>
 						#end        	
@@ -267,7 +355,7 @@ function valueChanged(formField){
 						#formLabel($!l10n.get("Newsletter.Form.Label.Country"))
 						<td align="left">
 						<select name="custcountryidtemp" tabIndex="22" value="$!entry.CustCountryId" width="160" STYLE="width: 160px">
-							<option value="999">(*)</option>
+							<option value="999">( $!l10n.get("Common.List.Filter.Option.All") )</option>
 						#foreach ($country in $countries)
 							<option value="$country.CountryId">$country.CountryName</option>
 						#end        	
@@ -310,7 +398,6 @@ function valueChanged(formField){
 		 </tr>
 
 <input type="hidden" name="newslettercode" value="$!entry.NewsletterCode">
-<input type="hidden" name="emailformat" value="20">
 <input type="hidden" name="reldocstatus" value="$!entry.RelDocStatus">
 <input type="hidden" name="relprojectid" value="$!entry.RelProjectId">
 <input type="hidden" name="relproductid" value="$!entry.RelProductId">
@@ -319,13 +406,51 @@ function valueChanged(formField){
 <input type="hidden" name="custlanguageid" value="$!entry.CustLanguageId">
 <input type="hidden" name="custcountryid" value="$!entry.CustCountryId">
 <input type="hidden" name="status" value="$!entry.Status">
+<input type="hidden" name="emailformat" value="$!entry.EmailFormat">
 <input type="hidden" name="editorlang" value="$!l10n.getLocale().getLanguage()">
 
-  		#if($mode=="insert" || $!entry.Status==10)
+  		#if($mode=="insert")
 			<tr>
 				<td align=left colspan=2>
-				<IFRAME id="utilEditor" name="utilEditor" valign="top" src="$content.getAbsoluteURI('/resources/FCKeditor/body.html')" style="width: 580px; height:272px" frameborder="0" scrolling="no">
-				</IFRAME>
+				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none;width: 100%">$!entry.Body</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td align=left colspan=2>
+				<DIV ID="EmailEditor" NAME="EmailEditor" STYLE="width:580px; height:250px;">
+				  <textarea rows=16 id="FCKeditor1" name="FCKeditor1" width="100%" style="width: 100%">$!entry.body</textarea>
+				  <script type="text/javascript">
+				    oFCKeditor = new FCKeditor( 'FCKeditor1' ) ;
+				    oFCKeditor.BasePath = "$content.getAbsoluteURI('/resources/FCKeditor/')" ;
+				    oFCKeditor.ToolbarSet = 'Default';
+				    oFCKeditor.ReplaceTextarea();
+				  </script>
+				</DIV>
+				</td>
+			</tr>
+  		#elseif($!entry.Status==10 && $!entry.EmailFormat==10)
+			<tr>
+				<td align=left colspan=2>
+				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none;width: 100%">$!entry.Body</textarea>
+				</td>
+			</tr>
+			<tr>
+				<td align=left colspan=2>
+				<DIV ID="EmailEditor" NAME="EmailEditor" STYLE="width:580px; height:250px;">
+				  <textarea rows=16 id="FCKeditor1" name="FCKeditor1" width="100%" style="width: 100%">$!entry.body</textarea>
+				  <script type="text/javascript">
+				    oFCKeditor = new FCKeditor( 'FCKeditor1' ) ;
+				    oFCKeditor.BasePath = "$content.getAbsoluteURI('/resources/FCKeditor/')" ;
+				    oFCKeditor.ToolbarSet = 'Default';
+				    oFCKeditor.ReplaceTextarea();
+				  </script>
+				</DIV>
+				</td>
+			</tr>
+		#elseif ($!entry.Status==10 && $!entry.EmailFormat==20)
+			<tr>
+				<td align=left colspan=2>
+				<textarea rows=16 id="body" name="body" tabIndex=33 style="width: 100%">$!entry.Body</textarea>
 				</td>
 			</tr>
 		#else
@@ -337,11 +462,6 @@ function valueChanged(formField){
 				</td>
 			</tr>
 		#end
-			<tr>
-				<td align=left colspan=2>
-				<textarea rows=16 id="body" name="body" tabIndex=33 style="display:none; width: 100%">$!entry.Body</textarea>
-				</td>
-			</tr>
 
 #if($!entry.Status==50 && $!entry.Notes)
 		 <tr>

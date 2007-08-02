@@ -1,12 +1,14 @@
 ﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fck_2_gecko.js
  * 	This is the second part of the "FCK" object creation. This is the main
@@ -36,7 +38,7 @@ FCK.RedirectNamedCommands =
 	Print	: true,
 	Paste	: true,
 	Cut		: true,
-	Copy	: true 
+	Copy	: true
 }
 
 // ExecuteNamedCommand overload for Gecko.
@@ -48,17 +50,17 @@ FCK.ExecuteRedirectedNamedCommand = function( commandName, commandParameter )
 			FCK.EditorWindow.print() ;
 			break ;
 		case 'Paste' :
-			try			{ if ( FCK.Paste() ) FCK._BaseExecuteNamedCommand( 'Paste' ) ; }
-			catch (e)	{ alert( FCKLang.PasteErrorPaste ) ; }
+			try			{ if ( FCK.Paste() ) FCK.ExecuteNamedCommand( 'Paste', null, true ) ; }
+			catch (e)	{ alert(FCKLang.PasteErrorPaste) ; }
 			break ;
 		case 'Cut' :
-			try			{ FCK._BaseExecuteNamedCommand( 'Cut' ) ; }
-			catch (e)	{ alert( FCKLang.PasteErrorCut ) ; }
+			try			{ FCK.ExecuteNamedCommand( 'Cut', null, true ) ; }
+			catch (e)	{ alert(FCKLang.PasteErrorCut) ; }
 			break ;
 		case 'Copy' :
-			try			{ FCK._BaseExecuteNamedCommand( 'Copy' ) ; }
-			catch (e)	{ alert( FCKLang.PasteErrorCopy ) ; }
-			break ;
+			try			{ FCK.ExecuteNamedCommand( 'Copy', null, true ) ; }
+			catch (e)	{ alert(FCKLang.PasteErrorCopy) ; }
+			break ;			
 		default :
 			FCK.ExecuteNamedCommand( commandName, commandParameter ) ;
 	}
@@ -76,6 +78,7 @@ FCK.Paste = function()
 		FCK.PasteAsPlainText() ;	
 		return false ;
 	}
+/* For now, the AutoDetectPasteFromWord feature is IE only.
 	else if ( FCKConfig.AutoDetectPasteFromWord )
 	{
 		var sHTML = FCK.GetClipboardHTML() ;
@@ -89,6 +92,7 @@ FCK.Paste = function()
 			}
 		}
 	}
+*/
 	else
 		return true ;
 }
@@ -98,18 +102,14 @@ FCK.Paste = function()
 // selected content if any.
 FCK.InsertHtml = function( html )
 {
+	html = FCKConfig.ProtectedSource.Protect( html ) ;
+	html = FCK.ProtectUrls( html ) ;
+
 	// Delete the actual selection.
 	var oSel = FCKSelection.Delete() ;
 	
-//	var oContainer	= oSel.getRangeAt(0).startContainer ;
-//	var iOffSet		= oSel.getRangeAt(0).startOffset ;
-	
 	// Get the first available range.
 	var oRange = oSel.getRangeAt(0) ;
-	
-//	var oRange = this.EditorDocument.createRange() ;
-//	oRange.setStart( oContainer, iOffSet ) ;
-//	oRange.setEnd( oContainer, iOffSet ) ;
 	
 	// Create a fragment with the input HTML.
 	var oFragment = oRange.createContextualFragment( html ) ;
@@ -121,13 +121,9 @@ FCK.InsertHtml = function( html )
 	oRange.insertNode(oFragment) ;
 	
 	// Set the cursor after the inserted fragment.
-	oRange.setEndAfter( oLastNode ) ;
-	oRange.setStartAfter( oLastNode ) ;
+	FCKSelection.SelectNode( oLastNode ) ;
+	FCKSelection.Collapse( false ) ;
 	
-	oSel.removeAllRanges() ;
-	oSel = FCK.EditorWindow.getSelection() ;
-	oSel.addRange( oRange ) ;
-		
 	this.Focus() ;
 }
 
@@ -143,8 +139,8 @@ FCK.InsertElement = function( element )
 	oRange.insertNode( element ) ;
 	
 	// Set the cursor after the inserted fragment.
-	oRange.setEndAfter( element ) ;
-	oRange.setStartAfter( element ) ;
+	FCKSelection.SelectNode( element ) ;
+	FCKSelection.Collapse( false ) ;
 
 	this.Focus() ;
 }

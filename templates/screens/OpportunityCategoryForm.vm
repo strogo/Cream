@@ -1,0 +1,20 @@
+#set ( $module = "Options" )
+#formCommon(3021)
+
+function formInit(){
+	highlight(myForm.opportunitycatname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.opportunitycatname)) return false;
+	
+	return true;
+}
+
+#formHeader("OpportunityCategoryForm.vm" "OpportunityCategorySQL" "opportunitycatid" $!entry.OpportunityCatId $mode)
+
+      <tr>  
+        #formCell ($!l10n.get("Common.Form.Label.Name") "opportunitycatname" $!entry.OpportunityCatName 50 200 1)
+      </tr>
+
+#formFooter("OpportunityCategoryForm.vm" "OpportunityCategorySQL" "opportunitycatid" $!entry.OpportunityCatId $mode)

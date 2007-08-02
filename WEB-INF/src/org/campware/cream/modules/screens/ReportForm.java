@@ -60,8 +60,8 @@ import org.campware.cream.om.ProductCategoryPeer;
 import org.campware.cream.om.CountryPeer;
 import org.campware.cream.om.RegionPeer;
 import org.campware.cream.om.LanguagePeer;
-import org.campware.cream.om.HouseholdCategoryPeer;
-import org.campware.cream.om.EducationCategoryPeer;
+import org.campware.cream.om.IndustryPeer;
+import org.campware.cream.om.LeadSourcePeer;
 import org.campware.cream.om.VendorPeer;
 import org.campware.cream.om.UomPeer;
 
@@ -124,15 +124,15 @@ public class ReportForm extends SecureScreen
             langcrit.addAscendingOrderByColumn(LanguagePeer.LANGUAGE_NAME);
             context.put("languages", LanguagePeer.doSelect(langcrit));
 
-            Criteria housecatcrit = new Criteria();
-            housecatcrit.add(HouseholdCategoryPeer.HOUSEHOLD_CAT_ID, 999, Criteria.GREATER_THAN);
-            housecatcrit.addAscendingOrderByColumn(HouseholdCategoryPeer.HOUSEHOLD_CAT_NAME);
-            context.put("householdcats", HouseholdCategoryPeer.doSelect(housecatcrit));
+            Criteria industrycrit = new Criteria();
+            industrycrit.add(IndustryPeer.INDUSTRY_ID, 999, Criteria.GREATER_THAN);
+            industrycrit.addAscendingOrderByColumn(IndustryPeer.INDUSTRY_NAME);
+            context.put("industries", IndustryPeer.doSelect(industrycrit));
 
-            Criteria educationcrit = new Criteria();
-            educationcrit.add(EducationCategoryPeer.EDUCATION_CAT_ID, 999, Criteria.GREATER_THAN);
-            educationcrit.addAscendingOrderByColumn(EducationCategoryPeer.EDUCATION_CAT_NAME);
-            context.put("educationcats", EducationCategoryPeer.doSelect(educationcrit));
+            Criteria leadsrccrit = new Criteria();
+            leadsrccrit.add(LeadSourcePeer.LEAD_SOURCE_ID, 999, Criteria.GREATER_THAN);
+            leadsrccrit.addAscendingOrderByColumn(LeadSourcePeer.LEAD_SOURCE_NAME);
+            context.put("leadsources", LeadSourcePeer.doSelect(leadsrccrit));
 
             Criteria vendorcrit = new Criteria();
             vendorcrit.add(VendorPeer.VENDOR_ID, 999, Criteria.GREATER_THAN);

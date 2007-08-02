@@ -114,6 +114,7 @@ public class OutboxEventSQL extends CreamAction
 	        } finally {
 	            if (!success) Transaction.safeRollback(conn);
 	        }
+	        setSavedId(entry.getPrimaryKey().toString());
 		}
     }
 
@@ -181,7 +182,7 @@ public class OutboxEventSQL extends CreamAction
 	//			ve.setMailServer(TurbineResources.getString("mail.server")); 
 				ve.setCharset("UTF-8"); 
 				ve.addTo( sEmailAddress, "");
-				ve.setFrom(Turbine.getConfiguration().getString("mail.smtp.from"), Turbine.getConfiguration().getString("mail.smtp.from.name")); 
+				ve.setFrom(Turbine.getConfiguration().getString("mail.smtp.from.email"), Turbine.getConfiguration().getString("mail.smtp.from.name")); 
 				ve.setSubject(emailEntry.getSubject()); 
 	//			ve.setTextMsg(emailEntry.getBody()); 
 				context.put("emailbody", emailEntry.getBody()); 

@@ -1,12 +1,14 @@
 ﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: it.js
  * 	Italian language file.
@@ -20,7 +22,7 @@ var FCKLang =
 // Language direction : "ltr" (left to right) or "rtl" (right to left).
 Dir					: "ltr",
 
-ToolbarCollapse		: "Nasconti la barra degli strumenti",
+ToolbarCollapse		: "Nascondi la barra degli strumenti",
 ToolbarExpand		: "Mostra la barra degli strumenti",
 
 // Toolbar Items and Context Menu
@@ -82,7 +84,9 @@ Source				: "Codice Sorgente",
 Find				: "Trova",
 Replace				: "Sostituisci",
 SpellCheck			: "Correttore ortografico",
-UniversalKeyboard	: "Tastiera univerale",
+UniversalKeyboard	: "Tastiera universale",
+PageBreakLbl		: "Interruzione di pagina",
+PageBreak			: "Inserisci interruzione di pagina",
 
 Form			: "Modulo",
 Checkbox		: "Checkbox",
@@ -94,8 +98,13 @@ Button			: "Bottone",
 SelectionField	: "Menu di selezione",
 ImageButton		: "Bottone immagine",
 
+FitWindow		: "Massimizza l'area dell'editor",
+
 // Context Menu
 EditLink			: "Modifica collegamento",
+CellCM				: "Cella",
+RowCM				: "Riga",
+ColumnCM			: "Colonna",
 InsertRow			: "Inserisci riga",
 DeleteRows			: "Elimina righe",
 InsertColumn		: "Inserisci colonna",
@@ -104,21 +113,22 @@ InsertCell			: "Inserisci cella",
 DeleteCells			: "Elimina celle",
 MergeCells			: "Unisce celle",
 SplitCell			: "Dividi celle",
-CellProperties		: "Propriet cella",
-TableProperties		: "Propriet tabella",
-ImageProperties		: "Propriet immagine",
-FlashProperties		: "Propriet Oggetto Flash",
+TableDelete			: "Cancella Tabella",
+CellProperties		: "Proprietà cella",
+TableProperties		: "Proprietà tabella",
+ImageProperties		: "Proprietà immagine",
+FlashProperties		: "Proprietà Oggetto Flash",
 
-AnchorProp			: "Propriet ancora",
-ButtonProp			: "Propriet bottone",
-CheckboxProp		: "Propriet checkbox",
-HiddenFieldProp		: "Propriet campo nascosto",
-RadioButtonProp		: "Propriet radio button",
-ImageButtonProp		: "Propriet bottone immagine",
-TextFieldProp		: "Propriet campo di testo",
-SelectionFieldProp	: "Propriet menu di selezione",
-TextareaProp		: "Propriet area di testo",
-FormProp			: "Propriet modulo",
+AnchorProp			: "Proprietà ancora",
+ButtonProp			: "Proprietà bottone",
+CheckboxProp		: "Proprietà checkbox",
+HiddenFieldProp		: "Proprietà campo nascosto",
+RadioButtonProp		: "Proprietà radio button",
+ImageButtonProp		: "Proprietà bottone immagine",
+TextFieldProp		: "Proprietà campo di testo",
+SelectionFieldProp	: "Proprietà menu di selezione",
+TextareaProp		: "Proprietà area di testo",
+FormProp			: "Proprietà modulo",
 
 FontFormats			: "Normale;Formattato;Indirizzo;Titolo 1;Titolo 2;Titolo 3;Titolo 4;Titolo 5;Titolo 6;Paragrafo (DIV)",
 
@@ -126,11 +136,14 @@ FontFormats			: "Normale;Formattato;Indirizzo;Titolo 1;Titolo 2;Titolo 3;Titolo 
 ProcessingXHTML		: "Elaborazione XHTML in corso. Attendere prego...",
 Done				: "Completato",
 PasteWordConfirm	: "Il testo da incollare sembra provenire da Word. Desideri pulirlo prima di incollare?",
-NotCompatiblePaste	: "Questa funzione  disponibile solo per Internet Explorer 5.5 o superiore. Desideri incollare il testo senza pulirlo?",
+NotCompatiblePaste	: "Questa funzione è disponibile solo per Internet Explorer 5.5 o superiore. Desideri incollare il testo senza pulirlo?",
 UnknownToolbarItem	: "Elemento della barra strumenti sconosciuto \"%1\"",
 UnknownCommand		: "Comando sconosciuto \"%1\"",
-NotImplemented		: "Commando non implementato",
+NotImplemented		: "Comando non implementato",
 UnknownToolbarSet	: "La barra di strumenti \"%1\" non esiste",
+NoActiveX			: "Le impostazioni di sicurezza del tuo browser potrebbero limitare alcune funzionalità dell'editor. Devi abilitare l'opzione \"Esegui controlli e plug-in ActiveX\". Potresti avere errori e notare funzionalità mancanti.",
+BrowseServerBlocked : "Non è possibile aprire la finestra di espolorazione risorse. Verifica che tutti i blocca popup siano bloccati.",
+DialogBlocked		: "Non è possibile aprire la finestra di dialogo. Verifica che tutti i blocca popup siano bloccati.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -138,18 +151,18 @@ DlgBtnCancel		: "Annulla",
 DlgBtnClose			: "Chiudi",
 DlgBtnBrowseServer	: "Cerca sul server",
 DlgAdvancedTag		: "Avanzate",
-DlgOpOther			: "&lt;Altro&gt;",
+DlgOpOther			: "<Altro>",
 DlgInfoTab			: "Info",
 DlgAlertUrl			: "Devi inserire l'URL",
 
 // General Dialogs Labels
-DlgGenNotSet		: "&lt;non impostato&gt;",
+DlgGenNotSet		: "<non impostato>",
 DlgGenId			: "Id",
 DlgGenLangDir		: "Direzione scrittura",
 DlgGenLangDirLtr	: "Da Sinistra a Destra (LTR)",
 DlgGenLangDirRtl	: "Da Destra a Sinistra (RTL)",
 DlgGenLangCode		: "Codice Lingua",
-DlgGenAccessKey		: "Scorciatoria<br>da tastiera",
+DlgGenAccessKey		: "Scorciatoia<br />da tastiera",
 DlgGenName			: "Nome",
 DlgGenTabIndex		: "Ordine di tabulazione",
 DlgGenLongDescr		: "URL descrizione estesa",
@@ -160,7 +173,7 @@ DlgGenLinkCharset	: "Set di caretteri della risorsa collegata",
 DlgGenStyle			: "Stile",
 
 // Image Dialog
-DlgImgTitle			: "Propriet immagine",
+DlgImgTitle			: "Proprietà immagine",
 DlgImgInfoTab		: "Informazioni immagine",
 DlgImgBtnUpload		: "Invia al server",
 DlgImgURL			: "URL",
@@ -188,7 +201,7 @@ DlgImgAlertUrl		: "Devi inserire l'URL per l'immagine",
 DlgImgLinkTab		: "Collegamento",
 
 // Flash Dialog
-DlgFlashTitle		: "Propriet Oggetto Flash",
+DlgFlashTitle		: "Proprietà Oggetto Flash",
 DlgFlashChkPlay		: "Avvio Automatico",
 DlgFlashChkLoop		: "Cicla",
 DlgFlashChkMenu		: "Abilita Menu di Flash",
@@ -207,12 +220,12 @@ DlgLnkTypeURL		: "URL",
 DlgLnkTypeAnchor	: "Ancora nella pagina",
 DlgLnkTypeEMail		: "E-Mail",
 DlgLnkProto			: "Protocollo",
-DlgLnkProtoOther	: "&lt;altro&gt;",
+DlgLnkProtoOther	: "<altro>",
 DlgLnkURL			: "URL",
 DlgLnkAnchorSel		: "Scegli Ancora",
 DlgLnkAnchorByName	: "Per Nome",
 DlgLnkAnchorById	: "Per id elemento",
-DlgLnkNoAnchors		: "&lt;Nessuna ancora disponibile nel documento&gt;",
+DlgLnkNoAnchors		: "<Nessuna ancora disponibile nel documento>",
 DlgLnkEMail			: "Indirizzo E-Mail",
 DlgLnkEMailSubject	: "Oggetto del messaggio",
 DlgLnkEMailBody		: "Corpo del messaggio",
@@ -220,8 +233,8 @@ DlgLnkUpload		: "Carica",
 DlgLnkBtnUpload		: "Invia al Server",
 
 DlgLnkTarget		: "Destinazione",
-DlgLnkTargetFrame	: "&lt;riquadro&gt;",
-DlgLnkTargetPopup	: "&lt;finestra popup&gt;",
+DlgLnkTargetFrame	: "<riquadro>",
+DlgLnkTargetPopup	: "<finestra popup>",
 DlgLnkTargetBlank	: "Nuova finestra (_blank)",
 DlgLnkTargetParent	: "Finestra padre (_parent)",
 DlgLnkTargetSelf	: "Stessa finestra (_self)",
@@ -245,6 +258,7 @@ DlgLnkPopTop		: "Posizione dall'alto",
 DlnLnkMsgNoUrl		: "Devi inserire l'URL del collegamento",
 DlnLnkMsgNoEMail	: "Devi inserire un'indirizzo e-mail",
 DlnLnkMsgNoAnchor	: "Devi selezionare un'ancora",
+DlnLnkMsgInvPopName	: "The popup name must begin with an alphabetic character and must not contain spaces",	//MISSING
 
 // Color Dialog
 DlgColorTitle		: "Seleziona colore",
@@ -259,12 +273,12 @@ DlgSmileyTitle		: "Inserisci emoticon",
 DlgSpecialCharTitle	: "Seleziona carattere speciale",
 
 // Table Dialog
-DlgTableTitle		: "Propriet tabella",
+DlgTableTitle		: "Proprietà tabella",
 DlgTableRows		: "Righe",
 DlgTableColumns		: "Colonne",
 DlgTableBorder		: "Dimensione bordo",
 DlgTableAlign		: "Allineamento",
-DlgTableAlignNotSet	: "&lt;non impostato&gt;",
+DlgTableAlignNotSet	: "<non impostato>",
 DlgTableAlignLeft	: "Sinistra",
 DlgTableAlignCenter	: "Centrato",
 DlgTableAlignRight	: "Destra",
@@ -275,24 +289,25 @@ DlgTableHeight		: "Altezza",
 DlgTableCellSpace	: "Spaziatura celle",
 DlgTableCellPad		: "Padding celle",
 DlgTableCaption		: "Intestazione",
+DlgTableSummary		: "Indice",
 
 // Table Cell Dialog
-DlgCellTitle		: "Propriet cella",
+DlgCellTitle		: "Proprietà cella",
 DlgCellWidth		: "Larghezza",
 DlgCellWidthPx		: "pixel",
 DlgCellWidthPc		: "percento",
 DlgCellHeight		: "Altezza",
 DlgCellWordWrap		: "A capo automatico",
-DlgCellWordWrapNotSet	: "&lt;non impostato&gt;",
+DlgCellWordWrapNotSet	: "<non impostato>",
 DlgCellWordWrapYes	: "Si",
 DlgCellWordWrapNo	: "No",
 DlgCellHorAlign		: "Allineamento orizzontale",
-DlgCellHorAlignNotSet	: "&lt;non impostato&gt;",
+DlgCellHorAlignNotSet	: "<non impostato>",
 DlgCellHorAlignLeft	: "Sinistra",
 DlgCellHorAlignCenter	: "Centrato",
 DlgCellHorAlignRight: "Destra",
 DlgCellVerAlign		: "Allineamento verticale",
-DlgCellVerAlignNotSet	: "&lt;non impostato&gt;",
+DlgCellVerAlignNotSet	: "<non impostato>",
 DlgCellVerAlignTop	: "In Alto",
 DlgCellVerAlignMiddle	: "Centrato",
 DlgCellVerAlignBottom	: "In Basso",
@@ -306,7 +321,7 @@ DlgCellBtnSelect	: "Scegli...",
 // Find Dialog
 DlgFindTitle		: "Trova",
 DlgFindFindBtn		: "Trova",
-DlgFindNotFoundMsg	: "L'elemento cercato non  stato trovato.",
+DlgFindNotFoundMsg	: "L'elemento cercato non è stato trovato.",
 
 // Replace Dialog
 DlgReplaceTitle			: "Sostituisci",
@@ -330,16 +345,15 @@ DlgPasteIgnoreFont		: "Ignora le definizioni di Font",
 DlgPasteRemoveStyles	: "Rimuovi le definizioni di Stile",
 DlgPasteCleanBox		: "Svuota area di testo",
 
-
 // Color Picker
 ColorAutomatic	: "Automatico",
 ColorMoreColors	: "Altri colori...",
 
 // Document Properties
-DocProps		: "Propriet del Documento",
+DocProps		: "Proprietà del Documento",
 
 // Anchor Dialog
-DlgAnchorTitle		: "Propriet ancora",
+DlgAnchorTitle		: "Proprietà ancora",
 DlgAnchorName		: "Nome ancora",
 DlgAnchorErrorName	: "Inserici il nome dell'ancora",
 
@@ -361,8 +375,11 @@ DlgSpellManyChanges		: "Controllo ortografico completato: %1 parole cambiate",
 IeSpellDownload			: "Contollo ortografico non installato. Lo vuoi scaricare ora?",
 
 // Button Dialog
-DlgButtonText	: "Testo (Value)",
-DlgButtonType	: "Tipo",
+DlgButtonText		: "Testo (Value)",
+DlgButtonType		: "Tipo",
+DlgButtonTypeBtn	: "Button",	//MISSING
+DlgButtonTypeSbm	: "Submit",	//MISSING
+DlgButtonTypeRst	: "Reset",	//MISSING
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Nome",
@@ -409,11 +426,12 @@ DlgHiddenName	: "Nome",
 DlgHiddenValue	: "Valore",
 
 // Bulleted List Dialog
-BulletedListProp	: "Propriet lista puntata",
-NumberedListProp	: "Propriet lista numerata",
+BulletedListProp	: "Proprietà lista puntata",
+NumberedListProp	: "Proprietà lista numerata",
+DlgLstStart			: "Start",	//MISSING
 DlgLstType			: "Tipo",
 DlgLstTypeCircle	: "Tondo",
-DlgLstTypeDisk		: "Disco",
+DlgLstTypeDisc		: "Disco",
 DlgLstTypeSquare	: "Quadrato",
 DlgLstTypeNumbers	: "Numeri (1, 2, 3)",
 DlgLstTypeLCase		: "Caratteri minuscoli (a, b, c)",
@@ -433,6 +451,15 @@ DlgDocLangDirLTR	: "Da Sinistra a Destra (LTR)",
 DlgDocLangDirRTL	: "Da Destra a Sinistra (RTL)",
 DlgDocLangCode		: "Codice Lingua",
 DlgDocCharSet		: "Set di caretteri",
+DlgDocCharSetCE		: "Central European",	//MISSING
+DlgDocCharSetCT		: "Chinese Traditional (Big5)",	//MISSING
+DlgDocCharSetCR		: "Cyrillic",	//MISSING
+DlgDocCharSetGR		: "Greek",	//MISSING
+DlgDocCharSetJP		: "Japanese",	//MISSING
+DlgDocCharSetKR		: "Korean",	//MISSING
+DlgDocCharSetTR		: "Turkish",	//MISSING
+DlgDocCharSetUN		: "Unicode (UTF-8)",	//MISSING
+DlgDocCharSetWE		: "Western European",	//MISSING
 DlgDocCharSetOther	: "Altro set di caretteri",
 
 DlgDocDocType		: "Intestazione DocType",
@@ -459,13 +486,15 @@ DlgDocPreview		: "Anteprima",
 // Templates Dialog
 Templates			: "Modelli",
 DlgTemplatesTitle	: "Contenuto dei modelli",
-DlgTemplatesSelMsg	: "Seleziona il modello da aprire nell'editor<br>(il contenuto attuale verr eliminato):",
+DlgTemplatesSelMsg	: "Seleziona il modello da aprire nell'editor<br />(il contenuto attuale verrà eliminato):",
 DlgTemplatesLoading	: "Caricamento modelli in corso. Attendere prego...",
 DlgTemplatesNoTpl	: "(Nessun modello definito)",
+DlgTemplatesReplace	: "Replace actual contents",	//MISSING
 
 // About Dialog
 DlgAboutAboutTab	: "Informazioni",
 DlgAboutBrowserInfoTab	: "Informazioni Browser",
+DlgAboutLicenseTab	: "Licenza",
 DlgAboutVersion		: "versione",
 DlgAboutLicense		: "Rilasciato sotto la licensa GNU Lesser General Public License",
 DlgAboutInfo		: "Localizzazione in Italiano realizzata da Simone Chiaretta<br /><a target=\"_blank\" href=\"http://www.piyosailing.com/S/\">www.piyosailing.com</a><br /><br />Per maggiori informazioni visitare"

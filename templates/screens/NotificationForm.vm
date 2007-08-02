@@ -1,5 +1,5 @@
 #set ( $module = "System" )
-#formCommon()
+#formCommon(5004)
 
 function formInit(){
 	myForm.subject1.focus();
@@ -16,7 +16,7 @@ function formValidate(){
 	return true;
 }
 
-function saveForm(retUrl){
+function saveFormAndReturn(retUrl){
 	myAction='NotificationSQL';
 	myUrl= retUrl + '/action/' + myAction;
 	myForm.action= myUrl;

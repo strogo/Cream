@@ -52,7 +52,7 @@ import org.campware.cream.om.CarrierPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class CarrierSQL extends CreamAction
+public class CarrierSQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -75,6 +75,7 @@ public class CarrierSQL extends CreamAction
         Carrier entry = new Carrier();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

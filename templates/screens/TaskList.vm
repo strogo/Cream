@@ -1,0 +1,23 @@
+#set ( $module = "Main" )
+#listCommon()
+#listHeader(1005 "TaskList.vm" "TaskSQL" 8)
+
+	#if ($entries)
+
+	    #foreach ($entry in $entries)
+			#rowStatusClass($entry.Status)
+				#addToggle($!entry.TaskId)
+				#addListPic($ui.task)
+				<td width="15%"><span class="llink" onClick="doEdit('$entry.TaskId')">$!entry.TaskCode</span></td>
+				#listCellPrc (25 $!entry.Subject)
+				#listCellPrc (20 $!entry.Customer.CustomerDisplay)
+				#listCellPrc (15 $!entry.AssignedTo)
+				<td width="10%" align="right">
+				  $!entry.Progress%&nbsp;
+				</td>
+				#listCellPrcDate (15 $!entry.DueDate)
+			</tr>        
+	    #end
+	#end
+
+#listFooter()

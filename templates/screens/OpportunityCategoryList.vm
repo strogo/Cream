@@ -1,0 +1,15 @@
+#set ( $module = "Options" )
+#listCommon()
+#listHeader(3021 "OpportunityCategoryList.vm" "OpportunityCategorySQL" 3)
+  
+	#if ($entries)
+		#foreach ($entry in $entries)
+	        <tr class=rowopen valign="center">
+				#addToggle($entry.OpportunityCatId)
+				#addListPic($ui.space)
+				<td width="100%"><span class="llink" onClick="doEdit('$entry.OpportunityCatId')">$entry.OpportunityCatName</span></td>
+	        </tr>        
+		#end
+	#end
+
+#listFooter()

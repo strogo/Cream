@@ -52,7 +52,7 @@ import org.campware.cream.om.CountryPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CountryForm extends CreamForm
+public class CountryForm extends CreamLookupForm
 {
     protected void initScreen()
     {

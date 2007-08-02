@@ -1,6 +1,6 @@
 #set ( $module = "Main" )
 
-#formCommon()
+#formCommon(2010)
 
 function formInit(){
 	myForm.status.value=$entry.Status;
@@ -8,16 +8,23 @@ function formInit(){
 	myForm.eventtype.value=$entry.EventType;
 	myForm.eventchanneltemp.value=$entry.EventChannel;
 	myForm.customerid.value=$entry.CustomerId;
+	myForm.contactid.value=$entry.ContactId;
 	myForm.productid.value=$entry.ProductId;
 	myForm.projectid.value=$entry.ProjectId;
 
-	if (myForm.eventchanneltemp.value==10){
+	if (myForm.eventchanneltemp.value==10 || myForm.eventchanneltemp.value==60){
 		myForm.eventchanneltemp.disabled=true;
 		parent.showSpecialTop(INBOX_EMAIL, false);
 	}
 
 	myForm.eventtype.focus();
 
+}
+
+function valueChanged(formField){
+	if (formField.name=='customerid'){
+		loadUtil('$link.setPage("CustomerContacts.vm")', formField.value);
+	}
 }
 
 function formValidate(){
@@ -31,17 +38,15 @@ function formValidate(){
 }
 
 function formReplyToEmail(){
-	parent.doReply($!entry.InboxEventId);
+	parent.showNewRelated(OUTBOX, INBOX, $!entry.InboxEventId);
 }
 
 #formHeader("InboxEventForm.vm" "InboxEventSQL" "inboxeventid" $!entry.InboxEventId $mode)
 
  <tr>
 	<td>
-    <table align=center cellpadding=0 cellspacing=0 border=0>
+    <table align=center width="100%" cellpadding=0 cellspacing=0 border=0>
 <tr>
-<td>
-</td>
 <td>
     <table align=center cellpadding=0 cellspacing=0 border=0>
       <tr>  
@@ -92,6 +97,9 @@ function formReplyToEmail(){
 			<option value="30">$!l10n.get("Inbox.Form.Channel.Letter")</option>
 			<option value="40">$!l10n.get("Inbox.Form.Channel.Fax")</option>
 			<option value="50">$!l10n.get("Inbox.Form.Channel.Visit")</option>
+	  		#if($mode!="insert" && $!entry.EventChannel==60)
+				<option value="60">$!l10n.get("Inbox.Form.Channel.WebForm")</option>
+			#end
 		</select>
 		</td>
 			<td width=16>&nbsp;</td>
@@ -100,25 +108,30 @@ function formReplyToEmail(){
 	</table>
 	</td>
  </tr>
- <tr>
-	<td>
-	&nbsp;
-	</td>
- </tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr class="formline">
+<td>
+&nbsp;
+</td>
+</tr>
+
+	<tr>
+		<td>
+	<table align="center" cellpadding=0 width="100%" cellspacing=0 border=0>
+		<tr>
+			<td>
+		<table align="center" cellpadding=0 cellspacing=0 border=0>
+
  		<tr>
-			#formLabel($!l10n.get("Common.Form.Label.Customer"))
-			<td align="left">
-			<select name="customerid" tabIndex="7" value="$!entry.CustomerId" width="520" STYLE="width: 520px">
-			#foreach ($customer in $customers)
-				<option value="$customer.CustomerId">$!customer.CustomerDisplay</option>
-			#end        	
-			</select>
-			</td>
- 		</tr>
- 		<tr>
+	   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 7)
+				<td width=16>&nbsp;</td>
 			#formLabel($!l10n.get("Common.Form.Label.Product"))
 			<td align="left">
-			<select name="productid" tabIndex="8" value="$!entry.ProductId" width="520" STYLE="width: 520px">
+			<select name="productid" tabIndex="9" value="$!entry.ProductId" width="160" STYLE="width: 160px">
 			#foreach ($product in $products)
 				<option value="$product.ProductId">$!product.ProductDisplay</option>
 			#end        	
@@ -126,21 +139,64 @@ function formReplyToEmail(){
 			</td>
  		</tr>
  		<tr>
+			#formLabel($!l10n.get("Common.Form.Label.Contact"))
+			<td align="left">
+			<select name="contactid" tabIndex="8" value="$!entry.ContactId" width="160" STYLE="width: 160px">
+			#foreach ($contact in $contacts)
+				<option value="$contact.ContactId">$!contact.ContactDisplay</option>
+			#end        	
+			</select>
+			</td>
+				<td width=16>&nbsp;</td>
 			#formLabel($!l10n.get("Common.Form.Label.Project"))
 			<td align="left">
-			<select name="projectid" tabIndex="9" value="$!entry.ProjectId" width="520" STYLE="width: 520px">
+			<select name="projectid" tabIndex="10" value="$!entry.ProjectId" width="160" STYLE="width: 160px">
 			#foreach ($project in $projects)
 				<option value="$project.ProjectId">$!project.ProjectName</option>
 			#end        	
 			</select>
 			</td>
  		</tr>
-		 <tr>
-			<td>
-			&nbsp;
-			</td>
-		 </tr>
-	  		#if($mode!="insert" && $!entry.EventChannel==10)
+
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell($!l10n.get("Inbox.Form.Label.Custom1") "custom1" $!entry.Custom1 128 160 11)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Inbox.Form.Label.Custom4")  "custom4" $!entry.Custom4 128 160 14)
+      </tr>
+      <tr>
+        #formCell($!l10n.get("Inbox.Form.Label.Custom2")  "custom2" $!entry.Custom2 128 160 12)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Inbox.Form.Label.Custom5")  "custom5" $!entry.Custom5 128 160 15)
+      </tr>
+      <tr>
+        #formCell($!l10n.get("Inbox.Form.Label.Custom3")  "custom3" $!entry.Custom3 128 160 13)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Inbox.Form.Label.Custom6")  "custom6" $!entry.Custom6 128 160 16)
+      </tr>
+	</table>
+		</td>
+		</tr>
+		</table>
+	</td>
+      </tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+<tr class="formline">
+<td>
+&nbsp;
+</td>
+</tr>
+	<tr>
+	<table>
+	  		#if($mode!="insert" && ($!entry.EventChannel==10 || $!entry.EventChannel==60))
 	  			#set ( $module = "Main" )
 				#if($!entry.SenderName)
 		  			#set ( $sender = "$!entry.SenderName&nbsp;&lt;$!entry.SenderEmail&gt" )
@@ -148,26 +204,21 @@ function formReplyToEmail(){
 		  			#set ( $sender = "$!entry.SenderEmail" )
 				#end
 		 		<tr>
-		    		#formCellReadOnly ($!l10n.get("Inbox.Form.Label.From") "sendertemp" $sender 520 10)
+		    		#formCellReadOnly ($!l10n.get("Inbox.Form.Label.From") "sendertemp" $sender 500 17)
 		 		</tr>
 		 		<tr>
-		    		#formCellReadOnly ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 520 10)
+		    		#formCellReadOnly ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 500 17)
 		 		</tr>
 		 	#else
 		 		<tr>
-		    		#formCell ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 254 520 10)
+		    		#formCell ($!l10n.get("Common.Form.Label.Subject") "subject" $!entry.Subject 254 500 17)
 		 		</tr>
 		 	#end
-		 <tr>
-			<td>
-			&nbsp;
-			</td>
-		 </tr>
 
-	  		#if($mode!="insert" && $!entry.EventChannel==10)
+	  		#if($mode!="insert" && ($!entry.EventChannel==10 || $!entry.EventChannel==60))
 				<tr>
 					<td align=left colspan=2>
-					<DIV ID="EmailBody" NAME="EmailBody" STYLE="width:580px; height:250px; border-style:inset; border-width:1px; background-color: white; position: relative; overflow: auto;">
+					<DIV ID="EmailBody" NAME="EmailBody" STYLE="width:560px; height:250px; border-style:inset; border-width:1px; background-color: white; position: relative; overflow: auto;">
 							$!entry.Body
 							#if ($attachments)
 						    <table align=left cellpadding=0 cellspacing=0 border=0>

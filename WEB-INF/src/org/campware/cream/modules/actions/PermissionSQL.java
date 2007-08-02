@@ -71,6 +71,7 @@ public class PermissionSQL extends CreamAction
         data.getParameters().setProperties(entry);
 //        entry.setPermissionName(data.getParameters().getString("permissionname"));
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

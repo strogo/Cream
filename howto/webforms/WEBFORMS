@@ -1,0 +1,15 @@
+WEB FORMS FOR INFO AND SUPPORT REQUEST
+
+To create web form for info or support request, you should first enter couple of products. Then remember their IDs and go to edit our sample html file (webform.html). Change values for product IDs in the example file and replace 'localhost' with your server name.
+
+Of course, you can remove the following lines:
+ <input type="hidden" name="campaignid" value="CP0001001">
+ <input type="hidden" name="urlok" value="http://www.tol.org">
+ <input type="hidden" name="urlerror" value="http://www.campware.org">
+
+ The first line is if you want to track campaigns within the request (you should enter valid campaign ID from your database). Other two lines are for redirection after successful/unsuccessful subscription.
+
+You can add all 6 custom fields to the form.
+
+
+Enjoy!

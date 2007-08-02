@@ -52,7 +52,7 @@ import org.campware.cream.om.HouseholdCategoryPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class HouseholdCategorySQL extends CreamAction
+public class HouseholdCategorySQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -76,7 +76,8 @@ public class HouseholdCategorySQL extends CreamAction
         HouseholdCategory entry = new HouseholdCategory();
         data.getParameters().setProperties(entry);
         entry.save();
-    }
+        setSavedId(entry.getPrimaryKey().toString());
+   }
 
     /**
      * Update a record in the database with the

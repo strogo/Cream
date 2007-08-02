@@ -1,0 +1,63 @@
+------------------------------------------------
+WHAT YOU NEED
+------------------------------------------------
+
+** Java SDK (j2sdk-1.4.2._0X or later)
+http://java.sun.com/j2se/downloads.html
+
+** MysqlSQL (5.0.X or later)
+
+** Tomcat (5.0.28 or later)
+http://apache.roweboat.net/tomcat/tomcat-5/v5.0.28/bin/jakarta-tomcat-5.0.28.tar.gz
+In case this link doesn't work go here http://jakarta.apache.org/tomcat/index.html and download similar version. We do prefer 5.0.X branch but it's on you if you'd like to try newer versions.
+
+** CReaM
+cream-3.0.0.tar.gz
+
+
+------------------------------------------------
+HOW TO INSTALL
+------------------------------------------------
+
+** Java SDK
+- install Java SDK let's say to /usr/local
+- export java home (export JAVA_HOME=/usr/local/j2sdk1.4.2_0X)
+- you should probably put this export to the '/etc/profile' file
+
+** MySQL database
+- start mysql server using UTF-8 character set (mysqld_safe --user=mysql --character-set-server=utf8 &)
+- create 'cream' database (mysqladmin -u root -p create cream)
+- start mysql client utility (mysql -u root)
+- in the console use cream database (use cream)
+- create tables for cream (source cream-mysql-3.0-all.sql)
+- don't pay attention on errors, script tries to drop non existing tables before it creates new ones
+- exit from mysql (\q)
+
+** Tomcat & CReaM
+- extract Tomcat tar and copy it to let's say '/usr/local' directory
+- extract Cream tar and copy it to Tomcat's '/webapps/cream' directory
+- edit 'cream.properties' file from '{Tomcat installation}/webapps/cream/WEB-INF/conf' directory, set email properties and turn the scheduler on to start receiving emails
+- add mysql root password if needed
+- run 'startup.sh' from tomcat's '/bin' directory
+
+
+------------------------------------------------
+HOW TO START
+------------------------------------------------
+
+** Browser
+- open your browser (IE 6.0+, Firefox 2.0+ or Mozilla 1.3+)
+- because Cream comes with different localizations, set prefered language as default in your browser (somewhere in the browser preferences)
+- type url 'http://your_server:8080/cream/app/'
+- login as user 'admin' with password 'admn00'
+- create new roles and new users
+- logout as admin
+- login as some user
+- create some options
+- create some products
+- create some campaigns
+- create some customers
+- start using Cream
+
+Good luck! :-)
+ 

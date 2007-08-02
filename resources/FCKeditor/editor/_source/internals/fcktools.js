@@ -1,12 +1,14 @@
 ﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fcktools.js
  * 	Utility functions.
@@ -17,33 +19,32 @@
 
 var FCKTools = new Object() ;
 
-//**
-// FCKTools.GetLinkedFieldValue: Gets the value of the hidden INPUT element
-// that is associated to the editor. This element has its ID set to the 
-// editor's instance name so the user reffers to the instance name when getting
-// the posted data.
+FCKTools.AppendStyleSheet = function( documentElement, cssFileUrlOrArray )
+{
+	if ( typeof( cssFileUrlOrArray ) == 'string' )
+		return this._AppendStyleSheet( documentElement, cssFileUrlOrArray ) ;
+	else
+	{
+		for ( var i = 0 ; i < cssFileUrlOrArray.length ; i++ )
+			this._AppendStyleSheet( documentElement, cssFileUrlOrArray[i] ) ;
+	}
+}
+
+/**
+ * Gets the value of the hidden INPUT element that is associated to the editor.
+ * This element has its ID set to the editor's instance name so the user refers
+ * to the instance name when getting the posted data.
+ */
 FCKTools.GetLinkedFieldValue = function()
 {
 	return FCK.LinkedField.value ;
 }
 
-//**
-// FCKTools.SetLinkedFieldValue: Sets the value of the hidden INPUT element
-// that is associated to the editor. This element has its ID set to the 
-// editor's instance name so the user reffers to the instance name when getting
-// the posted data.
-FCKTools.SetLinkedFieldValue = function( value )
-{
-	if ( FCKConfig.FormatOutput )
-		FCK.LinkedField.value = FCKCodeFormatter.Format( value ) ;
-	else
-		FCK.LinkedField.value = value ;
-}
-
-//**
-// FCKTools.AttachToLinkedFieldFormSubmit: attaches a function call to the 
-// submit event of the linked field form. This function us generally used to
-// update the linked field value before submitting the form.
+/**
+ * Attachs a function call to the submit event of the linked field form. This
+ * function us generally used to update the linked field value before
+ * submitting the form.
+ */
 FCKTools.AttachToLinkedFieldFormSubmit = function( functionPointer )
 {
 	// Gets the linked field form
@@ -56,7 +57,7 @@ FCKTools.AttachToLinkedFieldFormSubmit = function( functionPointer )
 	if ( FCKBrowserInfo.IsIE )
 		oForm.attachEvent( "onsubmit", functionPointer ) ;
 	else
-		oForm.addEventListener( 'submit', functionPointer, true ) ;
+		oForm.addEventListener( 'submit', functionPointer, false ) ;
 	
 	//**
 	// Attaches the functionPointer call to the submit method 
@@ -96,11 +97,56 @@ function FCKTools_SubmitReplacer()
 	this.originalSubmit() ;
 }
 
-//**
-// FCKTools.AddSelectOption: Adds a option to a SELECT element.
-FCKTools.AddSelectOption = function( targetDocument, selectElement, optionText, optionValue )
+// Get the window object where the element is placed in.
+FCKTools.GetElementWindow = function( element )
 {
-	var oOption = targetDocument.createElement("OPTION") ;
+	return this.GetDocumentWindow( this.GetElementDocument( element ) ) ;
+}
+
+FCKTools.GetDocumentWindow = function( doc )
+{
+	// With Safari, there is not way to retrieve the window from the document, so we must fix it.
+	if ( FCKBrowserInfo.IsSafari && !doc.parentWindow )
+		this.FixDocumentParentWindow( window.top ) ;
+	
+	return doc.parentWindow || doc.defaultView ;
+}
+
+/*
+	This is a Safari specific function that fix the reference to the parent 
+	window from the document object.
+*/
+FCKTools.FixDocumentParentWindow = function( targetWindow )
+{
+	targetWindow.document.parentWindow = targetWindow ; 
+	
+	for ( var i = 0 ; i < targetWindow.frames.length ; i++ )
+		FCKTools.FixDocumentParentWindow( targetWindow.frames[i] ) ;
+}
+
+FCKTools.GetParentWindow = function( document )
+{
+	return document.contentWindow ? document.contentWindow : document.parentWindow ;
+}
+
+FCKTools.HTMLEncode = function( text )
+{
+	if ( !text )
+		return '' ;
+
+	text = text.replace( /&/g, '&amp;' ) ;
+	text = text.replace( /</g, '&lt;' ) ;
+	text = text.replace( />/g, '&gt;' ) ;
+
+	return text ;
+}
+
+/**
+ * Adds an option to a SELECT element.
+ */
+FCKTools.AddSelectOption = function( selectElement, optionText, optionValue )
+{
+	var oOption = FCKTools.GetElementDocument( selectElement ).createElement( "OPTION" ) ;
 
 	oOption.text	= optionText ;
 	oOption.value	= optionValue ;	
@@ -110,102 +156,33 @@ FCKTools.AddSelectOption = function( targetDocument, selectElement, optionText, 
 	return oOption ;
 }
 
-FCKTools.RemoveAllSelectOptions = function( selectElement )
+FCKTools.RunFunction = function( func, thisObject, paramsArray, timerWindow )
 {
-	for ( var i = selectElement.options.length - 1 ; i >= 0 ; i-- )
-	{
-		selectElement.options.remove(i) ;
-	}
+	if ( func )
+		this.SetTimeout( func, 0, thisObject, paramsArray, timerWindow ) ;
 }
 
-FCKTools.SelectNoCase = function( selectElement, value, defaultValue )
+FCKTools.SetTimeout = function( func, milliseconds, thisObject, paramsArray, timerWindow )
 {
-	var sNoCaseValue = value.toString().toLowerCase() ;
-	
-	for ( var i = 0 ; i < selectElement.options.length ; i++ )
-	{
-		if ( sNoCaseValue == selectElement.options[i].value.toLowerCase() )
+	return ( timerWindow || window ).setTimeout( 
+		function()
 		{
-			selectElement.selectedIndex = i ;
-			return ;
-		}
-	}
-	
-	if ( defaultValue != null ) FCKTools.SelectNoCase( selectElement, defaultValue ) ;
+			if ( paramsArray )
+				func.apply( thisObject, [].concat( paramsArray ) ) ;
+			else
+				func.apply( thisObject ) ;
+		},
+		milliseconds ) ;
 }
 
-FCKTools.HTMLEncode = function( text )
+FCKTools.SetInterval = function( func, milliseconds, thisObject, paramsArray, timerWindow )
 {
-	if ( !text )
-		return '' ;
-
-	text = text.replace( /&/g, "&amp;" ) ;
-	text = text.replace( /"/g, "&quot;" ) ;
-	text = text.replace( /</g, "&lt;" ) ;
-	text = text.replace( />/g, "&gt;" ) ;
-	text = text.replace( /'/g, "&#39;" ) ;
-
-	return text ;
-}
-
-//**
-// FCKTools.GetResultingArray: Gets a array from a string (where the elements 
-// are separated by a character), a fuction (that returns a array) or a array.
-FCKTools.GetResultingArray = function( arraySource, separator )
-{
-	switch ( typeof( arraySource ) )
-	{
-		case "string" :
-			return arraySource.split( separator ) ;
-		case "function" :
-			return separator() ;
-		default :
-			if ( isArray( arraySource ) ) return arraySource ;
-			else return new Array() ;
-	}
-}
-
-FCKTools.GetElementPosition = function( el )
-{
-	// Initializes the Coordinates object that will be returned by the function.
-	var c = { X:0, Y:0 } ;
-	
-	// Loop throw the offset chain.
-	while ( el )
-	{
-		c.X += el.offsetLeft ;
-		c.Y += el.offsetTop ;
-		
-		el = el.offsetParent ;
-	}
-	
-	// Return the Coordinates object
-	return c ;
-}
-
-FCKTools.GetElementAscensor = function( element, ascensorTagName )
-{
-	var e = element.parentNode ;
-
-	while ( e )
-	{
-		if ( e.nodeName == ascensorTagName )
-			return e ;
-
-		e = e.parentNode ;
-	}
-}
-
-FCKTools.Pause = function( miliseconds )
-{
-	var oStart = new Date() ;
-
-	while (true)
-	{ 
-		var oNow = new Date() ;
-		if ( miliseconds < oNow - oStart ) 
-			return ;
-	}
+	return ( timerWindow || window ).setInterval( 
+		function()
+		{
+			func.apply( thisObject, paramsArray || [] ) ;
+		},
+		milliseconds ) ;
 }
 
 FCKTools.ConvertStyleSizeToHtml = function( size )
@@ -216,4 +193,44 @@ FCKTools.ConvertStyleSizeToHtml = function( size )
 FCKTools.ConvertHtmlSizeToStyle = function( size )
 {
 	return size.endsWith( '%' ) ? size : ( size + 'px' ) ;
+}
+
+// START iCM MODIFICATIONS
+// Amended to accept a list of one or more ascensor tag names
+// Amended to check the element itself before working back up through the parent hierarchy
+FCKTools.GetElementAscensor = function( element, ascensorTagNames )
+{
+//	var e = element.parentNode ;
+	var e = element ;
+	var lstTags = "," + ascensorTagNames.toUpperCase() + "," ;
+
+	while ( e )
+	{
+		if ( lstTags.indexOf( "," + e.nodeName.toUpperCase() + "," ) != -1 )
+			return e ;
+
+		e = e.parentNode ;
+	}
+	return null ;
+}
+// END iCM MODIFICATIONS
+
+FCKTools.CreateEventListener = function( func, params )
+{
+	var f = function()
+	{
+		var aAllParams = [] ;
+		
+		for ( var i = 0 ; i < arguments.length ; i++ )
+			aAllParams.push( arguments[i] ) ;
+
+		func.apply( this, aAllParams.concat( params ) ) ;
+	} 
+
+	return f ;
+}
+
+FCKTools.GetElementDocument = function ( element )
+{
+	return element.ownerDocument || element.document ;
 }

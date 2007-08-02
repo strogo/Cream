@@ -48,7 +48,7 @@ import org.campware.cream.om.CountryPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CountryList extends CreamList
+public class CountryList extends CreamLookupList
 {
 
     protected void initScreen()

@@ -42,6 +42,7 @@ package org.campware.cream.modules.screens;
 
 import java.util.List;
 import java.util.Locale;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -49,9 +50,15 @@ import java.text.DecimalFormatSymbols;
 import org.apache.turbine.util.RunData;
 import org.apache.turbine.util.security.AccessControlList;
 
+import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
 import org.apache.velocity.context.Context;
 import org.apache.turbine.Turbine;
+import org.campware.cream.om.ContactCategoryPeer;
+import org.campware.cream.om.ContactPeer;
+import org.campware.cream.om.CountryPeer;
+
+import com.workingdogs.village.Record;
 
 /**
  * Grab all the records in a table using a Peer, and
@@ -81,6 +88,8 @@ public class CreamList extends SecureScreen
 
         int filterNo = 0;
         int sortNo = 0;
+        int offsetNo = 0;
+        int limitNo = 50;
         String orderStr = new String();
         String findStr = new String();
 
@@ -91,13 +100,22 @@ public class CreamList extends SecureScreen
         sortNo = data.getParameters().getInt("sortcol", 0);
         orderStr = data.getParameters().getString("sortord", "ASC");
         findStr = data.getParameters().getString("find", "");
+        offsetNo = data.getParameters().getInt("listoffset", 0);
+        limitNo = data.getParameters().getInt("listlimit", 25);
 
         Criteria criteria = new Criteria();
+        Criteria countcrit = new Criteria();
+        
+        countcrit.add(defIdName, 1000, Criteria.GREATER_THAN);
         criteria.add(defIdName, 1000, Criteria.GREATER_THAN);
 
+        criteria.setOffset(offsetNo);
+        criteria.setLimit(limitNo);
+        
         if (filterNo>0)
         {
             setFilter(filterNo, criteria, data);
+            setFilter(filterNo, countcrit, data);
         }
         else
         {
@@ -105,6 +123,7 @@ public class CreamList extends SecureScreen
             {
                 findStr= findStr + "%";
                 setFind(findStr, criteria);
+                setFind(findStr, countcrit);
             }
         }
 
@@ -120,9 +139,23 @@ public class CreamList extends SecureScreen
             }
         }
 
-        criteria.setIgnoreCase(true);
+        try
+        {
+            countcrit.addSelectColumn("COUNT(" + defIdName + ")");
+            List sumrecord = BasePeer.doSelect(countcrit);
+            int numberOfRecords= ((Record) sumrecord.get(0)).getValue(1).asInt();
+            context.put("entriesno", new Integer(numberOfRecords));
+        }
+        catch (Exception e)
+        {
+        }
 
-        context.put("entries", getEntries(criteria));
+        
+        criteria.setIgnoreCase(true);
+        List resultSet= getEntries(criteria);
+
+        context.put("entries", resultSet);
+//        context.put("entriesno", new Integer(resultSet.size()));
         context.put("df", new SimpleDateFormat ("dd.MM.yyyy"));
 
         DecimalFormatSymbols symb= new DecimalFormatSymbols();

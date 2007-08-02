@@ -51,7 +51,7 @@ import org.campware.cream.om.UomPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class UomForm extends CreamForm
+public class UomForm extends CreamLookupForm
 {
     protected void initScreen()
     {

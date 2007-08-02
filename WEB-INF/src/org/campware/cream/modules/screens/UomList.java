@@ -48,7 +48,7 @@ import org.campware.cream.om.UomPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class UomList extends CreamList
+public class UomList extends CreamLookupList
 {
 
     protected void initScreen()

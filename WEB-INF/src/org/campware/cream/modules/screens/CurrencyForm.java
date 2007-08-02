@@ -51,7 +51,7 @@ import org.campware.cream.om.CurrencyPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CurrencyForm extends CreamForm
+public class CurrencyForm extends CreamLookupForm
 {
     protected void initScreen()
     {

@@ -49,6 +49,7 @@ import org.apache.turbine.util.RunData;
 import org.apache.torque.util.Criteria;
 import org.campware.cream.om.InboxEventPeer;
 import org.campware.cream.om.CustomerPeer;
+import org.campware.cream.om.ContactPeer;
 
 /**
  * To read comments for this class, please see
@@ -74,6 +75,8 @@ public class InboxEventList extends CreamList
         } else if (sortNo==3){
             return CustomerPeer.CUSTOMER_DISPLAY;
         } else if (sortNo==4){
+            return ContactPeer.CONTACT_DISPLAY;
+        } else if (sortNo==5){
             return InboxEventPeer.ISSUED_DATE;
         }
         
@@ -152,6 +155,7 @@ public class InboxEventList extends CreamList
         try
         {
             criteria.addJoin(CustomerPeer.CUSTOMER_ID, InboxEventPeer.CUSTOMER_ID);
+            criteria.addJoin(ContactPeer.CONTACT_ID, InboxEventPeer.CONTACT_ID);
             return InboxEventPeer.doSelect(criteria);
         }
         catch (Exception e)

@@ -1,0 +1,27 @@
+#set ( $module = "Util" )
+#utilCommon()
+
+function copyDetails(){
+	myForm=parent.document.getElementById('formData');
+
+	myForm.contactid.length=0;
+
+	#foreach ($contact in $contacts)
+		if (document.all) {
+			ordo = parent.document.createElement("OPTION");
+			ordo.text = '$!contact.ContactDisplay';
+			ordo.value = '$!contact.ContactId';
+			myForm.contactid.add(ordo);
+		}else{
+			ordo = new Option();
+			ordo.text = '$!contact.ContactDisplay';
+			ordo.value = '$!contact.ContactId';
+			myForm.contactid.options[myForm.contactid.length] = ordo;
+		}
+	#end
+	myForm.contactid.focus();
+
+}
+
+#utilHeader()
+#utilFooter()

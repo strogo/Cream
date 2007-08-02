@@ -1,5 +1,8 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(2003)
+
+var rowId=1;
+var tabInd=26;
 
 function ProductObject (disp, u){
 	this.productDisplay=disp;
@@ -21,6 +24,21 @@ function formInit(){
 	myForm.sorderid.value=$!entry.SorderId;
 	myForm.productid.value=$!entry.ProductId;
 
+	#if ($!mode=="insert")
+
+	#else
+		#foreach ($entryitem in $entryitems)
+			doAddItem();
+			suf= '_' + rowId;
+			myForm['ip1' + suf].value="$!entryitem.Ip1";
+			myForm['ip2' + suf].value="$!entryitem.Ip2";
+			myForm['ip3' + suf].value="$!entryitem.Ip3";
+			myForm['ip4' + suf].value="$!entryitem.Ip4";
+			myForm['addressno' + suf].value="$!entryitem.AddressNo";
+	
+		#end
+	#end
+
 	myForm.customerid.focus();
 
 }
@@ -41,6 +59,30 @@ function formValidate(){
 
 	if (parent.isEmpty(myForm.enddate)) return false;
 	if (parent.isNotDate(myForm.enddate)) return false;
+
+	var len = myForm.elements.length;
+	for (var i = 0; i < len; i++) {
+	    var e = myForm.elements[i];
+	    if (e.name.substring(0, 3) == 'ip1') {
+			if (parent.isNotIpNo(e)) return false;
+	    }
+	    else if (e.name.substring(0, 3) == 'ip2') {
+			if (parent.isNotIpNo(e)) return false;
+	    }
+	    else if (e.name.substring(0, 3) == 'ip3') {
+			if (parent.isNotIpNo(e)) return false;
+	    }
+	    else if (e.name.substring(0, 3) == 'ip4') {
+			if (parent.isNotIpNo(e)) return false;
+	    }
+	    else if (e.name.substring(0, 9) == 'addressno') {
+			if (parent.isNotQuantity(e)) return false;
+	    }
+	    else{
+	    }
+	}
+
+
 
 	return true;
 }
@@ -67,8 +109,48 @@ function valueChanged(formField){
 	}
 	else if (formField.name=='productid'){
 		myForm.productdisplay.value=this.orderProduct[formField.value].productDisplay;
+		myForm.subject.value=this.orderProduct[formField.value].productDisplay;
 		myForm.uomcode.value=this.orderProduct[formField.value].uomCode;
 	}
+}
+
+function doAddItem(){
+	rowId++;
+
+	itemstr1='<a href="javascript: void 0" ONCLICK="doDeleteItem(this)"><img src="$ui.image($ui.itemDelete)" width="16" height="16" border=0 alt="Delete Item"></a>';
+	itemstr2='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="ip1_' + rowId + '" value="0" STYLE="width: 50px; text-align: right;">';
+	tabInd++;
+	itemstr3='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="ip2_' + rowId + '" value="0" STYLE="width: 50px; text-align: right;">';
+	tabInd++;
+	itemstr4='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="ip3_' + rowId + '" value="0" STYLE="width: 50px; text-align: right;">';
+	tabInd++;
+	itemstr5='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="ip4_' + rowId + '" value="0" STYLE="width: 50px; text-align: right;">';
+	tabInd++;
+	itemstr6='<input type="text" tabIndex="' + tabInd + '" maxLength="10" name="addressno_' + rowId + '" value="0" STYLE="width: 300px; text-align: right;">';
+
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+    var row = table.insertRow(table.rows.length);
+
+    var cell1 = row.insertCell(0);
+    cell1.innerHTML = itemstr1;
+    var cell2 = row.insertCell(1);
+    cell2.innerHTML = itemstr2;
+    var cell3 = row.insertCell(2);
+    cell3.innerHTML = itemstr3;
+    var cell4 = row.insertCell(3);
+    cell4.innerHTML = itemstr4;
+    var cell5 = row.insertCell(4);
+    cell5.innerHTML = itemstr5;
+    var cell6 = row.insertCell(5);
+    cell6.innerHTML = itemstr6;
+}
+
+function doDeleteItem(cell){
+	var table = document.all ? document.all["itemList"] : document.getElementById("itemList");
+	var rowIndex= document.all ? cell.parentElement.parentElement.rowIndex : cell.parentNode.parentNode.rowIndex;
+
+	table.deleteRow(rowIndex);
+
 }
 
 #formHeader("OnlineSubscriptionForm.vm" "OnlineSubscriptionSQL" "onlinesubsid" $!entry.OnlineSubsId $mode)
@@ -79,7 +161,7 @@ function valueChanged(formField){
       <tr>  
    		#formCellDisabled ($!l10n.get("Common.Form.Label.Id") "onlinesubscode" $!entry.OnlineSubsCode 20 100 1)
 			<td width=16>&nbsp;</td>
-        #formCellDateDefault ($!l10n.get("Common.Form.Label.Issued") "issueddate" $!entry.IssuedDate $!today 10 100 2)
+        	#formCellDateDefault ($!l10n.get("Common.Form.Label.Issued") "issueddate" $!entry.IssuedDate $!today 10 100 2)
 			<td width=16>&nbsp;</td>
    		#formSelectStatus ($!l10n.get("Common.Form.Label.Status") "status" $!entry.Status 100 3)
       </tr>
@@ -154,7 +236,49 @@ function valueChanged(formField){
 </td>
 </tr>
 
+<tr>
+<td>
+	<table align=center cellpadding=0 cellspacing=0 border=0>
+	<tr>
+		<td>
+		<table id="itemHeaderTable" name="itemHeaderTable" align=center cellpadding=0 cellspacing=0 border=0>
+			<tr class="frmlabel" align="center">
+				<td width="516">$!l10n.get("OnlineSubscription.Form.Items.Header.IPAddressRestrictions")</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<table id="itemHeaderTable2" name="itemHeaderTable2" align=center cellpadding=0 cellspacing=0 border=0>
+			<tr class="toolbar" align="center">
+				<td>
+				<a href="javascript: void 0" ONCLICK="doAddItem()"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Item"></a>
+				</td>
+				<td width="200">$!l10n.get("OnlineSubscription.Form.Items.Header.StartIP")</td>
+				<td width="300">$!l10n.get("OnlineSubscription.Form.Items.Header.NumberOfAddresses")</td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<table id="itemList" name="itemList" align=center cellpadding=0 cellspacing=0 border=0>
+		</table>
+		</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+
 <input type="hidden" name="onlinesubscode" value="$!entry.OnlineSubsCode">
+<input type="hidden" name="subject" value="$!entry.Subject">
 
 #documentFooter()
 	

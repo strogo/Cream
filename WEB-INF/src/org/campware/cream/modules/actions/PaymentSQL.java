@@ -147,6 +147,7 @@ public class PaymentSQL extends CreamAction
         } finally {
             if (!success) Transaction.safeRollback(conn);
         }
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

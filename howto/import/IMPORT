@@ -1,6 +1,6 @@
 CREAM Product/Customer Import Instructions
 
 1.Create an Excel file with columns as provided in the example files.
-2.Save file as Text (Tab delimited) (*.txt)
-3.Import the file into Cream using the Import module from System Tab of the application.
+2.Save file as Text (with Tab as a field delimiter and no text delimiter) (*.txt)
+3.Import the file into Cream using the Import module from the System Tab of the application.
  

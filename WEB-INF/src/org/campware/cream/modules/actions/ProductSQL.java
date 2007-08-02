@@ -41,15 +41,20 @@ package org.campware.cream.modules.actions;
  */
 
 import java.util.Date;
+import java.util.Enumeration;
+
 import org.apache.velocity.context.Context;
 
 import org.apache.turbine.util.RunData;
+import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
 import java.sql.Connection;
 
 import org.campware.cream.om.Product;
 import org.campware.cream.om.ProductPeer;
+import org.campware.cream.om.ProductCmsSection;
+import org.campware.cream.om.ProductCmsSectionPeer;
 
 /**
  * This class provides a simple set of methods to
@@ -86,6 +91,27 @@ public class ProductSQL extends CreamAction
         entry.setModifiedBy(data.getUser().getName());
         entry.setModified(new Date());
         
+        ParameterParser pp= data.getParameters();
+        Enumeration paramKeys= pp.keys();
+        int prodId = entry.getProductId();
+        
+	    while(paramKeys.hasMoreElements()) {
+	        String paramName = paramKeys.nextElement().toString();
+	        if(paramName.startsWith("prodsecid")) {	
+	            String suffix=paramName.substring(9, paramName.length());
+	            ProductCmsSection entryItem= new ProductCmsSection();
+
+	            entryItem.setCmsPublicationId(pp.getInt("cmspublicationid" + suffix));
+	            entryItem.setCmsSectionId(pp.getInt("cmssectionid" + suffix));
+	            entryItem.setCmsLanguageId(pp.getInt("cmslanguageid" + suffix));
+
+	            entryItem.setProductId(prodId);
+
+	            entry.addProductCmsSection(entryItem);
+            }
+        }
+
+        
         if (myCode.equals("AUTO"))
         {
             entry.setProductCode(getTempCode());
@@ -107,6 +133,7 @@ public class ProductSQL extends CreamAction
         {
             entry.save();
         }
+        setSavedId(entry.getPrimaryKey().toString());
 
     }
 
@@ -125,6 +152,9 @@ public class ProductSQL extends CreamAction
         data.getParameters().setProperties(entry);
 
         String myCode=data.getParameters().getString("productcode");
+
+        
+        
         if (myCode.equals("AUTO"))
         {
             entry.setProductCode(getRowCode("PR", entry.getProductId()));
@@ -134,9 +164,47 @@ public class ProductSQL extends CreamAction
         entry.setModifiedBy(data.getUser().getName());
         entry.setModified(new Date());
 
+
+        ParameterParser pp= data.getParameters();
+        Enumeration paramKeys= pp.keys();
+        int prodId = entry.getProductId();
+        
+	    while(paramKeys.hasMoreElements()) {
+	        String paramName = paramKeys.nextElement().toString();
+	        if(paramName.startsWith("prodsecid")) {	
+	            String suffix=paramName.substring(9, paramName.length());
+	            ProductCmsSection entryItem= new ProductCmsSection();
+
+	            entryItem.setCmsPublicationId(pp.getInt("cmspublicationid" + suffix));
+	            entryItem.setCmsSectionId(pp.getInt("cmssectionid" + suffix));
+	            entryItem.setCmsLanguageId(pp.getInt("cmslanguageid" + suffix));
+
+	            entryItem.setProductId(prodId);
+
+	            entry.addProductCmsSection(entryItem);
+            }
+        }
+
+        
+        
+        
         entry.setModified(true);
         entry.setNew(false);
-        entry.save();
+
+        Criteria crit = new Criteria();
+        crit.add(ProductCmsSectionPeer.PRODUCT_ID, entry.getProductId());
+
+        Connection conn = Transaction.begin(ProductPeer.DATABASE_NAME);
+        boolean success = false;
+        try {
+            ProductCmsSectionPeer.doDelete(crit, conn);
+            entry.save(conn);
+            Transaction.commit(conn);
+            success = true;
+
+        } finally {
+            if (!success) Transaction.safeRollback(conn);
+        }
 
     }
 

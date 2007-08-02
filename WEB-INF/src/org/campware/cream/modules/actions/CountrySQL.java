@@ -52,7 +52,7 @@ import org.campware.cream.om.CountryPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class CountrySQL extends CreamAction
+public class CountrySQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -75,6 +75,7 @@ public class CountrySQL extends CreamAction
         Country entry = new Country();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

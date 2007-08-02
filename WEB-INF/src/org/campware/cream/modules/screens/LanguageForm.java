@@ -52,7 +52,7 @@ import org.campware.cream.om.LanguagePeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class LanguageForm extends CreamForm
+public class LanguageForm extends CreamLookupForm
 {
     protected void initScreen()
     {

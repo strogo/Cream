@@ -19,12 +19,12 @@
 			<tr class="repcontent">
 				<td class="repcontent" align="left">&nbsp;$!entry.CustomerRelatedByRecipientId.CustomerName1</td>
 				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.CustomerName2</td>
-				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Address1</td>
-				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Address2</td>
-				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.City</td>
-				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Zip</td>
-				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.State</td>
-				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.Country.CountryName</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.ShiptoAddress1</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.ShiptoAddress2</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.ShiptoCity</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.ShiptoZip</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.ShiptoState</td>
+				<td class="repcontent" align="left">$!entry.CustomerRelatedByRecipientId.CountryRelatedByShiptoCountryId.CountryName</td>
 				<td class="repcontent" align="right">$!entry.Quantity&nbsp;</td>
 			</tr>        
 	    #end

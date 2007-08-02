@@ -51,7 +51,7 @@ import org.campware.cream.om.VendorPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class VendorForm extends CreamForm
+public class VendorForm extends CreamLookupForm
 {
     protected void initScreen()
     {

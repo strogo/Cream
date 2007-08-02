@@ -86,11 +86,20 @@ public class ImportSQL extends CreamAction
 			{
 				isAuthorized = true;
 			}
+			else if (imptype==30 && (acl.hasPermission( "NEWS_SUBSCRIPTION_MODIFY") || acl.hasRole("turbine_root")))
+			{
+				isAuthorized = true;
+			}
 			else
 			{
-				isAuthorized = false;
-				data.setMessage("Sorry, you don't have permission for this operation!");
-				data.setScreenTemplate("CreamError.vm");
+				if (acl.hasRole("turbine_root")){
+					isAuthorized = true;
+					
+				}else{
+					isAuthorized = false;
+					data.setMessage("Sorry, you don't have permission for this operation!");
+					data.setScreenTemplate("CreamError.vm");
+				}
 
 			}
 		}

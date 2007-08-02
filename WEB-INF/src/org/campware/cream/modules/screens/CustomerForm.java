@@ -40,18 +40,26 @@ package org.campware.cream.modules.screens;
  * <http://www.apache.org/>.
  */
 
+import org.apache.torque.util.BasePeer;
 import org.apache.torque.util.Criteria;
+import org.apache.turbine.Turbine;
 
 import org.apache.velocity.context.Context;
 
 import org.campware.cream.om.Customer;
 import org.campware.cream.om.CustomerPeer;
 import org.campware.cream.om.LanguagePeer;
+import org.campware.cream.om.IndustryPeer;
+import org.campware.cream.om.LeadSourcePeer;
 import org.campware.cream.om.CustomerCategoryPeer;
 import org.campware.cream.om.HouseholdCategoryPeer;
 import org.campware.cream.om.EducationCategoryPeer;
+import org.campware.cream.om.AgeCategoryPeer;
+import org.campware.cream.om.EmployeeNoCategoryPeer;
+import org.campware.cream.om.RevenueCategoryPeer;
 import org.campware.cream.om.CountryPeer;
 import org.campware.cream.om.RegionPeer;
+import org.campware.cream.om.CustomerDocPeer;
 
 /**
  * To read comments for this class, please see
@@ -73,6 +81,15 @@ public class CustomerForm extends CreamForm
         {
             Customer entry = (Customer) CustomerPeer.doSelect(criteria).get(0);
             context.put("entry", entry);
+
+      		boolean bCmsIntegration = Turbine.getConfiguration().getBoolean("cms.integration.enabled", false);
+
+      		if (bCmsIntegration){
+                context.put("cmsintegration", "1");
+      		}else{
+                context.put("cmsintegration", "0");
+      		}
+
             return true;
         }
         catch (Exception e)
@@ -87,7 +104,16 @@ public class CustomerForm extends CreamForm
         {
             Customer entry = new Customer();
             context.put("entry", entry);
-            return true;
+
+      		boolean bCmsIntegration = Turbine.getConfiguration().getBoolean("cms.integration.enabled", false);
+
+      		if (bCmsIntegration){
+                context.put("cmsintegration", "1");
+      		}else{
+                context.put("cmsintegration", "0");
+      		}
+
+      		return true;
         }
         catch (Exception e)
         {
@@ -103,6 +129,16 @@ public class CustomerForm extends CreamForm
             langcrit.add(LanguagePeer.LANGUAGE_ID, 999, Criteria.GREATER_THAN);
             langcrit.addAscendingOrderByColumn(LanguagePeer.LANGUAGE_NAME);
             context.put("languages", LanguagePeer.doSelect(langcrit));
+
+            Criteria indcrit = new Criteria();
+            indcrit.add(IndustryPeer.INDUSTRY_ID, 999, Criteria.GREATER_THAN);
+            indcrit.addAscendingOrderByColumn(IndustryPeer.INDUSTRY_NAME);
+            context.put("industries", IndustryPeer.doSelect(indcrit));
+
+            Criteria leadcrit = new Criteria();
+            leadcrit.add(LeadSourcePeer.LEAD_SOURCE_ID, 999, Criteria.GREATER_THAN);
+            leadcrit.addAscendingOrderByColumn(LeadSourcePeer.LEAD_SOURCE_NAME);
+            context.put("leadsources", LeadSourcePeer.doSelect(leadcrit));
 
             Criteria custcatcrit = new Criteria();
             custcatcrit.add(CustomerCategoryPeer.CUSTOMER_CAT_ID, 999, Criteria.GREATER_THAN);
@@ -128,6 +164,22 @@ public class CustomerForm extends CreamForm
             educrit.add(EducationCategoryPeer.EDUCATION_CAT_ID, 999, Criteria.GREATER_THAN);
             educrit.addAscendingOrderByColumn(EducationCategoryPeer.EDUCATION_CAT_NAME);
             context.put("educations", EducationCategoryPeer.doSelect(educrit));
+
+            Criteria agecrit = new Criteria();
+            agecrit.add(AgeCategoryPeer.AGE_CAT_ID, 999, Criteria.GREATER_THAN);
+            agecrit.addAscendingOrderByColumn(AgeCategoryPeer.AGE_CAT_NAME);
+            context.put("agecats", AgeCategoryPeer.doSelect(agecrit));
+
+            Criteria emplocrit = new Criteria();
+            emplocrit.add(EmployeeNoCategoryPeer.EMPLOYEE_NO_CAT_ID, 999, Criteria.GREATER_THAN);
+            emplocrit.addAscendingOrderByColumn(EmployeeNoCategoryPeer.EMPLOYEE_NO_CAT_NAME);
+            context.put("employeecats", EmployeeNoCategoryPeer.doSelect(emplocrit));
+
+            Criteria revenuecrit = new Criteria();
+            revenuecrit.add(RevenueCategoryPeer.REVENUE_CAT_ID, 999, Criteria.GREATER_THAN);
+            revenuecrit.addAscendingOrderByColumn(RevenueCategoryPeer.REVENUE_CAT_NAME);
+            context.put("revenues", RevenueCategoryPeer.doSelect(revenuecrit));
+
 
             return true;
         }

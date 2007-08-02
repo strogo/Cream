@@ -47,6 +47,7 @@ import org.apache.velocity.context.Context;
 
 import org.apache.turbine.modules.actions.VelocitySecureAction;
 import org.apache.turbine.util.RunData;
+import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.turbine.util.security.AccessControlList;
 import org.apache.turbine.Turbine;
 
@@ -67,6 +68,7 @@ public class CreamAction extends VelocitySecureAction
     public static final int UTIL=1006;
 
     private int defModuleType;
+    private String savedId=new String();
     private String defModuleName=new String();
 
     protected void initScreen()
@@ -190,18 +192,48 @@ public class CreamAction extends VelocitySecureAction
             defModuleType=modtype;
     }
 
+    protected void setSavedId(String someId)
+    {
+            savedId=someId;
+    }
     
     public void doInsertrow(RunData data, Context context)
     throws Exception
 	{
     	try{
+//    		ParameterParser myParams= data.getParameters();
+//    		int tempCustomerId= data.getParameters().getInt("customerid", 0);
     		doInsert(data, context);
+//    		if (tempCustomerId>0) data.getParameters().setString("customerid", new Integer(tempCustomerId).toString());
+//    		data.getParameters().setRequest(myParams.getRequest());
+    		
+    	}catch (Exception e){
+    		handleCreamException(data, e);
+    	}
+	}
+
+    public void doInsertrowandstay(RunData data, Context context)
+    throws Exception
+	{
+    	try{
+    		doInsert(data, context);
+        data.getParameters().setString("formid", savedId);
     	}catch (Exception e){
     		handleCreamException(data, e);
     	}
 	}
 
     public void doUpdaterow(RunData data, Context context)
+    throws Exception
+	{
+    	try{
+    		doUpdate(data, context);
+    	}catch (Exception e){
+    		handleCreamException(data, e);
+    	}
+	}
+    
+    public void doUpdaterowandstay(RunData data, Context context)
     throws Exception
 	{
     	try{
@@ -234,7 +266,7 @@ public class CreamAction extends VelocitySecureAction
     public void doInsert(RunData data, Context context)
     throws Exception
 	{
-    	
+
 	}
 
     public void doUpdate(RunData data, Context context)

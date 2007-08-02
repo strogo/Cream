@@ -52,7 +52,7 @@ import org.campware.cream.om.CustomerCategoryPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class CustomerCategorySQL extends CreamAction
+public class CustomerCategorySQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -75,6 +75,7 @@ public class CustomerCategorySQL extends CreamAction
         CustomerCategory entry = new CustomerCategory();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

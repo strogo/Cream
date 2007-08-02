@@ -1,7 +1,7 @@
 #set ( $module = "System" )
 $page.setHttpEquiv("Pragma", "no-cache")
 $page.setBgColor("$ui.formBg")
-$page.addBodyAttribute("onLoad", "window.parent.copyFormContent();")	
+$page.addBodyAttribute("onLoad", "window.parent.copyFormContent(5006, false);")	
 
 <head>
 <script id="formScript" language=JavaScript>
@@ -19,7 +19,7 @@ function formValidate(){
 	return true;
 }
 
-function saveForm(retUrl){
+function saveFormAndReturn(retUrl){
 	myAction='ImportSQL';
 	myUrl= retUrl + '/action/' + myAction;
 	myForm.action= myUrl;
@@ -44,9 +44,10 @@ function saveForm(retUrl){
 		#formLabel($!l10n.get("Import.Form.Label.Type"))
 		<td align=left>
 		
-		<SELECT SIZE="1" name="type" maxlength="50" size="40" >
+		<SELECT size="1" name="type" maxlength="50" width="40" >
 		<OPTION value="10">$!l10n.get("Customer.Menu.Label")</OPTION>
 		<OPTION value="20">$!l10n.get("Product.Menu.Label")</OPTION>
+		<OPTION value="30">$!l10n.get("NewsSubscription.Menu.Label")</OPTION>
 		</SELECT>
 		
 		</td>
@@ -61,7 +62,7 @@ function saveForm(retUrl){
 
 </table>
 
-    <input type="hidden" name="eventSubmit_doUpdate" value="Update"/>
+    <input type="hidden" name="eventSubmit_doUpdaterow" value="Update"/>
       </div>
   
 </form>

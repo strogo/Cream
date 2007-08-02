@@ -48,7 +48,7 @@ import org.campware.cream.om.CurrencyPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class CurrencyList extends CreamList
+public class CurrencyList extends CreamLookupList
 {
 
     protected void initScreen()

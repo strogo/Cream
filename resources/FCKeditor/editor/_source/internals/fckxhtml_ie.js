@@ -1,12 +1,14 @@
 ﻿/*
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: fckxhtml_ie.js
  * 	Defines the FCKXHtml object, responsible for the XHTML operations.
@@ -19,11 +21,6 @@
 FCKXHtml._GetMainXmlString = function()
 {
 	return this.MainNode.xml ;
-}
-
-FCKXHtml._AppendEntity = function( xmlNode, entity )
-{
-	xmlNode.appendChild( this.XML.createEntityReference( entity ) ) ;
 }
 
 FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node, nodeName )
@@ -39,8 +36,8 @@ FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node, nodeName )
 			var sAttName = oAttribute.nodeName.toLowerCase() ;
 			var sAttValue ;
 
-			// The "_fckxhtmljob" attribute is used to mark the already processed elements.
-			if ( sAttName == '_fckxhtmljob' )
+			// Ignore any attribute starting with "_fck".
+			if ( sAttName.startsWith( '_fck' ) )
 				continue ;
 			// The following must be done because of a bug on IE regarding the style
 			// attribute. It returns "null" for the nodeValue.
@@ -59,9 +56,6 @@ FCKXHtml._AppendAttributes = function( xmlNode, htmlNode, node, nodeName )
 			// We must use getAttribute to get it exactly as it is defined.
 			else if ( ! (sAttValue = htmlNode.getAttribute( sAttName, 2 ) ) )
 				sAttValue = oAttribute.nodeValue ;
-
-			if ( FCKConfig.ForceSimpleAmpersand && sAttValue.replace )
-				sAttValue = sAttValue.replace( /&/g, '___FCKAmp___' ) ;
 
 			this._AppendAttribute( node, sAttName, sAttValue ) ;
 		}
@@ -107,6 +101,9 @@ FCKXHtml.TagProcessors['input'] = function( node, htmlNode )
 	if ( htmlNode.value && !node.attributes.getNamedItem( 'value' ) )
 		FCKXHtml._AppendAttribute( node, 'value', htmlNode.value ) ;
 
+	if ( !node.attributes.getNamedItem( 'type' ) )
+		FCKXHtml._AppendAttribute( node, 'type', 'text' ) ;
+
 	return node ;
 }
 
@@ -117,25 +114,6 @@ FCKXHtml.TagProcessors['option'] = function( node, htmlNode )
 		FCKXHtml._AppendAttribute( node, 'selected', 'selected' ) ;
 
 	FCKXHtml._AppendChildNodes( node, htmlNode ) ;
-
-	return node ;
-}
-
-// There is a BUG in IE regarding the ABBR tag.
-FCKXHtml.TagProcessors['abbr'] = function( node, htmlNode )
-{
-	var oNextNode = htmlNode.nextSibling ;
-
-	while ( true )
-	{
-		if ( oNextNode && oNextNode.nodeName != '/ABBR' )
-		{
-			FCKXHtml._AppendNode( node, oNextNode ) ;
-			oNextNode = oNextNode.nextSibling ;
-		}
-		else
-			break ;
-	}
 
 	return node ;
 }
@@ -172,7 +150,7 @@ FCKXHtml.TagProcessors['label'] = function( node, htmlNode )
 
 FCKXHtml.TagProcessors['form'] = function( node, htmlNode )
 {
-	if ( htmlNode.acceptCharset.length > 0 && htmlNode.acceptCharset != 'UNKNOWN' )
+	if ( htmlNode.acceptCharset && htmlNode.acceptCharset.length > 0 && htmlNode.acceptCharset != 'UNKNOWN' )
 		FCKXHtml._AppendAttribute( node, 'accept-charset', htmlNode.acceptCharset ) ;
 
 	if ( htmlNode.name ) 
@@ -193,3 +171,14 @@ FCKXHtml.TagProcessors['textarea'] = FCKXHtml.TagProcessors['select'] = function
  
 	return node ; 
 } 
+
+// On very rare cases, IE is loosing the "align" attribute for DIV. (right align and apply bulleted list)
+FCKXHtml.TagProcessors['div'] = function( node, htmlNode )
+{
+	if ( htmlNode.align.length > 0 )
+		FCKXHtml._AppendAttribute( node, 'align', htmlNode.align ) ;
+
+	FCKXHtml._AppendChildNodes( node, htmlNode ) ;
+
+	return node ;
+}

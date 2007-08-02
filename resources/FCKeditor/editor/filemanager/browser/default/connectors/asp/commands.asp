@@ -1,12 +1,14 @@
 ﻿<!--
  * FCKeditor - The text editor for internet
- * Copyright (C) 2003-2005 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2006 Frederico Caldeira Knabben
  * 
  * Licensed under the terms of the GNU Lesser General Public License:
  * 		http://www.opensource.org/licenses/lgpl-license.php
  * 
  * For further information visit:
  * 		http://www.fckeditor.net/
+ * 
+ * "Support Open Source software. What about a donation today?"
  * 
  * File Name: commands.asp
  * 	This file include the functions that handle the Command requests
@@ -81,7 +83,7 @@ Sub CreateFolder( resourceType, currentFolder )
 	Dim sNewFolderName
 	sNewFolderName = Request.QueryString( "NewFolderName" )
 
-	If ( sNewFolderName = "" ) Then
+	If ( sNewFolderName = "" OR InStr( 1, sNewFolderName, ".." ) > 0  ) Then
 		sErrorNumber = "102"
 	Else
 		' Map the virtual path to the local server path of the current folder.

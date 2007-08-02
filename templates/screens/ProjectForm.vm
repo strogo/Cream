@@ -1,9 +1,16 @@
 #set ( $module = "Main" )
-#formCommon()
+#formCommon(1002)
 
 function formInit(){
 	myForm.status.value=$!entry.Status;
 	myForm.projectcatid.value=$!entry.ProjectCatId;
+
+	#if($mode!="insert")
+		if (parent.needsReload>1){
+			reloadRelated(parent.needsReload);
+			parent.needsReload=1;
+		}
+	#end
 
 	highlight(myForm.projectname);
 }
@@ -42,6 +49,135 @@ function valueChanged(formField){
 		}
 	}
 }
+
+#if($mode!="insert")
+
+function addRelated(doctype){
+	parent.showNewRelated(doctype, PROJECT, $!entry.ProjectId);
+}
+
+function addRelatedDoc(){
+	alert("Not implemented yet!");
+}
+
+function editRelated(doctype, docid){
+	var docForm="";
+	if (doctype==10)
+		docForm=INBOX;
+	else if (doctype==30)
+		docForm=INBOX;
+	else if (doctype==50)
+		docForm=INBOX;
+	else if (doctype==100)
+		docForm=OUTBOX;
+	else if (doctype==110)
+		docForm=ONLINE_SUBSCRIPTION;
+	else if (doctype==120)
+		docForm=PRINT_SUBSCRIPTION;
+	else if (doctype==130)
+		docForm=SERVICE;
+	else if (doctype==140)
+		docForm=SHIPMENT;
+	else if (doctype==150)
+		docForm=PAYMENT;
+	else if (doctype==160)
+		docForm=ORDER;
+	else if (doctype==170)
+		docForm=OPPORTUNITY;
+	else if (doctype==1005)
+		docForm=TASK;
+
+	showRelated(PROJECT, $!entry.ProjectId, docForm, docid);
+}
+
+function reloadRelated(doctype){
+	var docForm="";
+	if (doctype==1005)
+		showFormTab(4);
+	else if (doctype>2000)
+		showFormTab(3);
+	else
+		showFormTab(5);
+
+}
+
+function showFormTab(frmTab){
+	if (frmTab==3){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("docTab").style.display='block';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relDocs").style.display='block';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("ProjectRelDocs.vm")', $!entry.ProjectId);
+
+	}else if (frmTab==4){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='block';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='block';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("ProjectRelTasks.vm")', $!entry.ProjectId);
+
+	} else{
+		document.getElementById("notesTab").style.display='block';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='block';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='none';
+	}
+}
+
+    function showRelDocsMenu(menupic)
+    {
+		if (document.getElementById('relDocsMenu')){
+			document.getElementById('relDataFrame').removeChild(document.getElementById('relDocsMenu'));
+		}else{
+			hl = document.createElement('div');
+			hl.id="relDocsMenu";
+			hl.style.position = "absolute";
+			hl.style.top = document.getElementById("relDataFrame").firstChild.offsetTop; 
+			hl.style.left = document.getElementById("relDataFrame").firstChild.offsetLeft;
+//			hl.style.width = "400px";
+			hl.style.zIndex = "100";
+			hl.style.backgroundColor = "white";
+			hl.style.fontWeight = "bold";
+			hl.style.color = "#7694C8";
+			hl.style.border = "solid 1px #7694C8"
+			hl.style.textAlign = "center";
+			menuHtml = '<table><tr align="left"><td><img src="$ui.image($ui.inbox)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(INBOX)">$!l10n.get("Inbox.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.message)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(OUTBOX)">$!l10n.get("Outbox.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.opportunity)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(OPPORTUNITY)">$!l10n.get("Opportunity.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.sorder)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(ORDER)">$!l10n.get("SalesOrder.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.shipment)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(SHIPMENT)">$!l10n.get("Shipment.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.service)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(SERVICE)">$!l10n.get("Service.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.osubs)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(ONLINE_SUBSCRIPTION)">$!l10n.get("OnlineSubscription.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.psubs)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(PRINT_SUBSCRIPTION)">$!l10n.get("PrintSubscription.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.payment)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(PAYMENT)">$!l10n.get("Payment.Form.NewTitle")</a></td></tr>';
+			menuHtml += '</table>';
+			hl.innerHTML = menuHtml;
+			document.getElementById("relDataFrame").appendChild(hl);
+//			document.body.appendChild(hl);
+		}
+		
+    }
+
+
+#end
+
 
 #formHeader("ProjectForm.vm" "ProjectSQL" "projectid" $!entry.ProjectId $mode)
 
@@ -90,6 +226,23 @@ function valueChanged(formField){
 		&nbsp;
 		</td>
       </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
       <tr>
         #formCellAmount ($!l10n.get("Project.Form.Label.Expenses") "expenses" $!entry.Expenses 10 100 7)
 			<td width=16>&nbsp;</td>
@@ -100,20 +253,37 @@ function valueChanged(formField){
 		&nbsp;
 		</td>
       </tr>
-      <tr>
-        #formCell ($!l10n.get("Project.Form.Label.Custom1") "custom1" $!entry.Custom1 55 160 27)
-			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Project.Form.Label.Custom4")  "custom4" $!entry.Custom4 55 160 30)
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
       </tr>
       <tr>
-        #formCell ($!l10n.get("Project.Form.Label.Custom2")  "custom2" $!entry.Custom2 55 160 28)
+        #formCell ($!l10n.get("Project.Form.Label.Custom1") "custom1" $!entry.Custom1 128 160 27)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Project.Form.Label.Custom5")  "custom5" $!entry.Custom5 55 160 31)
+        #formCell ($!l10n.get("Project.Form.Label.Custom4")  "custom4" $!entry.Custom4 128 160 30)
       </tr>
       <tr>
-        #formCell ($!l10n.get("Project.Form.Label.Custom3")  "custom3" $!entry.Custom3 55 160 29)
+        #formCell ($!l10n.get("Project.Form.Label.Custom2")  "custom2" $!entry.Custom2 128 160 28)
 			<td width=16>&nbsp;</td>
-        #formCell ($!l10n.get("Project.Form.Label.Custom6")  "custom6" $!entry.Custom6 55 160 32)
+        #formCell ($!l10n.get("Project.Form.Label.Custom5")  "custom5" $!entry.Custom5 128 160 31)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Project.Form.Label.Custom3")  "custom3" $!entry.Custom3 128 160 29)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Project.Form.Label.Custom6")  "custom6" $!entry.Custom6 128 160 32)
       </tr>
 	</table>
   </td>
@@ -125,8 +295,121 @@ function valueChanged(formField){
 </td>
 </tr>
 <tr>
-	<td align=center>
-		<textarea rows="5" cols="96%" name="notes" tabIndex=43>$!entry.Notes</textarea>
+<td>
+#if($mode!="insert")
+
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="214" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:212px; width: 556px">$!entry.Notes</textarea>
+
+			<table id="relDocs" name="relDocs" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="showRelDocsMenu(this)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Common.List.Header.Date")</td>
+					</tr>
+			</table>
+			<table id="relTasks" name="relTasks" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="addRelated(TASK)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Task.List.Header.DueDate")</td>
+					</tr>
+			</table>
+			<DIV ID="relDataFrame" NAME="relDataFrame" STYLE=" width: 556px; height:191px; position: relative; overflow: scroll; overflow-x:hidden; background-color:white;display:none;">
+			</DIV>
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="docsTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="docTab" name="docTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="docsTab3" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Documents")</td>
+			<td id="tasksTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="taskTab" name="taskTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="docsTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab4" class=frmtabhi align=center valign=center>$!l10n.get("Task.Menu.Label")</td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#else
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="204" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:200px; width: 556px">$!entry.Notes</textarea>
+
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr align="left">
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="docsTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#end
 	</td>
 </tr>
 <tr>

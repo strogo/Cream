@@ -1,0 +1,678 @@
+#set ( $module = "Main" )
+#formCommon(1004)
+
+function formInit(){
+	myForm.status.value=$!entry.Status;
+	myForm.gender.value=$!entry.Gender;
+	myForm.customerid.value=$!entry.CustomerId;
+	myForm.contactcatid.value=$!entry.ContactCatId;
+	myForm.salutationid.value=$!entry.SalutationId;
+	myForm.languageid.value=$!entry.LanguageId;
+	myForm.emailformat.value=$!entry.EmailFormat;
+	myForm.countryid.value=$!entry.CountryId;
+	myForm.regionid.value=$!entry.RegionId;
+	myForm.seccountryid.value=$!entry.SecCountryId;
+	myForm.secregionid.value=$!entry.SecRegionId;
+	myForm.jobpositionid.value=$!entry.JobPositionId;
+
+	if (myForm.sendnews.value==10) myForm.sendnewstemp.checked=false;
+
+	#if($mode!="insert")
+		if (parent.needsReload>1 && parent.needsReload!=CONTACT){
+			reloadRelated(parent.needsReload);
+			parent.needsReload=1;
+		}
+	#end
+
+	highlight(myForm.firstname);
+}
+
+function formValidate(){
+	if (parent.isEmpty(myForm.contactcode)) return false;
+	if (parent.isEmpty(myForm.lastname)) return false;
+	if (parent.isEmpty(myForm.contactdisplay)) return false;
+
+	if (myForm.birthdate.value!=""){
+		if (parent.isNotDate(myForm.birthdate)) return false;
+	}
+	if (myForm.anniversary.value!=""){
+		if (parent.isNotDate(myForm.anniversary)) return false;
+	}
+
+	if (myForm.email.value!=""){
+		if (!parent.isEmail(myForm.email.value)){
+			myForm.email.focus();
+			return false;
+		}
+	}
+
+	if (myForm.email2.value!=""){
+		if (!parent.isEmail(myForm.email2.value)){
+			myForm.email2.focus();
+			return false;
+		}
+	}
+	
+	if (myForm.assistantemail.value!=""){
+		if (!parent.isEmail(myForm.assistantemail.value)){
+			myForm.assistantemail.focus();
+			return false;
+		}
+	}
+	myForm.contactcode.value = myForm.contactcode.value.toUpperCase();
+
+	if (myForm.sendnewstemp.checked){
+		 myForm.sendnews.value=20;
+	}
+	else {
+		 myForm.sendnews.value=10;
+	}
+
+	return true;
+}
+
+function valueChanged(formField){
+	if (formField.name=='lastname' || formField.name=='firstname'){
+		var firstName= trimString(myForm.firstname.value);
+		var lastName=trimString(myForm.lastname.value);
+
+		if (firstName.length>1){
+			myForm.contactdisplay.value=lastName + ', ' + firstName;
+			myForm.dear.value=firstName;
+		}else{
+			myForm.contactdisplay.value=lastName;
+			myForm.dear.value=lastName;
+		}
+			
+	}
+
+}
+
+function copyAddressRight(){
+	myForm.secaddress1.value=myForm.address1.value;
+	myForm.secaddress2.value=myForm.address2.value;
+	myForm.secaddress3.value=myForm.address3.value;
+	myForm.seccity.value=myForm.city.value;
+	myForm.seczip.value=myForm.zip.value;
+	myForm.secstate.value=myForm.state.value;
+	myForm.seccountryid.value=myForm.countryid.value;
+	myForm.secregionid.value=myForm.regionid.value;
+}
+
+function copyAddressLeft(){
+	myForm.address1.value=myForm.secaddress1.value;
+	myForm.address2.value=myForm.secaddress2.value;
+	myForm.address3.value=myForm.secaddress3.value;
+	myForm.city.value=myForm.seccity.value;
+	myForm.zip.value=myForm.seczip.value;
+	myForm.state.value=myForm.secstate.value;
+	myForm.countryid.value=myForm.seccountryid.value;
+	myForm.regionid.value=myForm.secregionid.value;
+}
+
+
+#if($mode!="insert")
+
+function addRelated(doctype){
+	parent.showNewRelated(doctype, CONTACT, $!entry.ContactId);
+}
+
+function addRelatedDoc(){
+	alert("Not implemented yet!");
+}
+
+function editRelated(doctype, docid){
+	var docForm="";
+	if (doctype==10)
+		docForm=INBOX;
+	else if (doctype==30)
+		docForm=INBOX;
+	else if (doctype==50)
+		docForm=INBOX;
+	else if (doctype==100)
+		docForm=OUTBOX;
+	else if (doctype==110)
+		docForm=ONLINE_SUBSCRIPTION;
+	else if (doctype==120)
+		docForm=PRINT_SUBSCRIPTION;
+	else if (doctype==130)
+		docForm=SERVICE;
+	else if (doctype==140)
+		docForm=SHIPMENT;
+	else if (doctype==150)
+		docForm=PAYMENT;
+	else if (doctype==160)
+		docForm=ORDER;
+	else if (doctype==170)
+		docForm=OPPORTUNITY;
+	else if (doctype==1005)
+		docForm=TASK;
+
+	showRelated(CONTACT, $!entry.ContactId, docForm, docid);
+}
+
+function reloadRelated(doctype){
+	var docForm="";
+	if (doctype==1005)
+		showFormTab(4);
+	else if (doctype>2000)
+		showFormTab(3);
+	else
+		showFormTab(5);
+
+}
+
+function showFormTab(frmTab){
+	if (frmTab==3){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("docTab").style.display='block';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relDocs").style.display='block';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("ContactRelDocs.vm")', $!entry.ContactId);
+
+	}else if (frmTab==4){
+		document.getElementById("notesTab").style.display='none';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='block';
+
+		document.getElementById("notes").style.display='none';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='block';
+
+		document.getElementById("relDataFrame").style.display='block';
+		showRelRetrieveInfo();
+		loadUtil('$link.setPage("ContactRelTasks.vm")', $!entry.ContactId);
+
+	} else{
+		document.getElementById("notesTab").style.display='block';
+		document.getElementById("docTab").style.display='none';
+		document.getElementById("taskTab").style.display='none';
+
+		document.getElementById("notes").style.display='block';
+		document.getElementById("relDocs").style.display='none';
+		document.getElementById("relTasks").style.display='none';
+
+		document.getElementById("relDataFrame").style.display='none';
+	}
+}
+
+    function showRelDocsMenu(menupic)
+    {
+		if (document.getElementById('relDocsMenu')){
+			document.getElementById('relDataFrame').removeChild(document.getElementById('relDocsMenu'));
+		}else{
+			hl = document.createElement('div');
+			hl.id="relDocsMenu";
+			hl.style.position = "absolute";
+			hl.style.top = document.getElementById("relDataFrame").firstChild.offsetTop; 
+			hl.style.left = document.getElementById("relDataFrame").firstChild.offsetLeft;
+//			hl.style.width = "400px";
+			hl.style.zIndex = "100";
+			hl.style.backgroundColor = "white";
+			hl.style.fontWeight = "bold";
+			hl.style.color = "#7694C8";
+			hl.style.border = "solid 1px #7694C8"
+			hl.style.textAlign = "center";
+			menuHtml = '<table><tr align="left"><td><img src="$ui.image($ui.inbox)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(INBOX)">$!l10n.get("Inbox.Form.NewTitle")</a></td></tr>';
+			menuHtml += '<tr align="left"><td><img src="$ui.image($ui.message)" width=16 height=16></td><td><a style="color:#1F386A;" href="javascript: void 0" ONCLICK="addRelated(OUTBOX)">$!l10n.get("Outbox.Form.NewTitle")</a></td></tr>';
+			menuHtml += '</table>';
+			hl.innerHTML = menuHtml;
+			document.getElementById("relDataFrame").appendChild(hl);
+//			document.body.appendChild(hl);
+		}
+		
+    }
+
+
+#end
+
+#formHeader("ContactForm.vm" "ContactSQL" "contactid" $!entry.ContactId $mode)
+
+<tr>
+<td>
+    <table align=center cellpadding=0 cellspacing=0 border=0>
+      <tr>  
+   		#formCell ($!l10n.get("Common.Form.Label.Code") "contactcode" $!entry.ContactCode 20 100 1)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Status"))
+		<td align="left">
+		<select name="status" tabIndex=2 value=$!entry.Status STYLE="width: 100px">
+			<option value="30">$!l10n.get("Contact.Form.Status.Active")</option>
+			<option value="50">$!l10n.get("Contact.Form.Status.Inactive")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+	<td>
+	&nbsp;
+	</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Contact.Form.Label.Salutation"))
+
+		<td align="left">
+		<select name="salutationid" tabIndex="10" value="$!entry.SalutationId" width="100" STYLE="width: 100px">
+			#foreach ($salutation in $salutations)
+				<option value="$salutation.SalutationId">$salutation.SalutationName</option>
+			#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+   		#formSelectCustomer ($!l10n.get("Common.Form.Label.Customer") "customerid" $!entry.CustomerId 160 16)
+      </tr>
+      <tr>
+		#formCellWithChange ($!l10n.get("Contact.Form.Label.FirstName") "firstname" $!entry.FirstName 70 160 11)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Common.Form.Label.Category"))
+		<td align="left">
+		<select name="contactcatid" tabIndex="17" value="$!entry.ContactCatId" width="160" STYLE="width: 160px">
+		#foreach ($contactcat in $contactcats)
+			<option value="$contactcat.ContactCatId">$contactcat.ContactCatName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		#formCellWithChange ($!l10n.get("Contact.Form.Label.LastName") "lastname" $!entry.LastName 70 160 12)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Contact.Form.Label.Gender"))
+		<td align="left">
+		<select name="gender" tabIndex="18" value="$!entry.Gender" width="160" STYLE="width: 160px">
+			<option value="10">---</option>
+			<option value="20">$!l10n.get("Contact.Form.Gender.Male")</option>
+			<option value="30">$!l10n.get("Contact.Form.Gender.Female")</option>
+		</select>
+		</td>
+      </tr>
+      <tr>
+		#formCell ($!l10n.get("Contact.Form.Label.Suffix") "suffix" $!entry.Suffix 15 100 13)
+			<td width=16>&nbsp;</td>
+        	#formCellDate ($!l10n.get("Contact.Form.Label.Birthdate") "birthdate" $!entry.Birthdate 10 100 19)
+      </tr>
+      <tr>
+		#formCell ($!l10n.get("Contact.Form.Label.Display") "contactdisplay" $!entry.ContactDisplay 70 160 14)
+			<td width=16>&nbsp;</td>
+        	#formCellDate ($!l10n.get("Contact.Form.Label.Anniversary") "anniversary" $!entry.Anniversary 10 100 20)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Dear") "dear" $!entry.Dear 70 160 15)
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Contact.Form.Label.Language"))
+		<td align="left">
+		<select name="languageid" tabIndex="21" value="$!entry.LanguageId" width="160" STYLE="width: 160px">
+		#foreach ($language in $languages)
+			<option value="$language.LanguageId">$language.LanguageName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.PhoneHome")  "phonehome" $!entry.PhoneHome 30 160 30)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.Email")  "email" $!entry.Email 254 160 34)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.PhoneWork")  "phonework" $!entry.PhoneWork 30 160 31)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.Email2")  "email2" $!entry.Email2 254 160 35)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.PhoneMobile")  "phonemobile" $!entry.PhoneMobile 30 160 32)
+			<td width=16>&nbsp;</td>
+        #formCheckBox ($!l10n.get("Contact.Form.Label.SendNewsletters")  "sendnewstemp" true 36)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Fax")  "fax" $!entry.Fax 30 160 33)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.InfoUrl")  "www" $!entry.Www 254 160 37)
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Address") "address1" $!entry.Address1 55 160 41)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.SecAddress") "secaddress1" $!entry.SecAddress1 55 160 49)
+      </tr>
+      <tr>
+        #formCell ("" "address2" $!entry.Address2 55 160 42)
+			<td width=16>&nbsp;</td>
+        #formCell ("" "secaddress2" $!entry.SecAddress2 55 160 50)
+      </tr>
+      <tr>
+        #formCell ("" "address3" $!entry.Address3 55 160 43)
+			<td width="40" align="center"><a href="javascript: void 0" ONCLICK="copyAddressRight()"><img src="$ui.image($ui.copyRight)" width="24" border="0"></td>
+        #formCell ("" "secaddress3" $!entry.SecAddress3 55 160 51)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.City")  "city" $!entry.City 35 160 44)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.City")  "seccity" $!entry.SecCity 35 160 52)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Zip")  "zip" $!entry.Zip 12 100 45)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.Zip")  "seczip" $!entry.SecZip 12 100 53)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.State")  "state" $!entry.State 35 160 46)
+			<td width="40" align="center"><a href="javascript: void 0" ONCLICK="copyAddressLeft()"><img src="$ui.image($ui.copyLeft)" width="24" border="0"></a></td>
+        #formCell ($!l10n.get("Contact.Form.Label.State")  "secstate" $!entry.SecState 35 160 54)
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Contact.Form.Label.Country") )
+		<td align="left">
+		<select name="countryid" tabIndex="47" value="$!entry.CountryId" width="160" STYLE="width: 160px">
+		#foreach ($country in $countries)
+			<option value="$country.CountryId">$country.CountryName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Contact.Form.Label.Country") )
+		<td align="left">
+		<select name="seccountryid" tabIndex="55" value="$!entry.SecCountryId" width="160" STYLE="width: 160px">
+		#foreach ($country in $countries)
+			<option value="$country.CountryId">$country.CountryName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Contact.Form.Label.Region") )
+		<td align="left">
+		<select name="regionid" tabIndex="48" value="$!entry.RegionId" width="160" STYLE="width: 160px">
+		#foreach ($region in $regions)
+			<option value="$region.RegionId">$region.RegionName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formLabel($!l10n.get("Contact.Form.Label.Region") )
+		<td align="left">
+		<select name="secregionid" tabIndex="56" value="$!entry.SecRegionId" width="160" STYLE="width: 160px">
+		#foreach ($region in $regions)
+			<option value="$region.RegionId">$region.RegionName</option>
+		#end        	
+		</select>
+		</td>
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr class="formline">
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+		#formCell ($!l10n.get("Contact.Form.Label.JobTitle")  "jobtitle" $!entry.JobTitle 70 160 61)
+			<td width=16>&nbsp;</td>
+		#formCell ($!l10n.get("Contact.Form.Label.AssistantName")  "assistantname" $!entry.AssistantName 70 160 64)
+      </tr>
+      <tr>
+		#formLabel($!l10n.get("Contact.Form.Label.JobPosition") )
+		<td align="left">
+		<select name="jobpositionid" tabIndex="62" value="$!entry.JobPositionId" width="160" STYLE="width: 160px">
+		#foreach ($jobposition in $jobpositions)
+			<option value="$jobposition.JobPositionId">$jobposition.JobPositionName</option>
+		#end        	
+		</select>
+		</td>
+			<td width=16>&nbsp;</td>
+		#formCell ($!l10n.get("Contact.Form.Label.AssistantPhone")  "assistantphone" $!entry.AssistantPhone 30 160 65)
+      </tr>
+      <tr>
+		#formCell ($!l10n.get("Contact.Form.Label.Department")  "department" $!entry.Department 70 160 63)
+			<td width=16>&nbsp;</td>
+		#formCell ($!l10n.get("Contact.Form.Label.AssistantEmail")  "assistantemail" $!entry.AssistantEmail 254 160 66)
+      </tr>
+      <tr>
+		<td>
+		&nbsp;
+		</td>
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Custom1")  "custom1" $!entry.Custom1 128 160 71)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.Custom4")  "custom4" $!entry.Custom4 128 160 74)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Custom2") "custom2" $!entry.Custom2 128 160 72)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.Custom5") "custom5" $!entry.Custom5 128 160 75)
+      </tr>
+      <tr>
+        #formCell ($!l10n.get("Contact.Form.Label.Custom3") "custom3" $!entry.Custom3 128 160 73)
+			<td width=16>&nbsp;</td>
+        #formCell ($!l10n.get("Contact.Form.Label.Custom6") "custom6" $!entry.Custom6 128 160 76)
+      </tr>
+	</table>
+  </td>
+</tr>
+
+<input type="hidden" name="sendnews" value="$!entry.SendNews">
+<input type="hidden" name="allowlogin" value="$!entry.AllowLogin">
+<input type="hidden" name="allowprofileedit" value="$!entry.AllowProfileEdit">
+<input type="hidden" name="loginexisted" value="$!entry.LoginExisted">
+<input type="hidden" name="loginname" value="$!entry.LoginName">
+<input type="hidden" name="passwordvalue" value="$!entry.PasswordValue">
+<input type="hidden" name="emailformat" value="20">
+
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+
+
+
+<tr>
+<td>
+#if($mode!="insert")
+
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="204" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:200px; width: 556px">$!entry.Notes</textarea>
+
+			<table id="relDocs" name="relDocs" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="showRelDocsMenu(this)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Common.List.Header.Date")</td>
+					</tr>
+			</table>
+			<table id="relTasks" name="relTasks" class="toolbar" align=center cellpadding=2 cellspacing=0 border=0 style="height:20px; width: 556px; display:none">
+					<tr align="center">
+						<td>
+						<a href="javascript: void 0" ONCLICK="addRelated(TASK)"><img src="$ui.image($ui.itemNew)" width="16" height="16" border="0" alt="Add Document"></a>
+						</td>
+						<td width="90">$!l10n.get("Common.Form.Items.Header.Id")</td>
+						<td width="350" align="left">$!l10n.get("Common.List.Header.Subject")</td>
+						<td width="80" align="left">$!l10n.get("Task.List.Header.DueDate")</td>
+					</tr>
+			</table>
+			<DIV ID="relDataFrame" NAME="relDataFrame" STYLE=" width: 556px; height:181px; position: relative; overflow: scroll; overflow-x:hidden; background-color:white;display:none;">
+			</DIV>
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="docsTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab1" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="docTab" name="docTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="docsTab3" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Documents")</td>
+			<td id="tasksTab3" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(4)">$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+			<div id="taskTab" name="taskTab" style="display:none;">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(1)">$!l10n.get("Common.Form.Label.Notes")</span></td>
+			<td id="docsTab4" class=frmtablo align=center valign=center><span class="tlink" onClick="showFormTab(3)">$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab4" class=frmtabhi align=center valign=center>$!l10n.get("Task.Menu.Label")</td>
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#else
+
+		<table align=center width="558" cellpadding=0 cellspacing=0 border=0>
+		<tr>
+		<td>
+			<table class="frmtabbgd" height="204" width="100%" cellpadding=0 cellspacing=0 border=0>
+			<tr>
+			<td align=center valign=top>
+
+			<textarea id="notes" name="notes" tabIndex="503" style="height:200px; width: 556px">$!entry.Notes</textarea>
+
+			</td>
+			</tr>
+			</table>
+		</td>
+		</tr>
+		<tr>
+		<td>
+			<div id="notesTab" name="notesTab">
+			<table width="100%" height="20" cellpadding=0 cellspacing=0 border=0>
+			<tr align="left">
+			<td class=frmtabrest width=5 align=center valign=center>&nbsp;</td>
+			<td id="notesTab1" class=frmtabhi align=center valign=center>$!l10n.get("Common.Form.Label.Notes")</td>
+			<td id="docsTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Common.Form.Label.Documents")</span></td>
+			<td id="tasksTab1" class=frmtabdis align=center valign=center><span>$!l10n.get("Task.Menu.Label")</span></td>
+			<td class=frmtabrest align=center valign=center>&nbsp;</td>
+			</tr>
+			</table>
+			</div>
+
+		</td>
+		</tr>
+		</table>
+
+#end
+
+
+</td>
+</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+#if ($!entry.Created)
+	<input type="hidden" name="created" value="$!dtf.format($!entry.Created)">
+	<input type="hidden" name="createdby" value="$!entry.CreatedBy">
+
+	<tr>
+		<td align=center>
+	    <table align=center width="96%" cellpadding=0 cellspacing=0 border=0>
+	      <tr>  
+	      	  <td align=left><font class=frmlabel>$!l10n.get("Common.Form.Label.Created"): </font>$!dtf.format($!entry.Created) ($!entry.CreatedBy)</td>
+	      	  <td align=right><font class=frmlabel>$!l10n.get("Common.Form.Label.Modified"): </font>$!dtf.format($!entry.Modified) ($!entry.ModifiedBy)</td>
+	      </tr>  
+		</table>
+		</td>
+	</tr>
+<tr>
+<td>
+&nbsp;
+</td>
+</tr>
+#end        	
+
+	
+#formFooter("ContactForm.vm" "ContactSQL" "contactid" $!entry.ContactId $mode)

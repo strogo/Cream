@@ -130,6 +130,7 @@ public class ShipmentSQL extends CreamAction
         } finally {
             if (!success) Transaction.safeRollback(conn);
         }
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

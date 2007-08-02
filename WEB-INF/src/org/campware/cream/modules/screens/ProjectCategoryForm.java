@@ -51,7 +51,7 @@ import org.campware.cream.om.ProjectCategoryPeer;
  * To read comments for this class, please see
  * the ancestor class
  */
-public class ProjectCategoryForm extends CreamForm
+public class ProjectCategoryForm extends CreamLookupForm
 {
     protected void initScreen()
     {

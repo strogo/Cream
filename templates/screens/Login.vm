@@ -50,8 +50,8 @@ function loginInit(){
 				<td align="center" valign="top">
 				<img src="$ui.image($ui.logo)">
 				</td>
-				<td align="center" valign="center">
-				<font color="#1F386A" size="+3"><b>CReaM 2.0.0</b></font>
+				<td align="left" valign="center">
+				<font color="#1F386A" size="+3"><b>CReaM 3.0.0</b></font>
 				</td>
 				</tr>
 				</table>

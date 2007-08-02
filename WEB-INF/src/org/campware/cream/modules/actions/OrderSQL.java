@@ -141,6 +141,7 @@ public class OrderSQL extends CreamAction
             if (!success) Transaction.safeRollback(conn);
         }
 
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

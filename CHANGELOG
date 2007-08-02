@@ -1,0 +1,21 @@
+*** What is new in Cream 3.0.0
+
+- switched to MySQL database
+- possible Campsite integration where Cream manage Campsite subscriptions
+- contacts management
+- opportunities management
+- tasks management
+- external HTML forms for support and info requests
+- new custom fields in support and info requests
+- bill to and ship to addresses in customers
+- some additional customer fields
+- added view of related contacts, documents and tasks in the customer detail
+- added view of related documents and tasks in the contact detail
+- added view of related documents and tasks in the campaign detail
+- added view of related documents in the sales order detail
+- many new options
+- import of Newsletter Subscriptions
+- changed look of user interface
+- added paginating for all lists
+- fixed some bugs
+

@@ -41,15 +41,26 @@ package org.campware.cream.modules.actions;
  */
 
 import java.util.Date;
+import java.util.Enumeration;
+
 import org.apache.velocity.context.Context;
 
 import org.apache.turbine.util.RunData;
 import org.apache.torque.util.Criteria;
 import org.apache.torque.util.Transaction;
+
+import java.math.BigDecimal;
 import java.sql.Connection;
 
 import org.campware.cream.om.OnlineSubscription;
 import org.campware.cream.om.OnlineSubscriptionPeer;
+import org.campware.cream.om.OnlineSubscriptionIp;
+import org.campware.cream.om.OnlineSubscriptionIpPeer;
+import org.campware.cream.om.SorderItem;
+import org.campware.cream.om.SorderItemPeer;
+import org.campware.cream.om.SorderPeer;
+
+import org.apache.turbine.util.parser.ParameterParser;
 import org.apache.turbine.util.velocity.VelocityHtmlEmail;
 import org.apache.turbine.Turbine;
 
@@ -96,6 +107,24 @@ public class OnlineSubscriptionSQL extends CreamAction
 		entry.setModified(new Date());
 
 		
+        ParameterParser pp= data.getParameters();
+        Enumeration paramKeys= pp.keys();
+        
+	    while(paramKeys.hasMoreElements()) {
+	        String paramName = paramKeys.nextElement().toString();
+	        if(paramName.startsWith("ip1")) {	
+	            String suffix=paramName.substring(3, paramName.length());
+	            OnlineSubscriptionIp entryItem= new OnlineSubscriptionIp();
+
+	            entryItem.setIp1(pp.getInt("ip1" + suffix));
+	            entryItem.setIp2(pp.getInt("ip2" + suffix));
+	            entryItem.setIp3(pp.getInt("ip3" + suffix));
+	            entryItem.setIp4(pp.getInt("ip4" + suffix));
+	            entryItem.setAddressNo(pp.getInt("addressno" + suffix));
+	            entry.addOnlineSubscriptionIp(entryItem);
+            }
+        }
+
 		boolean bSave=true;
 
 		if (myStatus!=10 && notify==20){
@@ -118,6 +147,7 @@ public class OnlineSubscriptionSQL extends CreamAction
 	        } finally {
 	            if (!success) Transaction.safeRollback(conn);
 	        }
+	        setSavedId(entry.getPrimaryKey().toString());
 		}
     }
 
@@ -146,7 +176,25 @@ public class OnlineSubscriptionSQL extends CreamAction
 		entry.setModifiedBy(data.getUser().getName());
 		entry.setModified(new Date());
 
-		boolean bSave=true;
+        ParameterParser pp= data.getParameters();
+        Enumeration paramKeys= pp.keys();
+        
+	    while(paramKeys.hasMoreElements()) {
+	        String paramName = paramKeys.nextElement().toString();
+	        if(paramName.startsWith("ip1")) {	
+	            String suffix=paramName.substring(3, paramName.length());
+	            OnlineSubscriptionIp entryItem= new OnlineSubscriptionIp();
+
+	            entryItem.setIp1(pp.getInt("ip1" + suffix));
+	            entryItem.setIp2(pp.getInt("ip2" + suffix));
+	            entryItem.setIp3(pp.getInt("ip3" + suffix));
+	            entryItem.setIp4(pp.getInt("ip4" + suffix));
+	            entryItem.setAddressNo(pp.getInt("addressno" + suffix));
+	            entry.addOnlineSubscriptionIp(entryItem);
+            }
+        }
+
+	    boolean bSave=true;
 
 		if (myStatus!=10 && notify==20){
 			bSave= sendEmail(data, context, entry);
@@ -155,7 +203,22 @@ public class OnlineSubscriptionSQL extends CreamAction
 		if (bSave){
 	        entry.setModified(true);
 	        entry.setNew(false);
-	        entry.save();
+
+	        Criteria crit = new Criteria();
+	        crit.add(OnlineSubscriptionIpPeer.ONLINE_SUBS_ID, entry.getOnlineSubsId());
+
+	        Connection conn = Transaction.begin(OnlineSubscriptionPeer.DATABASE_NAME);
+	        boolean success = false;
+	        try {
+	        		OnlineSubscriptionIpPeer.doDelete(crit, conn);
+	            entry.save(conn);
+	            Transaction.commit(conn);
+	            success = true;
+
+	        } finally {
+	            if (!success) Transaction.safeRollback(conn);
+	        }
+		
 		}
     }
 
@@ -197,6 +260,8 @@ public class OnlineSubscriptionSQL extends CreamAction
 			context.put("custom4", emailEntry.getCustomerRelatedByCustomerId().getCustom4()); 
 			context.put("custom5", emailEntry.getCustomerRelatedByCustomerId().getCustom5()); 
 			context.put("custom6", emailEntry.getCustomerRelatedByCustomerId().getCustom6()); 
+			context.put("login", emailEntry.getCustomerRelatedByCustomerId().getLoginName()); 
+			context.put("password", emailEntry.getCustomerRelatedByCustomerId().getPasswordValue()); 
 			context.put("productdisplay", emailEntry.getProduct().getProductDisplay()); 
 			context.put("productdescription", emailEntry.getProduct().getProductDescription()); 
 			context.put("startdate", formatDate(emailEntry.getStartDate())); 

@@ -67,7 +67,13 @@ public class CreamForm extends SecureScreen
     private String defIdName=new String();
     private String defFormIdName=new String();
     protected RunData myData;
-
+    protected int INBOX=2010;
+    protected int CUSTOMER=1001;
+    protected int CONTACT=1004;
+    protected int PRODUCT=1003;
+    protected int PROJECT=1002;
+    protected int SORDER=2001;
+    
     protected void initScreen()
     {
     }
@@ -82,19 +88,24 @@ public class CreamForm extends SecureScreen
         try
         {
             myData= data;
-            int entry_id = data.getParameters().getInt(defFormIdName);
+//            int entry_id = data.getParameters().getInt(defFormIdName);
+            int entry_id = data.getParameters().getInt("formid");
             
             if (entry_id>0)
             {
                 Criteria criteria = new Criteria();
                 criteria.add(defIdName, entry_id);
                 getEntry(criteria, context);
+//                getRelated(entry_id, context);
 
                 context.put("mode", "update");
             }
             else if (entry_id<0)
             {
-				getNewRelated(entry_id * (-1), context);
+                int baseform = data.getParameters().getInt("baseform");
+                int baseid = data.getParameters().getInt("baseid");
+
+            		getNewRelated(baseform, baseid, context);
 				context.put("mode", "insert");
             }
             else
@@ -107,13 +118,18 @@ public class CreamForm extends SecureScreen
             
             context.put("df", new SimpleDateFormat ("dd.MM.yyyy"));
             context.put("dtf", new SimpleDateFormat ("dd.MM.yyyy hh:mm:ss"));
+//            context.put("numberTool", new org.apache.velocity.tools.generic.NumberTool());
             
             DecimalFormatSymbols symb= new DecimalFormatSymbols();
             symb.setDecimalSeparator('.');
             
+            //String ass= new String("assasa");
             context.put("af", new DecimalFormat ("0.00", symb));
             context.put("rf", new DecimalFormat ("0.000000", symb));
             context.put("today", new Date());
+            context.put("currentuser", data.getUser().getName());
+            
+
         }
         catch (Exception e)
         {
@@ -162,7 +178,7 @@ public class CreamForm extends SecureScreen
             return false;
     }
 
-	protected boolean getNewRelated(int relid, Context context)
+	protected boolean getNewRelated(int relform, int relid, Context context)
 	{
 			return false;
 	}
@@ -172,7 +188,12 @@ public class CreamForm extends SecureScreen
             return false;
     }
 
-    protected void setIdName(String name)
+	protected boolean getRelated(int relid, Context context)
+    {
+            return false;
+    }
+
+	protected void setIdName(String name)
     {
             defIdName=name;
     }
@@ -204,6 +225,13 @@ public class CreamForm extends SecureScreen
 //        return DateFormat.getDateInstance(DateFormat.MEDIUM).format(d);
         SimpleDateFormat formatter = new SimpleDateFormat ("dd.MM.yyyy");
         return formatter.format(d);
+    }
+
+    protected String formatDateString(String ds)
+    {
+//        return DateFormat.getDateInstance(DateFormat.MEDIUM).format(d);
+        SimpleDateFormat formatter = new SimpleDateFormat ("dd.MM.yyyy");
+        return formatter.format(ds);
     }
     
     

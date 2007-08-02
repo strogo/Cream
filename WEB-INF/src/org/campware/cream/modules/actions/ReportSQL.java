@@ -69,6 +69,7 @@ import org.campware.cream.om.ProjectPeer;
 import org.campware.cream.om.PaymentItemPeer;
 import org.campware.cream.om.OnlineSubscriptionPeer;
 import org.campware.cream.om.PrintSubscriptionPeer;
+import org.campware.cream.om.NewsSubscriptionPeer;
 import org.campware.cream.om.ShipmentPeer;
 import org.campware.cream.om.CurrencyPeer;
 
@@ -301,6 +302,51 @@ public class ReportSQL extends VelocitySecureAction
                 // stuff something into the Velocity Context
     
                 context.put ("entries", ShipmentPeer.doSelect(criteria));
+
+            }else if (reportid==7){
+                criteria.addJoin(ProductPeer.PRODUCT_ID, NewsSubscriptionPeer.PRODUCT_ID);
+                criteria.addJoin(ProjectPeer.PROJECT_ID, NewsSubscriptionPeer.PROJECT_ID);
+    
+                criteria.addSelectColumn(NewsSubscriptionPeer.PRODUCT_ID);
+                criteria.addSelectColumn("COUNT(" + NewsSubscriptionPeer.NEWS_SUBS_ID + ")");
+                criteria.addSelectColumn(ProductPeer.PRODUCT_CODE);
+                criteria.addSelectColumn(ProductPeer.PRODUCT_DISPLAY);
+    
+                setNewsSubscriptionCriteria(data, criteria);
+                setProjectCriteria(data, criteria);
+                setProductCriteria(data, criteria);
+                
+                criteria.addGroupByColumn(NewsSubscriptionPeer.PRODUCT_ID);
+                criteria.addGroupByColumn(ProductPeer.PRODUCT_CODE);
+                criteria.addGroupByColumn(ProductPeer.PRODUCT_DISPLAY);
+    
+                criteria.addAscendingOrderByColumn(ProductPeer.PRODUCT_CODE);
+                // stuff something into the Velocity Context
+    
+                List records = BasePeer.doSelect(criteria);
+                List results = new ArrayList();
+                
+                for (int i = 0; i < records.size(); i++) {
+                  results.add( ((Record) records.get(i)) );
+                }
+                context.put ("entries", results);
+    
+                Criteria critall = new Criteria();
+    
+                critall.addJoin(ProductPeer.PRODUCT_ID, NewsSubscriptionPeer.PRODUCT_ID);
+                critall.addJoin(ProjectPeer.PROJECT_ID, NewsSubscriptionPeer.PROJECT_ID);
+    
+                critall.addSelectColumn("COUNT(" + NewsSubscriptionPeer.NEWS_SUBS_ID + ")");
+    
+                setNewsSubscriptionCriteria(data, critall);
+                setProjectCriteria(data, critall);
+                setProductCriteria(data, critall);
+                
+                // stuff something into the Velocity Context
+                List sumrecord = BasePeer.doSelect(critall);
+                int sumAll= ((Record) sumrecord.get(0)).getValue(1).asInt();
+                context.put ("sumall", new Integer(sumAll));
+                
             }
             
             context.put ("reptitle", data.getParameters().getString("reptitle"));
@@ -381,6 +427,26 @@ public class ReportSQL extends VelocitySecureAction
         criteria.add(PrintSubscriptionPeer.STATUS, new Integer(status), Criteria.EQUAL);
     }
 
+    private void setNewsSubscriptionCriteria(RunData data, Criteria criteria)
+    throws Exception
+{
+    Date fromDate= parseDate(data.getParameters().getString("fromdate"));
+    Date toDate= parseDate(data.getParameters().getString("todate"));
+    int status= data.getParameters().getInt("status", 30);
+    
+    if (status==50){
+        Criteria.Criterion b1 = criteria.getNewCriterion(NewsSubscriptionPeer.CLOSED_DATE, fromDate, Criteria.GREATER_EQUAL);
+        Criteria.Criterion b2 = criteria.getNewCriterion(NewsSubscriptionPeer.CLOSED_DATE, toDate, Criteria.LESS_THAN);
+        criteria.add( b1.and( b2));
+    }else{
+        Criteria.Criterion b1 = criteria.getNewCriterion(NewsSubscriptionPeer.ISSUED_DATE, fromDate, Criteria.GREATER_EQUAL);
+        Criteria.Criterion b2 = criteria.getNewCriterion(NewsSubscriptionPeer.ISSUED_DATE, toDate, Criteria.LESS_THAN);
+        criteria.add( b1.and( b2));
+    }
+
+    criteria.add(NewsSubscriptionPeer.STATUS, new Integer(status), Criteria.EQUAL);
+}
+
     private void setShipmentCriteria(RunData data, Criteria criteria)
         throws Exception
     {
@@ -410,8 +476,8 @@ public class ReportSQL extends VelocitySecureAction
         int countryId = data.getParameters().getInt("countryid", 999);
         int regionId = data.getParameters().getInt("regionid", 999);
         int languageId = data.getParameters().getInt("languageid", 999);
-        int householdCatId = data.getParameters().getInt("householdcatid", 999);
-        int educationCatId = data.getParameters().getInt("educationcatid", 999);
+        int industryId = data.getParameters().getInt("industryid", 999);
+        int leadSourceId = data.getParameters().getInt("leadsourceid", 999);
         
         if (customerId>999){
             criteria.add(CustomerPeer.CUSTOMER_ID, new Integer(customerId), Criteria.EQUAL);
@@ -432,11 +498,11 @@ public class ReportSQL extends VelocitySecureAction
             if (languageId>999){
                 criteria.add(CustomerPeer.LANGUAGE_ID, new Integer(languageId), Criteria.EQUAL);
             }
-            if (householdCatId>999){
-                criteria.add(CustomerPeer.HOUSEHOLD_CAT_ID, new Integer(householdCatId), Criteria.EQUAL);
+            if (industryId>999){
+                criteria.add(CustomerPeer.INDUSTRY_ID, new Integer(industryId), Criteria.EQUAL);
             }
-            if (educationCatId>999){
-                criteria.add(CustomerPeer.EDUCATION_CAT_ID, new Integer(educationCatId), Criteria.EQUAL);
+            if (leadSourceId>999){
+                criteria.add(CustomerPeer.LEAD_SOURCE_ID, new Integer(leadSourceId), Criteria.EQUAL);
             }
         }
         
@@ -539,6 +605,10 @@ public class ReportSQL extends VelocitySecureAction
             isAuthorized = true;
         }
         else if (reportid==6 && data.getUser().hasLoggedIn() && (acl.hasPermission( "SHIPMENT_VIEW") || acl.hasRole("turbine_root")))
+        {
+            isAuthorized = true;
+        }
+        else if (reportid==7 && data.getUser().hasLoggedIn() && (acl.hasPermission( "NEWS_SUBSCRIPTION_VIEW") || acl.hasRole("turbine_root")))
         {
             isAuthorized = true;
         }

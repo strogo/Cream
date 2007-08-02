@@ -3,18 +3,21 @@ $page.setTitle("CReaM")
 
 var defaultList=$!preferences.DefaultList;
 
-MSG_ABOUT='CReaM 2.0.0 \n\nWritten by Nenad Pandzic\nImport and part of HTML email module contributed by Roman Maxymchuk\nFCKeditor written by Frederico Caldeira Knabben\nDocumentation: Melissa Paulissen\nProject management: Sava Tatic, Douglas Arellanes\n\nLocalizers:\nDutch - Frans van Berckel\nGerman - Micz Flor\nRussian and Ukrainian - Roman Maxymchuk\nSerbian - Ana Nedic\nSpanish - Claudia Cruz';
+MSG_ABOUT='CReaM 3.0.0 \n\nWritten by Nenad Pandzic\nThe import and part of the HTML email module contributed by Roman Maxymchuk\nFCKeditor written by Frederico Caldeira Knabben\nDocumentation: Melissa Paulissen\nProject management: Sava Tatic, Douglas Arellanes\n\nLocalizers:\nDutch - Frans van Berckel\nGerman - Micz Flor\nRussian and Ukrainian - Roman Maxymchuk\nSerbian - Ana Nedic\nSpanish - Claudia Cruz';
 
-TAB_COMM=101;
+TAB_MAIN=101;
 TAB_SALES=102;
 TAB_OPTIONS=103;
 TAB_SYSTEM=104;
+TAB_MARKETING=105;
 
 TOP_LIST=101;
 TOP_FORM_NEW=102;
 TOP_FORM_EDIT=103;
 TOP_DIALOG=104;
 TOP_PORTAL=105;
+TOP_FORM_RELATED_NEW=106;
+TOP_FORM_RELATED_EDIT=107;
 
 SCREEN_LIST=101;
 SCREEN_FORM=102;
@@ -26,6 +29,12 @@ HOME=1000;
 CUSTOMER=1001;
 PROJECT=1002;
 PRODUCT=1003;
+CONTACT=1004;
+TASK=1005;
+FILE=1006;
+LEAD=1007;
+OPPORTUNITY=1008;
+ACCOUNT=1100;
 ORDER=2001;
 PAYMENT=2002;
 ONLINE_SUBSCRIPTION=2003;
@@ -41,15 +50,24 @@ NEWS_SUBSCRIPTION=2012;
 CURRENCY=3001;
 CARRIER=3002;
 COUNTRY=3003;
-REGION=3012;
-LANGUAGE=3004;
-HOUSEHOLD_CATEGORY=3005;
-EDUCATION_CATEGORY=3006;
-UOM=3007;
-VENDOR=3008;
-PROJECT_CATEGORY=3009;
-CUSTOMER_CATEGORY=3010;
-PRODUCT_CATEGORY=3011;
+REGION=3004;
+LANGUAGE=3005;
+HOUSEHOLD_CATEGORY=3006;
+EDUCATION_CATEGORY=3007;
+UOM=3008;
+VENDOR=3009;
+PROJECT_CATEGORY=3010;
+CUSTOMER_CATEGORY=3011;
+PRODUCT_CATEGORY=3012;
+CONTACT_CATEGORY=3013;
+INDUSTRY=3014;
+AGE_CATEGORY=3015;
+REVENUE_CATEGORY=3016;
+EMPLOYEE_NO_CATEGORY=3017;
+LEAD_SOURCE=3018;
+JOB_POSITION=3019;
+SALUTATION=3020;
+OPPORTUNITY_CATEGORY=3021;
 USER=4001;
 GROUP=4002;
 ROLE=4003;
@@ -69,7 +87,8 @@ HELP_BUGS=105;
 HELP_FAQ=106;
 
 
-TI_COMM='$!l10n.get("Application.Tab.Communication")';
+TI_MAIN='$!l10n.get("Application.Tab.Main")';
+TI_MARKETING='$!l10n.get("Application.Tab.Marketing")';
 TI_SALES='$!l10n.get("Application.Tab.Sales")';
 TI_OPTIONS='$!l10n.get("Application.Tab.Options")';
 TI_SYSTEM='$!l10n.get("Application.Tab.System")';
@@ -96,9 +115,15 @@ var creamObject= new Array();
 
 creamObject[HELP]=new ScreenObject("$!l10n.get("Help.Menu.Label")", "$link.setPage("Help.vm")", "", "", "$!l10n.get("Help.List.Title")", "", "", 1000, "", 0, "ASC");
 creamObject[HOME]=new ScreenObject("$!l10n.get("Home.Menu.Label")", "$link.setPage("Home.vm")", "", "", "$!l10n.get("Home.List.Title")", "", "", 1000, "", 0, "ASC");
+creamObject[ACCOUNT]=new ScreenObject("$!l10n.get("Account.Menu.Label")", "$link.setPage("CustomerList.vm")", "$link.setPage("CustomerForm.vm")", "customerid", "$!l10n.get("Account.List.Title")", "$!l10n.get("Customer.Form.NewTitle")", "$!l10n.get("Customer.Form.Title")", $!preferences.CustomerFid, "", 2, "ASC");
 creamObject[CUSTOMER]=new ScreenObject("$!l10n.get("Customer.Menu.Label")", "$link.setPage("CustomerList.vm")", "$link.setPage("CustomerForm.vm")", "customerid", "$!l10n.get("Customer.List.Title")", "$!l10n.get("Customer.Form.NewTitle")", "$!l10n.get("Customer.Form.Title")", $!preferences.CustomerFid, "", 2, "ASC");
 creamObject[PROJECT]=new ScreenObject("$!l10n.get("Project.Menu.Label")", "$link.setPage("ProjectList.vm")", "$link.setPage("ProjectForm.vm")", "projectid", "$!l10n.get("Project.List.Title")", "$!l10n.get("Project.Form.NewTitle")", "$!l10n.get("Project.Form.Title")", $!preferences.ProjectFid, "", 2, "ASC");
 creamObject[PRODUCT]=new ScreenObject("$!l10n.get("Product.Menu.Label")", "$link.setPage("ProductList.vm")", "$link.setPage("ProductForm.vm")", "productid", "$!l10n.get("Product.List.Title")", "$!l10n.get("Product.Form.NewTitle")", "$!l10n.get("Product.Form.Title")", $!preferences.ProductFid, "", 2, "ASC");
+creamObject[CONTACT]=new ScreenObject("$!l10n.get("Contact.Menu.Label")", "$link.setPage("ContactList.vm")", "$link.setPage("ContactForm.vm")", "contactid", "$!l10n.get("Contact.List.Title")", "$!l10n.get("Contact.Form.NewTitle")", "$!l10n.get("Contact.Form.Title")", $!preferences.ContactFid, "", 2, "ASC");
+creamObject[TASK]=new ScreenObject("$!l10n.get("Task.Menu.Label")", "$link.setPage("TaskList.vm")", "$link.setPage("TaskForm.vm")", "taskid", "$!l10n.get("Task.List.Title")", "$!l10n.get("Task.Form.NewTitle")", "$!l10n.get("Task.Form.Title")", $!preferences.TaskFid, "", 2, "ASC");
+creamObject[FILE]=new ScreenObject("$!l10n.get("File.Menu.Label")", "$link.setPage("FileList.vm")", "$link.setPage("FileForm.vm")", "fileid", "$!l10n.get("File.List.Title")", "$!l10n.get("File.Form.NewTitle")", "$!l10n.get("File.Form.Title")", $!preferences.FileFid, "", 2, "ASC");
+creamObject[LEAD]=new ScreenObject("$!l10n.get("Lead.Menu.Label")", "$link.setPage("LeadList.vm")", "$link.setPage("LeadForm.vm")", "leadid", "$!l10n.get("Lead.List.Title")", "$!l10n.get("Lead.Form.NewTitle")", "$!l10n.get("Lead.Form.Title")", $!preferences.LeadFid, "", 2, "ASC");
+creamObject[OPPORTUNITY]=new ScreenObject("$!l10n.get("Opportunity.Menu.Label")", "$link.setPage("OpportunityList.vm")", "$link.setPage("OpportunityForm.vm")", "opportunityid", "$!l10n.get("Opportunity.List.Title")", "$!l10n.get("Opportunity.Form.NewTitle")", "$!l10n.get("Opportunity.Form.Title")", $!preferences.OpportunityFid, "", 2, "ASC");
 creamObject[ORDER]=new ScreenObject("$!l10n.get("SalesOrder.Menu.Label")", "$link.setPage("OrderList.vm")", "$link.setPage("OrderForm.vm")", "sorderid", "$!l10n.get("SalesOrder.List.Title")", "$!l10n.get("SalesOrder.Form.NewTitle")", "$!l10n.get("SalesOrder.Form.Title")", $!preferences.SorderFid, "", 6, "DESC");
 creamObject[PAYMENT]=new ScreenObject("$!l10n.get("Payment.Menu.Label")", "$link.setPage("PaymentList.vm")", "$link.setPage("PaymentForm.vm")", "paymentid", "$!l10n.get("Payment.List.Title")", "$!l10n.get("Payment.Form.NewTitle")", "$!l10n.get("Payment.Form.Title")", $!preferences.PaymentFid, "", 6, "DESC");
 creamObject[ONLINE_SUBSCRIPTION]=new ScreenObject("$!l10n.get("OnlineSubscription.Menu.Label")", "$link.setPage("OnlineSubscriptionList.vm")", "$link.setPage("OnlineSubscriptionForm.vm")", "onlinesubsid", "$!l10n.get("OnlineSubscription.List.Title")", "$!l10n.get("OnlineSubscription.Form.NewTitle")", "$!l10n.get("OnlineSubscription.Form.Title")", $!preferences.OnlineSubsFid, "", 5, "DESC");
@@ -123,6 +148,15 @@ creamObject[VENDOR]=new ScreenObject("$!l10n.get("Vendor.Menu.Label")", "$link.s
 creamObject[PROJECT_CATEGORY]=new ScreenObject("$!l10n.get("ProjectCategory.Menu.Label")", "$link.setPage("ProjectCategoryList.vm")", "$link.setPage("ProjectCategoryForm.vm")", "projectcatid", "$!l10n.get("ProjectCategory.List.Title")", "$!l10n.get("ProjectCategory.Form.NewTitle")", "$!l10n.get("ProjectCategory.Form.Title")", 1000, "", 1, "ASC");
 creamObject[CUSTOMER_CATEGORY]=new ScreenObject("$!l10n.get("CustomerCategory.Menu.Label")", "$link.setPage("CustomerCategoryList.vm")", "$link.setPage("CustomerCategoryForm.vm")", "customercatid", "$!l10n.get("CustomerCategory.List.Title")", "$!l10n.get("CustomerCategory.Form.NewTitle")", "$!l10n.get("CustomerCategory.Form.Title")", 1000, "", 1, "ASC");
 creamObject[PRODUCT_CATEGORY]=new ScreenObject("$!l10n.get("ProductCategory.Menu.Label")", "$link.setPage("ProductCategoryList.vm")", "$link.setPage("ProductCategoryForm.vm")", "productcatid", "$!l10n.get("ProductCategory.List.Title")", "$!l10n.get("ProductCategory.Form.NewTitle")", "$!l10n.get("ProductCategory.Form.Title")", 1000, "", 1, "ASC");
+creamObject[CONTACT_CATEGORY]=new ScreenObject("$!l10n.get("ContactCategory.Menu.Label")", "$link.setPage("ContactCategoryList.vm")", "$link.setPage("ContactCategoryForm.vm")", "contactcatid", "$!l10n.get("ContactCategory.List.Title")", "$!l10n.get("ContactCategory.Form.NewTitle")", "$!l10n.get("ContactCategory.Form.Title")", 1000, "", 1, "ASC");
+creamObject[INDUSTRY]=new ScreenObject("$!l10n.get("Industry.Menu.Label")", "$link.setPage("IndustryList.vm")", "$link.setPage("IndustryForm.vm")", "industryid", "$!l10n.get("Industry.List.Title")", "$!l10n.get("Industry.Form.NewTitle")", "$!l10n.get("Industry.Form.Title")", 1000, "", 1, "ASC");
+creamObject[AGE_CATEGORY]=new ScreenObject("$!l10n.get("AgeCategory.Menu.Label")", "$link.setPage("AgeCategoryList.vm")", "$link.setPage("AgeCategoryForm.vm")", "agecatid", "$!l10n.get("AgeCategory.List.Title")", "$!l10n.get("AgeCategory.Form.NewTitle")", "$!l10n.get("AgeCategory.Form.Title")", 1000, "", 1, "ASC");
+creamObject[REVENUE_CATEGORY]=new ScreenObject("$!l10n.get("RevenueCategory.Menu.Label")", "$link.setPage("RevenueCategoryList.vm")", "$link.setPage("RevenueCategoryForm.vm")", "revenuecatid", "$!l10n.get("RevenueCategory.List.Title")", "$!l10n.get("RevenueCategory.Form.NewTitle")", "$!l10n.get("RevenueCategory.Form.Title")", 1000, "", 1, "ASC");
+creamObject[EMPLOYEE_NO_CATEGORY]=new ScreenObject("$!l10n.get("EmployeeNoCategory.Menu.Label")", "$link.setPage("EmployeeNoCategoryList.vm")", "$link.setPage("EmployeeNoCategoryForm.vm")", "employeenocatid", "$!l10n.get("EmployeeNoCategory.List.Title")", "$!l10n.get("EmployeeNoCategory.Form.NewTitle")", "$!l10n.get("EmployeeNoCategory.Form.Title")", 1000, "", 1, "ASC");
+creamObject[LEAD_SOURCE]=new ScreenObject("$!l10n.get("LeadSource.Menu.Label")", "$link.setPage("LeadSourceList.vm")", "$link.setPage("LeadSourceForm.vm")", "leadsourceid", "$!l10n.get("LeadSource.List.Title")", "$!l10n.get("LeadSource.Form.NewTitle")", "$!l10n.get("LeadSource.Form.Title")", 1000, "", 1, "ASC");
+creamObject[JOB_POSITION]=new ScreenObject("$!l10n.get("JobPosition.Menu.Label")", "$link.setPage("JobPositionList.vm")", "$link.setPage("JobPositionForm.vm")", "jobpositionid", "$!l10n.get("JobPosition.List.Title")", "$!l10n.get("JobPosition.Form.NewTitle")", "$!l10n.get("JobPosition.Form.Title")", 1000, "", 1, "ASC");
+creamObject[SALUTATION]=new ScreenObject("$!l10n.get("Salutation.Menu.Label")", "$link.setPage("SalutationList.vm")", "$link.setPage("SalutationForm.vm")", "salutationid", "$!l10n.get("Salutation.List.Title")", "$!l10n.get("Salutation.Form.NewTitle")", "$!l10n.get("Salutation.Form.Title")", 1000, "", 1, "ASC");
+creamObject[OPPORTUNITY_CATEGORY]=new ScreenObject("$!l10n.get("OpportunityCategory.Menu.Label")", "$link.setPage("OpportunityCategoryList.vm")", "$link.setPage("OpportunityCategoryForm.vm")", "opportunitycatid", "$!l10n.get("OpportunityCategory.List.Title")", "$!l10n.get("OpportunityCategory.Form.NewTitle")", "$!l10n.get("OpportunityCategory.Form.Title")", 1000, "", 1, "ASC");
 creamObject[USER]=new ScreenObject("$!l10n.get("User.Menu.Label")", "$link.setPage("UserList.vm")", "$link.setPage("UserForm.vm")", "userid", "$!l10n.get("User.List.Title")", "$!l10n.get("User.Form.NewTitle")", "$!l10n.get("User.Form.Title")", 1000, "", 1, "ASC");
 creamObject[GROUP]=new ScreenObject("Groups", "$link.setPage("group,FluxGroupList.vm")", "$link.setPage("group,FluxGroupForm.vm")", "name", "Groups", "New Group", "Group", 1000, "", 1, "ASC");
 creamObject[ROLE]=new ScreenObject("$!l10n.get("Role.Menu.Label")", "$link.setPage("RoleList.vm")", "$link.setPage("RoleForm.vm")", "roleid", "$!l10n.get("Role.List.Title")", "$!l10n.get("Role.Form.NewTitle")", "$!l10n.get("Role.Form.Title")", 1000, "", 1, "ASC");
@@ -139,28 +173,40 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 		tabContent='';
 		if (tabId==TAB_OPTIONS)
 		{
-			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_COMM)">'+TI_COMM+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MAIN)">'+TI_MAIN+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MARKETING)">'+TI_MARKETING+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SALES)">'+TI_SALES+'</span></td>';
 			tabContent+='<td class=tabhi align=center valign=center>'+TI_OPTIONS+'</td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SYSTEM)">'+TI_SYSTEM+'</span></td>';
 		}
 		else if (tabId==TAB_SYSTEM)
 		{
-			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_COMM)">'+TI_COMM+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MAIN)">'+TI_MAIN+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MARKETING)">'+TI_MARKETING+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SALES)">'+TI_SALES+'</span></td>';
 			tabContent+='<td  class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_OPTIONS)">'+TI_OPTIONS+'</span></td>';
 			tabContent+='<td  class=tabhi align=center valign=center>'+TI_SYSTEM+'</td>';
 		}
 		else if (tabId==TAB_SALES)
 		{
-			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_COMM)">'+TI_COMM+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MAIN)">'+TI_MAIN+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MARKETING)">'+TI_MARKETING+'</span></td>';
 			tabContent+='<td  class=tabhi align=center valign=center>'+TI_SALES+'</td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_OPTIONS)">'+TI_OPTIONS+'</span></td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SYSTEM)">'+TI_SYSTEM+'</span></td>';
+		}
+		else if (tabId==TAB_MARKETING)
+		{
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MAIN)">'+TI_MAIN+'</span></td>';
+			tabContent+='<td  class=tabhi align=center valign=center>'+TI_MARKETING+'</td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SALES)">'+TI_SALES+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_OPTIONS)">'+TI_OPTIONS+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SYSTEM)">'+TI_SYSTEM+'</span></td>';
 		}
 		else
 		{
-			tabContent+='<td class=tabhi align=center valign=center>'+TI_COMM+'</td>';
+			tabContent+='<td class=tabhi align=center valign=center>'+TI_MAIN+'</td>';
+			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_MARKETING)">'+TI_MARKETING+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SALES)">'+TI_SALES+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_OPTIONS)">'+TI_OPTIONS+'</span></td>';
 			tabContent+='<td class=tablo align=center valign=center><span class="tlink" onClick="showTab(TAB_SYSTEM)">'+TI_SYSTEM+'</span></td>';
@@ -190,17 +236,47 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(PRODUCT_CATEGORY)">'+getMenuLabel(PRODUCT_CATEGORY)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(INDUSTRY)">'+getMenuLabel(INDUSTRY)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(PROJECT_CATEGORY)">'+getMenuLabel(PROJECT_CATEGORY)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(AGE_CATEGORY)">'+getMenuLabel(AGE_CATEGORY)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(HOUSEHOLD_CATEGORY)">'+getMenuLabel(HOUSEHOLD_CATEGORY)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(EDUCATION_CATEGORY)">'+getMenuLabel(EDUCATION_CATEGORY)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(REVENUE_CATEGORY)">'+getMenuLabel(REVENUE_CATEGORY)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(EMPLOYEE_NO_CATEGORY)">'+getMenuLabel(EMPLOYEE_NO_CATEGORY)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=menuSpace;
 
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(VENDOR)">'+getMenuLabel(VENDOR)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(CONTACT_CATEGORY)">'+getMenuLabel(CONTACT_CATEGORY)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(SALUTATION)">'+getMenuLabel(SALUTATION)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(JOB_POSITION)">'+getMenuLabel(JOB_POSITION)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=menuSpace;
+
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(PRODUCT_CATEGORY)">'+getMenuLabel(PRODUCT_CATEGORY)+'</span></td>';
 			menuContent+=postMenuItem;
 
 			menuContent+=beforeMenuItem;
@@ -208,7 +284,17 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(LANGUAGE)">'+getMenuLabel(LANGUAGE)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(VENDOR)">'+getMenuLabel(VENDOR)+'</span></td>';
+			menuContent+=postMenuItem;
+
+			menuContent+=menuSpace;
+
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(PROJECT_CATEGORY)">'+getMenuLabel(PROJECT_CATEGORY)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(REGION)">'+getMenuLabel(REGION)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
@@ -216,7 +302,7 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(REGION)">'+getMenuLabel(REGION)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(LANGUAGE)">'+getMenuLabel(LANGUAGE)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
@@ -228,13 +314,13 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(HOUSEHOLD_CATEGORY)">'+getMenuLabel(HOUSEHOLD_CATEGORY)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(LEAD_SOURCE)">'+getMenuLabel(LEAD_SOURCE)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(EDUCATION_CATEGORY)">'+getMenuLabel(EDUCATION_CATEGORY)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(OPPORTUNITY_CATEGORY)">'+getMenuLabel(OPPORTUNITY_CATEGORY)+'</span></td>';
 			menuContent+=postMenuItem;
-			
+
 		}
 		else if (tabId==TAB_SYSTEM)
 		{
@@ -262,7 +348,7 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+='<td><span class="mlink" onClick="showList(USER)">'+getMenuLabel(USER)+'</span></td>';
 			menuContent+=postMenuItem;
 			
-            menuContent+=menuSpace;
+            		menuContent+=menuSpace;
 
 			menuContent+=beforeMenuItem;
 			menuContent+='<td><span class="mlink" onClick="showDialog(IMPORT)">'+getMenuLabel(IMPORT)+'</span></td>';
@@ -274,28 +360,12 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 		}
 		else if (tabId==TAB_SALES)
 		{
-			menuContent+=beforeFirstMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(CUSTOMER)">'+getMenuLabel(CUSTOMER)+'</span></td>';
-			menuContent+=postMenuItem;
-			
-			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(PRODUCT)">'+getMenuLabel(PRODUCT)+'</span></td>';
-			menuContent+=postMenuItem;
-			
-			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(PROJECT)">'+getMenuLabel(PROJECT)+'</span></td>';
-			menuContent+=postMenuItem;
-			
-			menuContent+=menuSpace;
-			
 			menuContent+=beforeMenuItem;
 			menuContent+='<td><span class="mlink" onClick="showList(ORDER)">'+getMenuLabel(ORDER)+'</span></td>';
 			menuContent+=postMenuItem;
 			
-			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(PAYMENT)">'+getMenuLabel(PAYMENT)+'</span></td>';
-			menuContent+=postMenuItem;
-			
+            		menuContent+=menuSpace;
+
 			menuContent+=beforeMenuItem;
 			menuContent+='<td><span class="mlink" onClick="showList(SHIPMENT)">'+getMenuLabel(SHIPMENT)+'</span></td>';
 			menuContent+=postMenuItem;
@@ -305,18 +375,52 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(PRINT_SUBSCRIPTION)">'+getMenuLabel(PRINT_SUBSCRIPTION)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(ONLINE_SUBSCRIPTION)">'+getMenuLabel(ONLINE_SUBSCRIPTION)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(ONLINE_SUBSCRIPTION)">'+getMenuLabel(ONLINE_SUBSCRIPTION)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(PRINT_SUBSCRIPTION)">'+getMenuLabel(PRINT_SUBSCRIPTION)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+            		menuContent+=menuSpace;
+
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(PAYMENT)">'+getMenuLabel(PAYMENT)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+//			menuContent+=menuSpace;
+//			
+//			menuContent+=beforeMenuItem;
+//			menuContent+='<td><span class="mlink" onClick="showDialog(REPORT)">'+getMenuLabel(REPORT)+'</span></td>';
+//			menuContent+=postMenuItem;
+		}
+		else if (tabId==TAB_MARKETING)
+		{
+//			menuContent+=beforeFirstMenuItem;
+//			menuContent+='<td><span class="mlink" onClick="showList(LEAD)">'+getMenuLabel(LEAD)+'</span></td>';
+//			menuContent+=postMenuItem;
+			
+//			menuContent+=menuSpace;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(OPPORTUNITY)">'+getMenuLabel(OPPORTUNITY)+'</span></td>';
 			menuContent+=postMenuItem;
 			
 			menuContent+=menuSpace;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showDialog(REPORT)">'+getMenuLabel(REPORT)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(NEWS_SUBSCRIPTION)">'+getMenuLabel(NEWS_SUBSCRIPTION)+'</span></td>';
 			menuContent+=postMenuItem;
+
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(NEWSLETTER)">'+getMenuLabel(NEWSLETTER)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+//			menuContent+=menuSpace;
+			
+//			menuContent+=beforeMenuItem;
+//			menuContent+='<td><span class="mlink" onClick="showDialog(REPORT)">'+getMenuLabel(REPORT)+'</span></td>';
+//			menuContent+=postMenuItem;
 		}
 		else
 		{
@@ -331,13 +435,27 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			menuContent+=menuSpace;
 			
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(NEWS_SUBSCRIPTION)">'+getMenuLabel(NEWS_SUBSCRIPTION)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(TASK)">'+getMenuLabel(TASK)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=menuSpace;
+
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(CUSTOMER)">'+getMenuLabel(CUSTOMER)+'</span></td>';
 			menuContent+=postMenuItem;
 
 			menuContent+=beforeMenuItem;
-			menuContent+='<td><span class="mlink" onClick="showList(NEWSLETTER)">'+getMenuLabel(NEWSLETTER)+'</span></td>';
+			menuContent+='<td><span class="mlink" onClick="showList(CONTACT)">'+getMenuLabel(CONTACT)+'</span></td>';
 			menuContent+=postMenuItem;
 			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(PRODUCT)">'+getMenuLabel(PRODUCT)+'</span></td>';
+			menuContent+=postMenuItem;
+			
+			menuContent+=beforeMenuItem;
+			menuContent+='<td><span class="mlink" onClick="showList(PROJECT)">'+getMenuLabel(PROJECT)+'</span></td>';
+			menuContent+=postMenuItem;
+
 		}
 		
 		return menuContent;
@@ -345,7 +463,7 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 
 	function getListFilter(listName)
 	{
-		filterContent='<option value="1000">&nbsp;---</option>';
+		filterContent='<option value="1000">( $!l10n.get("Common.List.Filter.Option.All") )</option>';
 
 		if (listName==CUSTOMER)
 		{
@@ -355,6 +473,12 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			filterContent+='<option value="1004">$!l10n.get("Customer.List.Filter.Option.Active")</option>';
 			filterContent+='<option value="1005">$!l10n.get("Customer.List.Filter.Option.Inactive")</option>';
 			filterContent+='<option value="1006">$!l10n.get("Customer.List.Filter.Option.MyEntries")</option>';
+		}
+		else if (listName==CONTACT)
+		{
+			filterContent+='<option value="1001">$!l10n.get("Customer.List.Filter.Option.Active")</option>';
+			filterContent+='<option value="1002">$!l10n.get("Customer.List.Filter.Option.Inactive")</option>';
+			filterContent+='<option value="1003">$!l10n.get("Customer.List.Filter.Option.MyEntries")</option>';
 		}
 		else if (listName==PRODUCT)
 		{
@@ -371,6 +495,17 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			filterContent+='<option value="1001">$!l10n.get("Project.List.Filter.Option.Active")</option>';
 			filterContent+='<option value="1002">$!l10n.get("Project.List.Filter.Option.Inactive")</option>';
 			filterContent+='<option value="1003">$!l10n.get("Project.List.Filter.Option.MyEntries")</option>';
+		}
+		else if (listName==TASK)
+		{
+			filterContent+='<option value="1001">$!l10n.get("Common.List.Filter.Option.Today")</option>';
+			filterContent+='<option value="1002">$!l10n.get("Common.List.Filter.Option.ThisMonth")</option>';
+			filterContent+='<option value="1003">$!l10n.get("Task.List.Filter.Option.Due")</option>';
+			filterContent+='<option value="1004">$!l10n.get("Task.List.Filter.Option.Undated")</option>';
+			filterContent+='<option value="1005">$!l10n.get("Task.List.Filter.Option.AssignedToMe")</option>';
+			filterContent+='<option value="1007">$!l10n.get("Task.List.Filter.Option.Active")</option>';
+			filterContent+='<option value="1008">$!l10n.get("Task.List.Filter.Option.Completed")</option>';
+			filterContent+='<option value="1009">$!l10n.get("Task.List.Filter.Option.MyEntries")</option>';
 		}
 		else
 		{
@@ -402,14 +537,21 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Customer.List.Header.City")</span></td>';
 			listHeading+='<td width="10%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Customer.List.Header.Country")</span></td>';
 		}
+		else if (listName==CONTACT)
+		{
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
+			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Name")</span></td>';
+			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Customer")</span></td>';
+			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Category")</span></td>';
+			listHeading+='<td width="10%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Contact.List.Header.Country")</span></td>';
+		}
 		else if (listName==PROJECT)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
 			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Name")</span></td>';
 			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Category")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Project.List.Header.Start")</span></td>';
 			listHeading+='<td width="10%" align="right"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Project.List.Header.Expenses")&nbsp;</span></td>';
-			listHeading+='<td><img src="$ui.image($ui.space)" width=16></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Project.List.Header.Start")&nbsp;</span></td>';
 		}
 		else if (listName==PRODUCT)
 		{
@@ -420,6 +562,15 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="15%" align="right"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Product.List.Header.Price")&nbsp;</span></td>';
 			listHeading+='<td><img src="$ui.image($ui.space)" width=16></td>';
 		}
+		else if (listName==OPPORTUNITY)
+		{
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
+			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Name")</span></td>';
+			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Customer")</span></td>';
+			listHeading+='<td width="15%" align="right"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Opportunity.List.Header.Amount")&nbsp;</span></td>';
+			listHeading+='<td width="10%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Currency")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(6)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
+		}
 		else if (listName==ORDER)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
@@ -427,7 +578,7 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("SalesOrder.List.Header.PayTerm")</span></td>';
 			listHeading+='<td width="15%" align="right"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Total")&nbsp;</span></td>';
 			listHeading+='<td width="10%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Currency")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(6)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(6)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==PAYMENT)
 		{
@@ -436,7 +587,7 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Order")</span></td>';
 			listHeading+='<td width="15%" align="right"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Total")&nbsp;</span></td>';
 			listHeading+='<td width="10%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Currency")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(6)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(6)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==SHIPMENT)
 		{
@@ -444,14 +595,14 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Customer")</span></td>';
 			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Order")</span></td>';
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Shipment.List.Header.Carrier")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==SERVICE)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
 			listHeading+='<td width="35%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Customer")</span></td>';
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Order")</span></td>';
-			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==ONLINE_SUBSCRIPTION)
 		{
@@ -459,7 +610,7 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Customer")</span></td>';
 			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Order")</span></td>';
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Product")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==PRINT_SUBSCRIPTION)
 		{
@@ -467,43 +618,46 @@ creamObject[IMPORT]=new ScreenObject("$!l10n.get("Import.Menu.Label")", "", "$li
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Customer")</span></td>';
 			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Order")</span></td>';
 			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Product")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")</span></td>';
-		}
-		else if (listName==USAGE)
-		{
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
-			listHeading+='<td width="35%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Customer")</span></td>';
-			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Product")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">Start</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">End</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==INBOX)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
-			listHeading+='<td width="40%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Subject")</span></td>';
-			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Customer")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Subject")</span></td>';
+			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Customer")</span></td>';
+			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Contact")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==OUTBOX)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
-			listHeading+='<td width="40%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Subject")</span></td>';
-			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Customer")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Subject")</span></td>';
+			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Customer")</span></td>';
+			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Contact")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
+		}
+		else if (listName==TASK)
+		{
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
+			listHeading+='<td width="25%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Subject")</span></td>';
+			listHeading+='<td width="20%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Customer")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Task.List.Header.AssignedTo")</span></td>';
+			listHeading+='<td width="10%" align="right"><span class="lhlink" onClick="doSort(5)">$!l10n.get("Task.List.Header.Progress")&nbsp;</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(6)">$!l10n.get("Task.List.Header.DueDate")&nbsp;</span></td>';
 		}
 		else if (listName==NEWS_SUBSCRIPTION)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
 			listHeading+='<td width="40%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("NewsSubscription.List.Header.Email")</span></td>';
 			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Product")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==NEWSLETTER)
 		{
 			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(1)">$!l10n.get("Common.List.Header.Id")</span></td>';
 			listHeading+='<td width="40%"><span class="lhlink" onClick="doSort(2)">$!l10n.get("Common.List.Header.Subject")</span></td>';
 			listHeading+='<td width="30%"><span class="lhlink" onClick="doSort(3)">$!l10n.get("Common.List.Header.Product")</span></td>';
-			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")</span></td>';
+			listHeading+='<td width="15%"><span class="lhlink" onClick="doSort(4)">$!l10n.get("Common.List.Header.Date")&nbsp;</span></td>';
 		}
 		else if (listName==CURRENCY)
 		{

@@ -52,7 +52,7 @@ import org.campware.cream.om.RegionPeer;
  * This class provides a simple set of methods to
  * insert/update/delete records in a database.
  */
-public class RegionSQL extends CreamAction
+public class RegionSQL extends CreamLookupAction
 {
     protected void initScreen()
     {
@@ -75,6 +75,7 @@ public class RegionSQL extends CreamAction
         Region entry = new Region();
         data.getParameters().setProperties(entry);
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**

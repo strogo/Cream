@@ -98,6 +98,7 @@ public class RoleSQL extends CreamAction
         }
 
         entry.save();
+        setSavedId(entry.getPrimaryKey().toString());
     }
 
     /**
